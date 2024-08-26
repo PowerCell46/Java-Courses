@@ -32,6 +32,6 @@ public class Star extends Base {
     @JoinColumn(name = "constellation_id", referencedColumnName = "id", nullable = false)
     private Constellation constellation;
 
-    @OneToMany
+    @OneToMany(targetEntity = Astronomer.class, mappedBy = "observingStar", fetch = FetchType.EAGER)
     private Set<Astronomer> observers;
 }

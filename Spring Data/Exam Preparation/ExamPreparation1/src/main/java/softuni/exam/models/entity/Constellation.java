@@ -1,9 +1,6 @@
 package softuni.exam.models.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
@@ -20,6 +17,6 @@ public class Constellation extends Base {
     @Size(min = 5)
     private String description;
 
-    @OneToMany
+    @OneToMany(targetEntity = Star.class, mappedBy = "constellation", fetch = FetchType.EAGER)
     private Set<Star> stars;
 }
