@@ -1,5 +1,7 @@
 SELECT
-
+    (SELECT make FROM cars c0 WHERE c0.id = s.car_id) AS make,
+    (SELECT model FROM cars c0 WHERE c0.id = s.car_id) AS model,
+    (SELECT travelled_distance FROM cars c0 WHERE c0.id = s.car_id) AS travelled_distance,
     (
         SELECT
             name
@@ -18,7 +20,7 @@ SELECT
             sales s2
         WHERE
             s2.id = s.id
-    ) AS discount,
+    ) / 100 AS discount,
 
     (
         SELECT

@@ -23,10 +23,14 @@ SELECT
         sales s4
     WHERE
         s4.customer_id = s.customer_id
-    )
+    ) AS spent_money
 FROM
     sales s
-GROUP BY s.customer_id;
+GROUP BY
+    s.customer_id
+ORDER BY
+    spent_money DESC,
+    bought_cars DESC;
 
 
 -- # SELECT
