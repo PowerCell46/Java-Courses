@@ -1,0 +1,269 @@
+[{
+  "Id": 29,
+  "Name": "Louann Holzworth",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 50,
+      "CarName": "Toyota Tacoma"
+    }
+  ]
+}, {
+  "Id": 28,
+  "Name": "Donnetta Soliz",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 17,
+  "Name": "Rema Revelle",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 16,
+  "Name": "Carri Knapik",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 15,
+      "CarName": "Chevy Camaro"
+    },
+    {
+      "Discount": 15,
+      "CarName": "Toyota Prius"
+    }
+  ]
+}, {
+  "Id": 27,
+  "Name": "Garret Capron",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 5,
+      "CarName": "Nissan Altima"
+    }
+  ]
+}, {
+  "Id": 8,
+  "Name": "Teddy Hobby",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 40,
+      "CarName": "Opel Omega"
+    }
+  ]
+}, {
+  "Id": 10,
+  "Name": "Audrea Cardinal",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 5,
+      "CarName": "Great Wall H8"
+    }
+  ]
+}, {
+  "Id": 11,
+  "Name": "Francis Mckim",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 10,
+      "CarName": "BMW 1M Coupe"
+    }
+  ]
+}, {
+  "Id": 14,
+  "Name": "Brett Brickley",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 40,
+      "CarName": "Mercedes A 160"
+    },
+    {
+      "Discount": 15,
+      "CarName": "Nissan Altima"
+    }
+  ]
+}, {
+  "Id": 15,
+  "Name": "Kristian Engberg",
+  "IsYoungDriver": false,
+  "Sales": []
+}, {
+  "Id": 26,
+  "Name": "Hipolito Lamoreaux",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 40,
+      "CarName": "Skoda Rapid"
+    }
+  ]
+}, {
+  "Id": 4,
+  "Name": "Zada Attwood",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 25,
+  "Name": "Sylvie Mcelravy",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 0,
+      "CarName": "Fiat Panda 4x4"
+    }
+  ]
+}, {
+  "Id": 7,
+  "Name": "Rico Peer",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 10,
+      "CarName": "Nissan GT-R"
+    }
+  ]
+}, {
+  "Id": 5,
+  "Name": "Hai Everton",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 6,
+  "Name": "Lino Subia",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 20,
+      "CarName": "Nissan GT-R"
+    }
+  ]
+}, {
+  "Id": 24,
+  "Name": "Jimmy Grossi",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 12,
+  "Name": "Carole Witman",
+  "IsYoungDriver": false,
+  "Sales": []
+}, {
+  "Id": 13,
+  "Name": "Oren Perlman",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 10,
+      "CarName": "BMW F20"
+    }
+  ]
+}, {
+  "Id": 2,
+  "Name": "Natalie Poli",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 5,
+      "CarName": "Chevy Caprice"
+    },
+    {
+      "Discount": 10,
+      "CarName": "Alfa Romeo Alfetta"
+    }
+  ]
+}, {
+  "Id": 3,
+  "Name": "Marcelle Griego",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 19,
+  "Name": "Yvonne Mccalla",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 40,
+      "CarName": "BMW F04"
+    },
+    {
+      "Discount": 30,
+      "CarName": "Opel Omega"
+    }
+  ]
+}, {
+  "Id": 30,
+  "Name": "Ann Mcenaney",
+  "IsYoungDriver": true,
+  "Sales": [
+    {
+      "Discount": 15,
+      "CarName": "Peugeot 308"
+    },
+    {
+      "Discount": 10,
+      "CarName": "Chevy Camaro"
+    },
+    {
+      "Discount": 30,
+      "CarName": "Toyota Prius"
+    }
+  ]
+}, {
+  "Id": 21,
+  "Name": "Cinthia Lasala",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 1,
+  "Name": "Emmitt Benally",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 20,
+  "Name": "Nisha Markwell",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 30,
+      "CarName": "Opel Insignia"
+    },
+    {
+      "Discount": 20,
+      "CarName": "Rolls-Royce Ghost"
+    }
+  ]
+}, {
+  "Id": 23,
+  "Name": "Faustina Burgher",
+  "IsYoungDriver": false,
+  "Sales": []
+}, {
+  "Id": 18,
+  "Name": "Taina Achenbach",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 50,
+      "CarName": "Opel Insignia"
+    }
+  ]
+}, {
+  "Id": 9,
+  "Name": "Johnette Derryberry",
+  "IsYoungDriver": true,
+  "Sales": []
+}, {
+  "Id": 22,
+  "Name": "Daniele Zarate",
+  "IsYoungDriver": false,
+  "Sales": [
+    {
+      "Discount": 50,
+      "CarName": "Chevy Cruze"
+    }
+  ]
+}]

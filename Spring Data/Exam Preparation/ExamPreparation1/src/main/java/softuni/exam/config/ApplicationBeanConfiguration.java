@@ -13,9 +13,12 @@ public class ApplicationBeanConfiguration {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
-//
-//    @Bean
-//    public Gson gson() {
-//        return new Gson().
-//    }
+
+    @Bean
+    public Gson gson() {
+        return new Gson().newBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
+            .setPrettyPrinting()
+            .create();
+    }
 }

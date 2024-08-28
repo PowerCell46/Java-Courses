@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import softuni.exam.models.entity.Star;
 
 @Repository
-public interface StarRepository extends JpaRepository<Star, Integer> {
+public interface StarRepository extends JpaRepository<Star, Long> {
 
 }

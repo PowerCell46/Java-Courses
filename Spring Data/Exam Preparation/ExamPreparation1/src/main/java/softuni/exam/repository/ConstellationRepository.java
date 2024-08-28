@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import softuni.exam.models.entity.Constellation;
 
 @Repository
-public interface ConstellationRepository extends JpaRepository<Constellation, Integer> {
+public interface ConstellationRepository extends JpaRepository<Constellation, Long> {
 
 }
