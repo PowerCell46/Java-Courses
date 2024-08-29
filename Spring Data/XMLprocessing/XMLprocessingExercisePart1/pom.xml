@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>bg.softuni</groupId>
-    <artifactId>JSONprocessingExercise</artifactId>
+    <artifactId>XMLprocessingExercise</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>JSONprocessingExercise</name>
     <description>JSONprocessingExercise</description>
@@ -79,7 +79,12 @@
             <artifactId>hibernate-validator</artifactId>
             <version>8.0.1.Final</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.2</version>
+        </dependency>
     </dependencies>
 
     <build>
