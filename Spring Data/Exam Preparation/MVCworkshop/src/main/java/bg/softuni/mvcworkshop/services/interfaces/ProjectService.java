@@ -15,4 +15,6 @@ public interface ProjectService {
     boolean seedXMLdata(String projectsData) throws JAXBException;
 
     Optional<Project> findByName(String name);
+
+    String getFinishedProjects();
 }

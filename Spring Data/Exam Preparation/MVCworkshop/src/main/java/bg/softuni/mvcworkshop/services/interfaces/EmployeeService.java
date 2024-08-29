@@ -11,4 +11,6 @@ public interface EmployeeService {
     String getXMLdata() throws IOException;
 
     boolean seedXMLdata(String employees) throws JAXBException;
+
+    String getOlderThan25();
 }

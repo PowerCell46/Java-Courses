@@ -10,7 +10,6 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -18,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -69,5 +69,22 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Optional<Project> findByName(String name) {
         return projectRepository.findByName(name);
+    }
+
+    @Override
+    public String getFinishedProjects() {
+        List<Project> projects = projectRepository.findAllByIsFinishedIsTrue();
+        StringBuilder result = new StringBuilder();
+        for (Project project : projects) {
+            result
+                .append("Project Name: ").append(project.getName())
+                .append("\n     Description: ").append(project.getDescription())
+                .append("\n     ").append(project.getPayment())
+                .append("\n");
+        }
+
+        return result
+            .toString()
+            .trim();
     }
 }

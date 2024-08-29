@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +54,25 @@ public class EmployeeServiceImpl implements EmployeeService {
             ));
         }
         return true;
+    }
+
+    @Override
+    public String getOlderThan25() {
+        List<Employee> employees = employeeRepository.findAllByAgeGreaterThan(25);
+        StringBuilder result = new StringBuilder();
+
+        for (Employee employee : employees) {
+            result.append("Name: ")
+                .append(employee.getFirstName())
+                .append(" ")
+                .append(employee.getLastName())
+                .append("\n     Age: ")
+                .append(employee.getAge())
+                .append("\n     Project name: ")
+                .append(employee.getProject().getName())
+                .append("\n");
+        }
+
+        return result.toString().trim();
     }
 }
