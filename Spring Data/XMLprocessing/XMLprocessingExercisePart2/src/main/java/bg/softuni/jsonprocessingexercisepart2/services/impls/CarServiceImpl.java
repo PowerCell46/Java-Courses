@@ -1,18 +1,24 @@
 package bg.softuni.jsonprocessingexercisepart2.services.impls;
 
 import bg.softuni.jsonprocessingexercisepart2.DTOs.exports.CarDataExportDTO;
-import bg.softuni.jsonprocessingexercisepart2.DTOs.exports.CarExportDTO;
 import bg.softuni.jsonprocessingexercisepart2.DTOs.exports.PartDataExportDTO;
-import bg.softuni.jsonprocessingexercisepart2.DTOs.seeds.CarSeedDTO;
+import bg.softuni.jsonprocessingexercisepart2.DTOs.queries.*;
+import bg.softuni.jsonprocessingexercisepart2.DTOs.seedings.CarRootSeedDTO;
+import bg.softuni.jsonprocessingexercisepart2.DTOs.seedings.CarSeedDTO;
 import bg.softuni.jsonprocessingexercisepart2.entities.Car;
 import bg.softuni.jsonprocessingexercisepart2.entities.Part;
 import bg.softuni.jsonprocessingexercisepart2.repositories.CarRepository;
 import bg.softuni.jsonprocessingexercisepart2.services.interfaces.CarService;
 import bg.softuni.jsonprocessingexercisepart2.services.interfaces.PartService;
 import com.google.gson.Gson;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,25 +31,28 @@ import java.util.*;
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final PartService partService;
-    private static final String FILE_PATH = "src/main/resources/static/JSON/cars.json";
+    private static final String FILE_PATH = "src/main/resources/static/XML/cars.xml";
 
     private final Gson gson;
 
     @Override
-    public void seedCars() throws IOException {
+    public void seedCars() throws JAXBException {
         if (carRepository.count() > 0) return;
-
-        String jsonData = new String(Files.readAllBytes(Path.of(FILE_PATH)));
 
         long partLastId = partService.findLastId();
 
-        CarSeedDTO[] carSeedDTOS = gson.fromJson(jsonData, CarSeedDTO[].class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(CarRootSeedDTO.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        CarRootSeedDTO carRootSeedDTO = (CarRootSeedDTO) unmarshaller.unmarshal(new File(FILE_PATH));
 
-        for (CarSeedDTO carSeedDTO : carSeedDTOS) {
-            Car carEntity = mapCarSeedDTOtoCarEntity(carSeedDTO, partLastId);
-
-            carRepository.saveAndFlush(carEntity);
-        }
+        carRootSeedDTO
+            .getCars()
+            .stream()
+            .forEach(carSeedDTO ->
+                carRepository.saveAndFlush(
+                    mapCarSeedDTOtoCarEntity(carSeedDTO, partLastId)
+                )
+            );
     }
 
     @Override
@@ -57,52 +66,57 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public boolean exportToJSONCarsByToyotaMakerOrderedModelAscTravelledDistanceDesc() {
-        String EXPORT_RESULT_JSON_FILE_PATH =
-            "src/main/resources/static/resultsJSON/toyotaCarsOrderedByModelAscTravelledDistanceDesc.json";
+    public boolean exportToXMLCarsByToyotaMakerOrderedModelAscTravelledDistanceDesc() {
+        String EXPORT_RESULT_XML_FILE_PATH =
+            "src/main/resources/static/resultsXML/toyotaCarsOrderedByModelAscTravelledDistanceDesc.xml";
 
         Set<Car> toyotaCars = carRepository.findAllByMakeOrderByModelAscTravelledDistanceDesc("Toyota");
 
-        try (FileWriter writer = new FileWriter(EXPORT_RESULT_JSON_FILE_PATH)) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(CarRootQueryDTO.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-            List<String> jsonObjectsData = new ArrayList<>();
+            marshaller.marshal(
+                new CarRootQueryDTO(toyotaCars
+                    .stream()
+                    .map(car -> mapCarEntityToCarQueryDTO(car)).toList()),
+                new File(EXPORT_RESULT_XML_FILE_PATH));
 
-            for (Car toyotaCar : toyotaCars) {
-                CarExportDTO carExportDTO = mapCarEntityToCarExportDTO(toyotaCar);
-                jsonObjectsData.add(gson.toJson(carExportDTO));
-            }
 
-            writer.write(jsonObjectsData.toString());
             System.out.println("Successful operation!");
             return true;
 
-        } catch (IOException e) {
+        } catch (JAXBException e) {
             System.out.println("An Error occurred while Writing the Data!");
             return false;
         }
     }
 
     @Override
-    public boolean exportToJSONCarsAndTheirParts() {
-         String EXPORT_RESULT_JSON_FILE_PATH =
-            "src/main/resources/static/resultsJSON/carsAndTheirParts.json";
+    public boolean exportToXMLCarsAndTheirParts() {
+         String EXPORT_RESULT_XML_FILE_PATH =
+            "src/main/resources/static/resultsXML/carsAndTheirParts.xml";
 
         List<Car> cars = carRepository.findAll();
 
-        try (FileWriter writer = new FileWriter(EXPORT_RESULT_JSON_FILE_PATH)) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(CarRootSecondQueryDTO.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-            List<String> jsonObjectsData = new ArrayList<>();
+            marshaller.marshal(new CarRootSecondQueryDTO(
+                cars
+                .stream()
+                .map(car ->
+                    mapCarEntityToCarSecondQueryDTO(car)).toList()),
+                new File(EXPORT_RESULT_XML_FILE_PATH)
+            );
 
-            for (Car car : cars) {
-                CarDataExportDTO carDataExportDTO = mapCarEntityToCarDataExportDTO(car);
-                jsonObjectsData.add(gson.toJson(carDataExportDTO));
-            }
-
-            writer.write(jsonObjectsData.toString());
             System.out.println("Successful operation!");
             return true;
 
-        } catch (IOException e) {
+        } catch (JAXBException e) {
             System.out.println("An Error occurred while Writing the Data!");
             return false;
         }
@@ -130,33 +144,33 @@ public class CarServiceImpl implements CarService {
         );
     }
 
-    private CarExportDTO mapCarEntityToCarExportDTO(Car car) {
-        return CarExportDTO
+    private CarQueryDTO mapCarEntityToCarQueryDTO(Car car) {
+        return CarQueryDTO
             .builder()
-            .Id(car.getId())
-            .Make(car.getMake())
-            .Model(car.getModel())
-            .TravelledDistance(car.getTravelledDistance())
+            .id(car.getId())
+            .make(car.getMake())
+            .model(car.getModel())
+            .travelledDistance(car.getTravelledDistance())
             .build();
     }
 
-    private CarDataExportDTO mapCarEntityToCarDataExportDTO(Car car) {
-        return CarDataExportDTO
+    private CarSecondQueryDTO mapCarEntityToCarSecondQueryDTO(Car car) {
+        return CarSecondQueryDTO
                 .builder()
                 .make(car.getMake())
                 .model(car.getModel())
-                .TravelledDistance(car.getTravelledDistance())
-                .parts(mapPartEntityToPartDataExportDTO(car.getParts()))
+                .travelledDistance(car.getTravelledDistance())
+                .parts(mapPartEntityToCarPartSecondQueryDTO(car.getParts()))
                 .build();
     }
 
-    private List<PartDataExportDTO> mapPartEntityToPartDataExportDTO(Set<Part> parts) {
-        List<PartDataExportDTO> result = new ArrayList<>();
+    private List<CarPartSecondQueryDTO> mapPartEntityToCarPartSecondQueryDTO(Set<Part> parts) {
+        List<CarPartSecondQueryDTO> result = new ArrayList<>();
         for (Part part : parts) {
-            result.add(PartDataExportDTO
+            result.add(CarPartSecondQueryDTO
                 .builder()
-                .Name(part.getName())
-                .Price(part.getPrice())
+                .name(part.getName())
+                .price(part.getPrice())
                 .build());
         }
         return result;

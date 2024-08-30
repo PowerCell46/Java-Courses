@@ -23,12 +23,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         customerService.seedCustomers();
         salesService.seedSales();
 
-//        boolean result = customerService.exportToJSONCustomersOrderedByBirthdateAndIsNotYoungDriver();
-//        boolean result = carService.exportToJSONCarsByToyotaMakerOrderedModelAscTravelledDistanceDesc();
-//        boolean result = supplierService.exportToJSONSuppliersWithPartsNotFromAbroad();
-//        boolean result = carService.exportToJSONCarsAndTheirParts();
+//        boolean result = customerService.exportToXMLCustomersOrderedByBirthdateAndIsNotYoungDriver();
+//        boolean result = carService.exportToXMLCarsByToyotaMakerOrderedModelAscTravelledDistanceDesc();
+//        boolean result = supplierService.exportToXMLSuppliersWithPartsNotFromAbroad();
+        boolean result = carService.exportToXMLCarsAndTheirParts();
 //        boolean result = customerService.exportToJSONCustomerStatistics();
 //        boolean result = salesService.exportToJSONSalesStatistics();
-//        System.out.println(result);
+        System.out.println(result);
     }
 }

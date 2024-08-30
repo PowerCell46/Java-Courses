@@ -1,15 +1,20 @@
 package bg.softuni.jsonprocessingexercisepart2.services.impls;
 
-import bg.softuni.jsonprocessingexercisepart2.DTOs.seeds.PartSeedDTO;
+import bg.softuni.jsonprocessingexercisepart2.DTOs.seedings.PartRootSeedDTO;
+import bg.softuni.jsonprocessingexercisepart2.DTOs.seedings.PartSeedDTO;
 import bg.softuni.jsonprocessingexercisepart2.entities.Part;
 import bg.softuni.jsonprocessingexercisepart2.entities.Supplier;
 import bg.softuni.jsonprocessingexercisepart2.repositories.PartRepository;
 import bg.softuni.jsonprocessingexercisepart2.services.interfaces.PartService;
 import bg.softuni.jsonprocessingexercisepart2.services.interfaces.SupplierService;
 import com.google.gson.Gson;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,24 +27,28 @@ import java.util.Set;
 public class PartServiceImpl implements PartService {
     private final PartRepository partRepository;
     private final SupplierService supplierService;
-    private static final String FILE_PATH = "src/main/resources/static/JSON/parts.json";
+    private static final String FILE_PATH = "src/main/resources/static/XML/parts.xml";
 
     private final Gson gson;
 
     @Override
-    public void seedParts() throws IOException {
+    public void seedParts() throws JAXBException {
         if (partRepository.count() > 0) return;
 
-        String jsonData = new String(Files.readAllBytes(Path.of(FILE_PATH)));
         long supplierLastId = supplierService.findLastId();
 
-        PartSeedDTO[] partSeedDTOS = gson.fromJson(jsonData, PartSeedDTO[].class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(PartRootSeedDTO.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        PartRootSeedDTO partRootSeedDTO = (PartRootSeedDTO) unmarshaller.unmarshal(new File(FILE_PATH));
 
-        for (PartSeedDTO partSeedDTO : partSeedDTOS) {
-            Part partEntity = mapPartSeedDTOtoPartEntity(partSeedDTO, supplierLastId);
-
-            partRepository.saveAndFlush(partEntity);
-        }
+        partRootSeedDTO
+            .getParts()
+            .stream()
+            .forEach(partSeedDTO ->
+                partRepository.saveAndFlush(
+                    mapPartSeedDTOtoPartEntity(partSeedDTO, supplierLastId)
+                )
+            );
     }
 
     @Override
