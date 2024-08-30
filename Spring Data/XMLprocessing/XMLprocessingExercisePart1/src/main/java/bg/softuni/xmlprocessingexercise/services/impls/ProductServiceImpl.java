@@ -21,9 +21,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -33,9 +30,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final UserService userService;
     private final CategoryService categoryService;
-    private static final String FILE_PATH = "src/main/resources/static/XML/products.xml";
 
-    private final Gson gson;
+    private static final String FILE_PATH = "src/main/resources/static/XML/products.xml";
     private final ValidationUtil validationUtil;
     private final ModelMapper modelMapper;
 
@@ -87,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
                     .map(product ->
                             mapProductEntityToProductQueryDTO(product))
                     .toList());
+
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(productRootQueryDTO, new File(EXPORT_RESULT_XML_FILE_PATH));
@@ -100,9 +97,8 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    protected Product addRandomBuyerSellerCategories(ProductSeedDTO productSeedDTO,
-        long finalPossibleUserId, long finalPossibleCategoryId
-    ) {
+    protected Product addRandomBuyerSellerCategories(
+    ProductSeedDTO productSeedDTO, long finalPossibleUserId, long finalPossibleCategoryId) {
         Product product = modelMapper.map(productSeedDTO, Product.class);
 
         Random random = new Random();
@@ -133,17 +129,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private static ProductQueryDTO mapProductEntityToProductQueryDTO(Product product) {
-            StringBuilder sellerName = new StringBuilder();
-            if (product.getSeller().getFirstName() != null) {
-                sellerName.append(product.getSeller().getFirstName()).append(" ");
-            }
-            sellerName.append(product.getSeller().getLastName());
+        StringBuilder sellerName = new StringBuilder();
+        if (product.getSeller().getFirstName() != null) {
+            sellerName.append(product.getSeller().getFirstName()).append(" ");
+        }
+        sellerName.append(product.getSeller().getLastName());
 
-            return ProductQueryDTO
-                .builder()
-                .name(product.getName())
-                .price(product.getPrice())
-                .seller(sellerName.toString())
-                .build();
+        return ProductQueryDTO
+            .builder()
+            .name(product.getName())
+            .price(product.getPrice())
+            .seller(sellerName.toString())
+            .build();
     }
 }

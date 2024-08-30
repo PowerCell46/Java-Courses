@@ -128,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
 
     private static ProductQueryDTO mapProductEntityToProductQueryDTO(Product product) {
             StringBuilder sellerName = new StringBuilder();
-            if (product.getSeller().getLastName() != null) {
+            if (product.getSeller().getFirstName() != null) {
                 sellerName.append(product.getSeller().getFirstName()).append(" ");
             }
             sellerName.append(product.getSeller().getLastName());

@@ -22,10 +22,10 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         productService.seedProducts();
 
 //        boolean result = productService.exportToXMLProductsWithoutSellerWithPriceBetween500And1000();
-        boolean result = userService.exportToXMLUsersWithAtLeastOneSellingItemWithBuyer();
+//        boolean result = userService.exportToXMLUsersWithAtLeastOneSellingItemWithBuyer();
 //        boolean result = categoryService.exportToXMLCategoriesStatistics();
-//        boolean result = userService.exportToJSONUsersSellingItemsOrderedByNumOfProductsSoldDescLastNameAsc();
+//        boolean result = userService.exportToXMLUsersSellingItemsOrderedByNumOfProductsSoldDescLastNameAsc();
 
-        System.out.println(result);
+//        System.out.println(result);
     }
 }

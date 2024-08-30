@@ -1,10 +1,6 @@
 package bg.softuni.xmlprocessingexercise.services.impls;
 
-import bg.softuni.xmlprocessingexercise.DTOs.*;
-import bg.softuni.xmlprocessingexercise.DTOs.querying.UserQueryDTO;
-import bg.softuni.xmlprocessingexercise.DTOs.querying.UserRootQueryDTO;
-import bg.softuni.xmlprocessingexercise.DTOs.querying.UserRootSoldProductQueryDTO;
-import bg.softuni.xmlprocessingexercise.DTOs.querying.UserSoldProductQueryDTO;
+import bg.softuni.xmlprocessingexercise.DTOs.querying.*;
 import bg.softuni.xmlprocessingexercise.DTOs.seeding.UserRootSeedDTO;
 import bg.softuni.xmlprocessingexercise.DTOs.seeding.UserSeedDTO;
 import bg.softuni.xmlprocessingexercise.entities.Product;
@@ -12,7 +8,6 @@ import bg.softuni.xmlprocessingexercise.entities.User;
 import bg.softuni.xmlprocessingexercise.repositories.UserRepository;
 import bg.softuni.xmlprocessingexercise.services.interfaces.UserService;
 import bg.softuni.xmlprocessingexercise.utils.ValidationUtil;
-import com.google.gson.Gson;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -22,12 +17,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +27,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final String FILE_PATH = "src/main/resources/static/XML/users.xml";
 
-    private final Gson gson;
     private final ValidationUtil validationUtil;
     private final ModelMapper modelMapper;
 
@@ -107,44 +98,43 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean exportToXMLUsersSellingItemsOrderedByNumOfProductsSoldDescLastNameAsc() {
-        String EXPORT_RESULT_JSON_FILE_PATH =
-            "src/main/resources/static/resultJSON/usersWithSoldProducts.json";
+        String EXPORT_RESULT_XML_FILE_PATH =
+            "src/main/resources/static/resultXML/usersWithSoldProducts.xml";
 
         Set<User> users = userRepository
                 .findAllBySoldProductsIsNotEmptyOrderBySoldProductsDescLastNameAsc();
 
-        try (FileWriter writer = new FileWriter(EXPORT_RESULT_JSON_FILE_PATH)) {
-            List<String> jsonObjectsResult = new ArrayList<>();
+        try {
+            UserSecondRootQueryDTO userNextQueryDTO = new UserSecondRootQueryDTO(users
+                .stream()
+                .map(user ->
+                    mapUserEntityToUserSecondQueryDTO(user)).toList()
+            );
 
-            for (User user : users) {
-                UserNextQueryDTO userNextQueryDTO = mapUserEntityToUserNextQueryDTO(user);
-                jsonObjectsResult.add(gson.toJson(userNextQueryDTO));
-            }
-
-            writer.write(String.format("{\n\"usersCount\": %d,\n\"users\": ", jsonObjectsResult.size()));
-            writer.write(String.valueOf(jsonObjectsResult));
-            writer.write("\n}");
-            writer.write(System.lineSeparator());
+            JAXBContext jaxbContext = JAXBContext.newInstance(UserSecondRootQueryDTO.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(userNextQueryDTO, new File(EXPORT_RESULT_XML_FILE_PATH));
 
             System.out.println("Successful operation!");
             return true;
 
-         } catch (IOException e) {
-            System.out.println("An Error occurred while Writing the Data!");
+         } catch (JAXBException e) {
+            System.out.println("An Error occurred while Writing Or parsing the Data!");
             return false;
         }
     }
 
     private static UserQueryDTO mapUserToUserQueryDTO(User user) {
         return UserQueryDTO.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .soldProducts(
-                    new UserRootSoldProductQueryDTO(
-                        mapProductsToUserSoldProductsQueryDTO(user.getSoldProducts())
-                    )
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .soldProducts(
+                new UserRootSoldProductQueryDTO(
+                    mapProductsToUserSoldProductsQueryDTO(user.getSoldProducts())
                 )
-                .build();
+            )
+            .build();
     }
 
     private static List<UserSoldProductQueryDTO> mapProductsToUserSoldProductsQueryDTO(Set<Product> soldProducts) {
@@ -164,13 +154,13 @@ public class UserServiceImpl implements UserService {
         return soldProductQueryDTOS;
     }
 
-    private static UserNextQueryDTO mapUserEntityToUserNextQueryDTO(User user) {
-        SoldProductsDTO soldProductsDTO = SoldProductsDTO.builder()
+    private static UserSecondQueryDTO mapUserEntityToUserSecondQueryDTO(User user) {
+        UserSecondSoldProductsQueryDTO soldProductsDTO = UserSecondSoldProductsQueryDTO.builder()
                 .count(user.getSoldProducts().size())
-                .products(mapProductsToProductsNextQueryDTOs(user.getSoldProducts()))
+                .products(mapProductsToUserSecondSoldProductQueryDTOs(user.getSoldProducts()))
                 .build();
 
-        return UserNextQueryDTO.builder()
+        return UserSecondQueryDTO.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .age(user.getAge())
@@ -178,11 +168,11 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    private static List<ProductNextQueryDTO> mapProductsToProductsNextQueryDTOs(Set<Product> products) {
-        List<ProductNextQueryDTO> productNextQueryDTOS = new ArrayList<>();
+    private static List<UserSecondSoldProductQueryDTO> mapProductsToUserSecondSoldProductQueryDTOs(Set<Product> products) {
+        List<UserSecondSoldProductQueryDTO> productNextQueryDTOS = new ArrayList<>();
         for (Product product : products) {
             productNextQueryDTOS
-                .add(ProductNextQueryDTO.builder()
+                .add(UserSecondSoldProductQueryDTO.builder()
                     .name(product.getName())
                     .price(product.getPrice())
                     .build()

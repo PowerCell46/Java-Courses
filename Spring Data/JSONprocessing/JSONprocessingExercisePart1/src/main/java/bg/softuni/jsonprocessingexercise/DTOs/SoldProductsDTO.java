@@ -14,7 +14,7 @@ import java.util.List;
 public class SoldProductsDTO implements Serializable {
 
     @Expose
-    private int count;
+    private long count;
 
     @Expose
     private List<ProductNextQueryDTO> products;

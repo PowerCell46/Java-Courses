@@ -9,7 +9,6 @@ import bg.softuni.xmlprocessingexercise.entities.Category;
 import bg.softuni.xmlprocessingexercise.repositories.CategoryRepository;
 import bg.softuni.xmlprocessingexercise.services.interfaces.CategoryService;
 import bg.softuni.xmlprocessingexercise.utils.ValidationUtil;
-import com.google.gson.Gson;
 import jakarta.xml.bind.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,7 +24,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private static final String FILE_PATH = "src/main/resources/static/XML/categories.xml";
 
-    private final Gson gson;
     private final ValidationUtil validationUtil;
     private final ModelMapper modelMapper;
 
@@ -66,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     public boolean exportToXMLCategoriesStatistics() {
         String EXPORT_RESULT_XML_FILE_PATH =
             "src/main/resources/static/resultXML/categoriesStatistics.xml";
+
         try {
             CategoryRootQueryDTO categoryRootQueryDTO = new CategoryRootQueryDTO(
             this.categoryRepository

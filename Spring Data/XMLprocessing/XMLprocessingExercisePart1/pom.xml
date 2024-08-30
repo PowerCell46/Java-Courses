@@ -11,8 +11,8 @@
     <groupId>bg.softuni</groupId>
     <artifactId>XMLprocessingExercise</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>JSONprocessingExercise</name>
-    <description>JSONprocessingExercise</description>
+    <name>XMLprocessingExercise</name>
+    <description>XMLprocessingExercise</description>
     <url/>
     <licenses>
         <license/>

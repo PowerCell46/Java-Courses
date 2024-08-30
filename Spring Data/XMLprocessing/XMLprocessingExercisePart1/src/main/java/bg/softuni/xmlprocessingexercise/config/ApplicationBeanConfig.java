@@ -17,14 +17,6 @@ public class ApplicationBeanConfig {
     }
 
     @Bean
-    public Gson gson() {
-        return new Gson().newBuilder()
-            .setPrettyPrinting()
-            .excludeFieldsWithoutExposeAnnotation()
-            .create();
-    }
-
-    @Bean
     public Validator validator() {
         return Validation.buildDefaultValidatorFactory().getValidator();
     }
