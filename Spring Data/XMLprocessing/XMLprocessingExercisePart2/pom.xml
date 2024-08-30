@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>bg.softuni</groupId>
-    <artifactId>JSONprocessingExercisePart2</artifactId>
+    <artifactId>XMLprocessingExercisePart2</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>JSONprocessingExercisePart2</name>
-    <description>JSONprocessingExercisePart2</description>
+    <name>XMLprocessingExercisePart2</name>
+    <description>XMLprocessingExercisePart2</description>
     <url/>
     <licenses>
         <license/>
