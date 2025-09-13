@@ -36,15 +36,19 @@ class MessageAdd implements MessageHandler {
     }
 
     private void setParameters(String[] currentInputData) {
-        username = currentInputData[1];
-        sent = Integer.parseInt(currentInputData[2]);
-        received = Integer.parseInt(currentInputData[3]);
+        final int usernameIndex = 1;
+        final int sentIndex = 2;
+        final int receivedIndex = 3;
+
+        username = currentInputData[usernameIndex];
+        sent = Integer.parseInt(currentInputData[sentIndex]);
+        received = Integer.parseInt(currentInputData[receivedIndex]);
     }
 }
 
 class MessageMessage implements MessageHandler {
     private static final String REACH_CAPACITY_ERROR = "%s reached the capacity!";
-   
+
     private String sender;
     private String receiver;
 
@@ -58,7 +62,7 @@ class MessageMessage implements MessageHandler {
 
         if (messagesStore.containsKey(sender) && messagesStore.containsKey(receiver)) {
             if (messagesStore.get(sender).getTotalMessages() + 1 >= MAX_MESSAGES_PER_PERSON) {
-                System.out.printf(REACH_CAPACITY_ERROR, receiver);
+                System.out.printf(REACH_CAPACITY_ERROR, sender);
                 messagesStore.remove(sender);
             } else {
                 messagesStore.get(sender).incrementSentMessages();
@@ -74,14 +78,17 @@ class MessageMessage implements MessageHandler {
     }
 
     private void setParameters(String[] currentInputData) {
-        sender = currentInputData[1];
-        receiver = currentInputData[2];
+        final int senderIndex = 1;
+        final int receiverIndex = 2;
+
+        sender = currentInputData[senderIndex];
+        receiver = currentInputData[receiverIndex];
     }
 }
 
 class MessageEmpty implements MessageHandler {
     private static final String EMPTY_ALL_COMMAND = "All";
-   
+
     private String username;
 
     @Override
@@ -100,7 +107,9 @@ class MessageEmpty implements MessageHandler {
     }
 
     private void setParameters(String[] currentInputData) {
-        username = currentInputData[1];
+        final int usernameIndex = 1;
+
+        username = currentInputData[usernameIndex];
     }
 }
 
@@ -138,15 +147,16 @@ public class MessageManagerImproved {
         Integer MAX_MESSAGES_CAPACITY_PER_PERSON = Integer.parseInt(scanner.nextLine());
         Map<String, User> messagesStore = new LinkedHashMap<>();
 
-        while(true) {
+        while (true) {
             String currentInput = scanner.nextLine();
 
             if (currentInput.equals(END_READ_INPUT))
                 break;
 
             String[] currentInputData = currentInput.split(INPUT_SPLIT_TOKEN);
-
-            MessageHandler messageHandler = MessageHandler.of(currentInputData[0]);
+            final int commandIndex = 0;
+                    
+            MessageHandler messageHandler = MessageHandler.of(currentInputData[commandIndex]);
 
             messageHandler.execute(
                     messagesStore,
@@ -156,6 +166,7 @@ public class MessageManagerImproved {
         }
 
         printStatistics(messagesStore);
+        scanner.close();
     }
 
     private static void printStatistics(Map<String, User> messagesStore) {
