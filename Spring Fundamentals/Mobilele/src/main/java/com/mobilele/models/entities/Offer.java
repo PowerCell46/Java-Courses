@@ -27,7 +27,7 @@ public class Offer extends BaseTimestamp {
     private String imageUrl;
 
     @Column
-    private int mileage;
+    private long mileage;
 
     @Column
     private BigDecimal price;

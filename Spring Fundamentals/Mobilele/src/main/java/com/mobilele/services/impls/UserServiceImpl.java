@@ -1,10 +1,15 @@
 package com.mobilele.services.impls;
 
+import com.mobilele.models.DTOs.UserLoginDTO;
+import com.mobilele.models.DTOs.UserRegisterDTO;
 import com.mobilele.models.entities.User;
 import com.mobilele.repositories.UserRepository;
+import com.mobilele.services.CurrentUser;
 import com.mobilele.services.interfaces.RolesService;
 import com.mobilele.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +19,10 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RolesService rolesService;
+
+    private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final CurrentUser currentUser;
 
     @Override
     public void seedUsers() {
@@ -82,5 +91,44 @@ public class UserServiceImpl implements UserService {
         );
 
         userRepository.saveAllAndFlush(initUsers);
+    }
+
+
+    public void registerUser(UserRegisterDTO userRegisterDTO) {
+
+        userRepository.save(map(userRegisterDTO));
+    }
+
+    @Override
+    public boolean login(UserLoginDTO userLoginDTO) {
+        if (userLoginDTO.getPassword() == null) return false;
+
+        System.out.println(userLoginDTO.getUsername());
+        User user = userRepository.findByUsername(userLoginDTO.getUsername()).orElse(null);
+
+        System.out.println(user.getFirstName());
+        System.out.println(user.getPassword());
+
+        boolean passwordCorrect = passwordEncoder.matches(userLoginDTO.getPassword(),
+                user.getPassword()
+        );
+
+        if (passwordCorrect) {
+            currentUser.setFullName(user.getFirstName() + " " + user.getLastName());
+            currentUser.setLoggedIn(true);
+            return true;
+
+        } else {
+            currentUser.setFullName(null);
+            currentUser.setLoggedIn(false);
+            return false;
+        }
+    }
+
+    private User map(UserRegisterDTO userRegisterDTO) {
+        User entity = modelMapper.map(userRegisterDTO, User.class);
+        entity.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
+
+        return entity;
     }
 }

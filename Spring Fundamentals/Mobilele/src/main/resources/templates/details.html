@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+    xmlns:th="http://www.thymeleaf.org">
 
 <head>
      <meta charset="UTF-8">
@@ -77,12 +78,12 @@
             </div>
             <ul class="offer-details list-group list-group-flush">
                 <li class="list-group-item">
-                    <div class="card-text"><span>• Mileage</span></div>
-                    <div class="card-text"><span>• Price</span></div>
-                    <div class="card-text"><span>• Engine type</span></div>
-                    <div class="card-text"><span>• Transmission type</span></div>
-                    <div class="card-text"><span>• Offer created</span></div>
-                    <div class="card-text"><span>• Offer modified</span></div>
+                    <div class="card-text"><span th:text="${offer.mileage}">• Mileage</span></div>
+                    <div class="card-text"><span th:text="${offer.price}">• Price</span></div>
+                    <div class="card-text"><span th:text="${offer.engine}">• Engine type</span></div>
+                    <div class="card-text"><span th:text="${offer.transmission}">• Transmission type</span></div>
+                    <div class="card-text"><span th:text="${offer.created}">• Offer created</span></div>
+                    <div class="card-text"><span th:text="${offer.modified}">• Offer modified</span></div>
                     <div class="card-text"><span>• Seller - First and Last name</span></div>
                 </li>
             </ul>
@@ -92,7 +93,7 @@
             </div>
         </div>
         <div class="offer card col-sm-2 col-md-3  col-lg-4 m-1 p-0">
-            <img src="/" class="card-img-top"  alt="Car image">
+            <img th:src="${offer.imageUrl}" class="card-img-top"  alt="Car image">
         </div>
     </div>
 </div>
