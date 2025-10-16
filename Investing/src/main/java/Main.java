@@ -1,5 +1,6 @@
 public class Main {
     public static void main(String[] args) {
+
 //        long currentPeriodRevenue = 311_938_000;
 //        long previousPeriodRevenue = 290_403_000;
 //        System.out.println(calculateRevenueGrowth(currentPeriodRevenue, previousPeriodRevenue));
@@ -31,6 +32,115 @@ public class Main {
 //        double earningsPerShare = 3.86;
 //
 //        System.out.println(calculatePriceToEarnings(sharePrice, earningsPerShare));
+
+//        double sharePrice = 56.83;
+//        long stockholdersEquity = 143_486_000;
+//        long totalSharesOutstanding = 3_370_000_000L;
+//        System.out.println(calculatePriceToBooks(sharePrice, stockholdersEquity, totalSharesOutstanding));
+
+//        long freeCashFlow = 61_604_000;
+//        long marketCap = 253_903_000_000L;
+//        System.out.println(calculatePriceToFreeCashFlow(freeCashFlow, marketCap));
+
+        // * Return on invested capital
+        // Measures how efficiently a company generates profit from all the capital it controls.
+        // Shows how well a company turns invested money into returns, regardless of financing structure.
+
+        // TODO: skipped ---
+
+//        long currentAssets = 160_897_000;
+//        long currentLiabilities = 217_528_000;
+//
+//        System.out.println(calculateCurrentRatio(currentAssets, currentLiabilities));
+
+        // * Quick ratio (Acid-Test ratio)
+        // Measures a company's ability to meet short-term liabilities using its most liquid assets only.
+        // It excludes inventory and prepaid expenses, which may take longer to convert into cash.
+
+        long currentAssets = 160_897_000;
+        long currentLiabilities = 217_528_000;
+        // TODO: missing parameters ---
+
+//        long EBIT = 148_924_000;
+//        long interestExpense = 8_145_000;
+//
+//        System.out.println(calculateInterestCoverageRatio(EBIT, interestExpense));
+
+//        long totalRevenue = 311_938_000;
+//        long costOfRevenue = 50_068_000;
+//
+//        System.out.println(calculateGrossMargin(totalRevenue, costOfRevenue));
+
+
+    }
+
+    public static double calculateGrossMargin(long totalRevenue, long costOfRevenue) {
+        // * Gross margin
+        // Measures how much profit a company keeps from its revenue after accounting for the direct costs of producing
+        // goods or services. It reflects pricing power, production efficiency, and competitive advantage.
+
+        // ! Yahoo finance: financials: Income statement: Total revenue
+        // ! Yahoo finance: financials: Income statement: Cost of revenue
+
+        double grossMargin = ((double) (totalRevenue - costOfRevenue) / totalRevenue) * 100;
+
+        return grossMargin;
+    }
+
+    public static double calculateInterestCoverageRatio(long EBIT, long interestExpense) {
+        // * Interest coverage ratio
+        // Measures how easily a company can pay interest on its outstanding debt using its operating profits.
+        // It's a key indicator of financial stability and solvency, showing how safe the firm's debt load its relative
+        // to its earnings power.
+
+        // ! Yahoo finance: financials: Income Statement: EBIT
+        // ! Yahoo finance: financials: Income Statement: Interest Expense
+
+        double interestCoverageRatio = (double) EBIT / interestExpense;
+
+        return interestCoverageRatio;
+    }
+
+    public static double calculateCurrentRatio(long currentAssets, long currentLiabilities) {
+        // * Current ratio
+        // Measures a company's ability to meet its short-term obligations using its short-term assets.
+        // It reflects liquidity - the firm's capacity to cover debts within a year without raising new capital.
+
+        // <1.0 → the company may struggle to cover short-term debts.
+        // 1.5–2.5 → considered healthy and efficient for most industries.
+        // >3.0 → possibly too much idle capital or inventory buildup.
+
+        // ! Yahoo finance: statistics: Current Ratio (mrq)
+
+        double currentRatio = (double) currentAssets / currentLiabilities;
+
+        return currentRatio;
+    }
+
+    public static double calculatePriceToFreeCashFlow(long freeCashFlow, long marketCap) {
+        // * Price to free cash flow (P/FCF)
+        // Measures how much investors are paying for each dollar of free cash flow the company generates.
+        // Lower P/FCF -> potentially undervalued; higher -> investors expect growth.
+
+        // ! Yahoo finance: market cap: Summary
+        // ! Yahoo finance: free cash flow: Financials: Cash flow: Free cash flow
+
+        double priceToFreeCashFlow = (double) marketCap / freeCashFlow;
+
+        return priceToFreeCashFlow;
+    }
+
+    public static double calculatePriceToBooks(double sharePrice, long stockholdersEquity, long totalSharesOutstanding) {
+        // * Price to book (P/B)
+        // Compares a company's market value to its book value(net assets). Shows how much investors are paying relative
+        // to the company's actual net worth. Low P/B: undervaluation; High P/B: growth expectations/overvaluation
+
+        // ! Yahoo finance: Statistics: Price/Book
+
+        double bookValuePerShare = (double) stockholdersEquity / totalSharesOutstanding;
+        double priceToBooks = sharePrice / bookValuePerShare;
+
+        return priceToBooks;
     }
 
     public static double calculatePriceToEarnings(double sharePrice, double earningsPerShare) {
