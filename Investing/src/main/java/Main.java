@@ -71,7 +71,78 @@ public class Main {
 //
 //        System.out.println(calculateGrossMargin(totalRevenue, costOfRevenue));
 
+//        double dividendsPerShare = 1.099;
+//        double earningsPerShare = 3.88;
+//
+//        System.out.println(calculateDividendPayoutRatio(dividendsPerShare, earningsPerShare));
 
+//        double earningsPerShare = 3.88;
+//        double sharePrice = 49.46;
+//
+//        System.out.println(calculateEarningsYield(earningsPerShare, sharePrice));
+    }
+
+    public static long calculateOperatingCashFlow(long netIncome, long nonCashExpenses, long changesInWorkingCapital) {
+        // * Operating cash flow
+        // measures the actual cash generated from core business operations — before financing or investing activities.
+        // Strong OCF means the company can fund operations, pay dividends, and invest in growth without taking on new debt.
+
+        // ! Yahoo finance: financials: cash flow: operating cash flow
+
+        return netIncome + nonCashExpenses + changesInWorkingCapital;
+    }
+
+    public static double calculatePriceToEarningsToGrowthRatio(double priceToEarningsRatio, int earningsGrowthRate) {
+        // * Price / Earnings to Growth (PEG) ratio
+        // measures how expensive a stock is relative to its expected earnings growth.
+        // < 1.0: Undervalued (growth not fully priced in)
+        // > 1.0: Overvalued (price too high for its growth)
+
+        // ! Yahoo finance: statistics: PEG Ratio (5yr expected)
+
+        return priceToEarningsRatio / earningsGrowthRate;
+    }
+
+    public static double calculateEarningsYield(double earningsPerShare, double sharePrice) {
+        // * Earnings yield
+        // Shows how much earnings a company generates per 1 dollar of its stock price
+        // Higher earnings yield: the stock might be undervalued
+        // Lower earnings yield: the stock might be expensive or investors expect high future growth
+
+        return (earningsPerShare / sharePrice) * 100;
+    }
+
+    public static double calculateBookValuePerShare(long totalAssets, long totalLiabilities, int preferredEquity, long totalOutstandingCommonShares) {
+        // * Book value per share
+        // Represents the equity value of a company per outstanding share according to its balance sheet
+        // BVPS < current stock price → investors expect future growth (market values company above its book value)
+        // BVPS > current stock price → stock might be undervalued or market expects poor performance
+        // A rising BVPS over time = company is increasing shareholder value
+
+        // ! Yahoo finance: statistics: Book Value Per Share
+
+        long totalShareholdersEquity = totalAssets - totalLiabilities;
+        return (double) (totalShareholdersEquity - preferredEquity) / totalOutstandingCommonShares;
+    }
+
+    public static double calculateDividendYield(double annualDividendsPerShare, double currentSharePrice) {
+        // * Dividend Yield
+        // The Dividend Yield measures the annual dividend income an investor earns relative to the stock’s current market price.
+        // It’s expressed as a percentage and shows how much return you get from dividends alone
+
+        // ! Yahoo finance: summary: Forward Dividend & Yield
+
+        return (annualDividendsPerShare / currentSharePrice) * 100;
+    }
+
+    public static double calculateDividendPayoutRatio(double dividendsPerShare, double earningsPerShare) {
+        // * Dividend payout ratio
+        // Shows what percentage of a company's earnings are distributed to shareholders as dividends. Indicates how sustainable
+        // the dividend it - lower values: the company retains more profits for growth; higher values: it's returning more to shareholders.
+
+        // ! Yahoo finance: statistics: Payout ratio
+
+        return (dividendsPerShare / earningsPerShare) * 100;
     }
 
     public static double calculateGrossMargin(long totalRevenue, long costOfRevenue) {
@@ -193,7 +264,7 @@ public class Main {
     }
 
     public static long calculateFreeCashFlow(long operatingCashFlow, long capitalExpenditure) {
-        // * Free cash flow
+        // * Free cash flow (FCF)
         // Measures the actual cash a company generates after covering all its operating expenses and capital expenditures.
         // It's one of the most important indicators of a company's financial health, flexibility, and ability
         // to return value to shareholders (dividends, buybacks, reinvestment).
@@ -211,8 +282,6 @@ public class Main {
         // Measures how effectively a company generates profit from its shareholders' invested capital.
         // It reflects management: higher -> company is using its equity to produce strong returns for investors.
 
-        // ! Yahoo Finance (net income): Financials -> Income statement -> Net Income Common Stockholders
-        // ! Yahoo Finance (shareholders' equity): Financials -> Balance sheet -> Total Equity Gross Minority Interest -> Stockholders' Equity
         // ! Yahoo Finance: Statistics -> Return on Equity (ttm)
 
         double returnOnEquity = ((double) netIncome / shareholdersEquity) * 100;
@@ -224,6 +293,7 @@ public class Main {
         // * Earnings per share (EPS) Growth
         // Measures how much a company's earnings per share increase over time, showing how efficiently it converts
         // profits into shareholder value.
+
         // ! Yahoo Finance: Financials → Income Statement → EPS (Diluted)
 
         double earningsPerShareGrowth = ((double) (currentPeriodEPS - previousPeriodEPS) / previousPeriodEPS) * 100;
@@ -235,6 +305,7 @@ public class Main {
         // * Revenue growth
         // Measures how much a company's total sales increase over a specific period (year-to-year/quarter-over-quarter)
         // Reflects whether the company is expanding its business and demand for its products or services is rising.
+
         // ! Yahoo Finance: Financials → Income Statement → Total Revenue
 
         double revenueGrowthPercentage = ((double) (currentPeriodRevenue - previousPeriodRevenue) / previousPeriodRevenue) * 100;
