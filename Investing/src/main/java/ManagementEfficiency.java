@@ -38,4 +38,11 @@ public class ManagementEfficiency {
         // double totalAssets = beginningAssets + (double) endingAssets / 2;
         return totalRevenue / totalAssets;
     }
+
+    public static double inventoryTurnoverRatio(double costOfGoodsSold, double inventory) {
+        // * Inventory turnover ratio
+        // How quickly a company sells and replaces its inventory
+
+        return costOfGoodsSold / inventory;
+    }
 }
