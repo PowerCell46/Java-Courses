@@ -96,6 +96,35 @@ public class Main {
 //        System.out.println(calculateEnterpriseValueToEBITDA(enterpriseValue, EBITDA));
     }
 
+    public static double calculateTangibleBookValue(double totalAssets, double intangibleAssets, double totalLiabilities) {
+        // * Tangible book value
+        // represents the net worth of a company excluding intangible assets (goodwill, patents, trademarks)
+        // “If the company were liquidated today, how much real, physical asset value would remain for shareholders?”
+
+        return totalAssets - intangibleAssets - totalLiabilities;
+    }
+
+    public static double calculateShareBuybackRatio(long valueOfSharesRepurchased, long netIncome) {
+        // * Share buyback ratio
+        // how much of its market value or earnings a company uses to repurchase its own shares
+        // shows how aggressively a company is returning capital to shareholders by reducing share count
+
+        // ! Yahoo finance: financials: cash flow: Repurchase of Capital Stock
+
+        return (double) valueOfSharesRepurchased / netIncome;
+    }
+
+    // TODO:
+    public static long calculateCapitalExpenditures() {
+        // * Capital expenditures (CapEx)
+        // assess how much a company invests in maintaining and expanding its asset base (factories, equipment, R&D facilities, etc.)
+        // CapEx represents cash spent on long-term assets — factories, machinery, vehicles, buildings, or technology infrastructure.
+
+        // ! Yahoo finance: Financials: cash flow: Capital Expenditure
+
+        return 0;
+    }
+
     public static double calculateEnterpriseValueToRevenue(double enterpriseValue, double totalRevenue) {
         // * Enterprise value (EV) / Sales
         // particularly useful for growth companies or early-stage firms where earnings aren't yet stable or positive
@@ -164,19 +193,6 @@ public class Main {
         // How quickly a company sells and replaces its inventory
 
         return costOfGoodsSold / inventory;
-    }
-
-    public static double calculateAssetTurnoverRatio(double totalRevenue, double totalAssets) {
-        // * Asset turnover ratio
-        // How efficiently a company uses its assets to generate revenue
-        // Higher ratio → company uses assets efficiently to produce revenue.
-        // Lower ratio → assets may be underutilized or the business is capital-intensive.
-
-        // ! Yahoo finance: financials: income statement: total revenue
-        // ! Yahoo finance: balance sheet: total assets
-
-        // double totalAssets = beginningAssets + (double) endingAssets / 2;
-        return totalRevenue / totalAssets;
     }
 
     public static double calculateRevenuePerShare(double totalRevenue, double sharesOutstanding) {
@@ -391,17 +407,6 @@ public class Main {
         // ! Yahoo Finance: Financials -> Cash flow -> Free cash flow
 
         return operatingCashFlow - capitalExpenditure;
-    }
-
-    public static double calculateReturnOnEquity(long netIncome, long shareholdersEquity) {
-        // * Return on equity (ROE)
-        // Equity: Собствен капитал
-        // Measures how effectively a company generates profit from its shareholders' invested capital.
-        // It reflects management: higher -> company is using its equity to produce strong returns for investors.
-
-        // ! Yahoo Finance: Statistics -> Return on Equity (ttm)
-
-        return ((double) netIncome / shareholdersEquity) * 100;
     }
 
     public static double calculateEarningsPerShareGrowth(double currentPeriodEPS, double previousPeriodEPS) {
