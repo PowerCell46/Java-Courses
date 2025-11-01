@@ -80,6 +80,60 @@ public class Main {
 //        double sharePrice = 49.46;
 //
 //        System.out.println(calculateEarningsYield(earningsPerShare, sharePrice));
+
+//        double totalRevenue = 311_938_000_000.0; // 311.938B DKK
+//        double sharesOutstanding = 3_370_000_000.0;
+//
+//        System.out.println("Revenue per Share: " + calculateRevenuePerShare(totalRevenue, sharesOutstanding));
+
+//        double totalRevenue = 311_938_000_000.0; // 311.938B DKK
+//        double totalAssets = 465_795_000_000.0; // 465.795B DKK
+//        System.out.println(calculateAssetTurnoverRatio(totalRevenue, totalAssets));
+    }
+
+    public static double calculateInventoryTurnoverRatio(double costOfGoodsSold, double inventory) {
+        // * Inventory turnover ratio
+        // How quickly a company sells and replaces its inventory
+
+        return costOfGoodsSold / inventory;
+    }
+
+    public static double calculateAssetTurnoverRatio(double totalRevenue, double totalAssets) {
+        // * Asset turnover ratio
+        // How efficiently a company uses its assets to generate revenue
+        // Higher ratio → company uses assets efficiently to produce revenue.
+        // Lower ratio → assets may be underutilized or the business is capital-intensive.
+
+        // ! Yahoo finance: financials: income statement: total revenue
+        // ! Yahoo finance: balance sheet: total assets
+
+//        double totalAssets = beginningAssets + (double) endingAssets / 2;
+        return totalRevenue / totalAssets;
+    }
+
+    public static double calculateRevenuePerShare(double totalRevenue, double sharesOutstanding) {
+        // * Revenue per share
+        // how much revenue each share represents: purely sales per share
+
+        return (double) totalRevenue / sharesOutstanding;
+    }
+
+    public static double calculateMarketCapitalization(double sharePrice, long totalSharesOutstanding) {
+        // * Market capitalization
+        // The total market value of all a company's outstanding shares
+
+        // ! Yahoo finance: summary: Market cap
+
+        return sharePrice * totalSharesOutstanding;
+    }
+
+    public static long calculateTotalLiabilities(long currentLiabilities, long nonCurrentLiabilities) {
+        // * Total liabilities
+        // Represents all debts and financial obligations a company owes to external parties
+
+        // ! Yahoo finance: financials: balance sheet: Total Liabilities Net Minority Interest
+
+        return currentLiabilities + nonCurrentLiabilities;
     }
 
     public static long calculateOperatingCashFlow(long netIncome, long nonCashExpenses, long changesInWorkingCapital) {
@@ -92,7 +146,7 @@ public class Main {
         return netIncome + nonCashExpenses + changesInWorkingCapital;
     }
 
-    public static double calculatePriceToEarningsToGrowthRatio(double priceToEarningsRatio, int earningsGrowthRate) {
+    public static double calculatePriceToEarningsToGrowthRatio(double priceToEarningsRatio, double earningsGrowthRate) {
         // * Price / Earnings to Growth (PEG) ratio
         // measures how expensive a stock is relative to its expected earnings growth.
         // < 1.0: Undervalued (growth not fully priced in)
@@ -153,9 +207,7 @@ public class Main {
         // ! Yahoo finance: financials: Income statement: Total revenue
         // ! Yahoo finance: financials: Income statement: Cost of revenue
 
-        double grossMargin = ((double) (totalRevenue - costOfRevenue) / totalRevenue) * 100;
-
-        return grossMargin;
+        return ((double) (totalRevenue - costOfRevenue) / totalRevenue) * 100;
     }
 
     public static double calculateInterestCoverageRatio(long EBIT, long interestExpense) {
@@ -167,9 +219,7 @@ public class Main {
         // ! Yahoo finance: financials: Income Statement: EBIT
         // ! Yahoo finance: financials: Income Statement: Interest Expense
 
-        double interestCoverageRatio = (double) EBIT / interestExpense;
-
-        return interestCoverageRatio;
+        return (double) EBIT / interestExpense;
     }
 
     public static double calculateCurrentRatio(long currentAssets, long currentLiabilities) {
@@ -183,9 +233,7 @@ public class Main {
 
         // ! Yahoo finance: statistics: Current Ratio (mrq)
 
-        double currentRatio = (double) currentAssets / currentLiabilities;
-
-        return currentRatio;
+        return (double) currentAssets / currentLiabilities;
     }
 
     public static double calculatePriceToFreeCashFlow(long freeCashFlow, long marketCap) {
@@ -196,9 +244,7 @@ public class Main {
         // ! Yahoo finance: market cap: Summary
         // ! Yahoo finance: free cash flow: Financials: Cash flow: Free cash flow
 
-        double priceToFreeCashFlow = (double) marketCap / freeCashFlow;
-
-        return priceToFreeCashFlow;
+        return (double) marketCap / freeCashFlow;
     }
 
     public static double calculatePriceToBooks(double sharePrice, long stockholdersEquity, long totalSharesOutstanding) {
@@ -209,9 +255,8 @@ public class Main {
         // ! Yahoo finance: Statistics: Price/Book
 
         double bookValuePerShare = (double) stockholdersEquity / totalSharesOutstanding;
-        double priceToBooks = sharePrice / bookValuePerShare;
 
-        return priceToBooks;
+        return sharePrice / bookValuePerShare;
     }
 
     public static double calculatePriceToEarnings(double sharePrice, double earningsPerShare) {
@@ -222,9 +267,7 @@ public class Main {
         // ! Yahoo finance: Statistics: Trailing P/E (ttm): uses last 12 months’ earnings (TTM = trailing twelve months).
         // ! Yahoo finance: Statistics: Forward P/E: uses projected earnings for the next fiscal year.
 
-        double priceToEarnings = sharePrice / earningsPerShare;
-
-        return priceToEarnings; // * Investors pay "priceToEarnings" for every $1 of earnings.
+        return sharePrice / earningsPerShare; // * Investors pay "priceToEarnings" for every $1 of earnings.
     }
 
     public static double calculateNetMargin(long netIncome, long revenue) {
@@ -234,9 +277,7 @@ public class Main {
 
         // ! Yahoo finance: Statistics: Profit margin
 
-        double netProfitMargin = ((double) netIncome / revenue) * 100;
-
-        return netProfitMargin;
+        return ((double) netIncome / revenue) * 100;
     }
 
     public static double calculateOperatingMargin(long operatingIncome, long revenue) {
@@ -246,9 +287,21 @@ public class Main {
 
         // ! Yahoo finance: Statistics: Operating margin
 
-        double operatingMargin = ((double) operatingIncome / revenue) * 100;
+        return ((double) operatingIncome / revenue) * 100;
+    }
 
-        return operatingMargin;
+    public static double calculateQuickRatio(
+            long cashAndCashEquivalents,
+            long marketableSecurities,
+            long accountsReceivable,
+            long currentLiabilities
+    ) {
+        // * Quick ratio (Acid-test ratio)
+        // Evaluates whether a company can meet its short-term obligations with its most liquid assets.
+        // Excludes inventory and prepaid expenses to focus on assets that can quickly convert to cash.
+
+        long quickAssets = cashAndCashEquivalents + marketableSecurities + accountsReceivable;
+        return (double) quickAssets / currentLiabilities;
     }
 
     public static double calculateTotalDebtEquity(long totalDebt, long stockholdersEquity) {
@@ -258,9 +311,7 @@ public class Main {
 
         // ! Yahoo Finance: Statistics: Total Debt/Equity (mrq)
 
-        double totalDebtEquity = (double) totalDebt / stockholdersEquity;
-
-        return totalDebtEquity;
+        return (double) totalDebt / stockholdersEquity;
     }
 
     public static long calculateFreeCashFlow(long operatingCashFlow, long capitalExpenditure) {
@@ -271,9 +322,7 @@ public class Main {
 
         // ! Yahoo Finance: Financials -> Cash flow -> Free cash flow
 
-        long freeCashFlow = operatingCashFlow - capitalExpenditure; // capital expenditure is regularly a negative num
-
-        return freeCashFlow;
+        return operatingCashFlow - capitalExpenditure;
     }
 
     public static double calculateReturnOnEquity(long netIncome, long shareholdersEquity) {
@@ -284,9 +333,7 @@ public class Main {
 
         // ! Yahoo Finance: Statistics -> Return on Equity (ttm)
 
-        double returnOnEquity = ((double) netIncome / shareholdersEquity) * 100;
-
-        return returnOnEquity;
+        return ((double) netIncome / shareholdersEquity) * 100;
     }
 
     public static double calculateEarningsPerShareGrowth(double currentPeriodEPS, double previousPeriodEPS) {
@@ -296,9 +343,7 @@ public class Main {
 
         // ! Yahoo Finance: Financials → Income Statement → EPS (Diluted)
 
-        double earningsPerShareGrowth = ((double) (currentPeriodEPS - previousPeriodEPS) / previousPeriodEPS) * 100;
-
-        return earningsPerShareGrowth;
+        return ((double) (currentPeriodEPS - previousPeriodEPS) / previousPeriodEPS) * 100;
     }
 
     public static double calculateRevenueGrowth(long currentPeriodRevenue, long previousPeriodRevenue) {
@@ -308,8 +353,6 @@ public class Main {
 
         // ! Yahoo Finance: Financials → Income Statement → Total Revenue
 
-        double revenueGrowthPercentage = ((double) (currentPeriodRevenue - previousPeriodRevenue) / previousPeriodRevenue) * 100;
-
-        return revenueGrowthPercentage;
+        return ((double) (currentPeriodRevenue - previousPeriodRevenue) / previousPeriodRevenue) * 100;
     }
 }
