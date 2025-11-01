@@ -89,6 +89,74 @@ public class Main {
 //        double totalRevenue = 311_938_000_000.0; // 311.938B DKK
 //        double totalAssets = 465_795_000_000.0; // 465.795B DKK
 //        System.out.println(calculateAssetTurnoverRatio(totalRevenue, totalAssets));
+
+//        double enterpriseValue = 271_800.0; // in millions
+//        double EBITDA = 159_260.0; // in millions
+//
+//        System.out.println(calculateEnterpriseValueToEBITDA(enterpriseValue, EBITDA));
+    }
+
+    public static double calculateEnterpriseValueToRevenue(double enterpriseValue, double totalRevenue) {
+        // * Enterprise value (EV) / Sales
+        // particularly useful for growth companies or early-stage firms where earnings aren't yet stable or positive
+        // how much investors are paying for each unit of revenue — including both debt and equity
+
+        // ! Yahoo finance: statistics: Enterprise Value/Revenue
+
+        return enterpriseValue / totalRevenue;
+    }
+
+    public static double calculateEnterpriseValueToEBITDA(double enterpriseValue, double EBITDA) {
+        // * Enterprise value (EV) / Earnings Before Interest, Taxes, Depreciation, and Amortization (EBITDA)
+        // Measures a company’s total enterprise value relative to its operating profitability
+        // Shows how much investors are paying for each unit of operating earnings before non-cash and financing items
+
+        // ! Yahoo finance: statistics: Enterprise Value/EBITDA
+
+        return (double) enterpriseValue / EBITDA;
+    }
+
+    public static long calculateEnterpriseValue(
+            long marketCapitalization,
+            long shortTermDebt,
+            long longTermDebt,
+            long preferredStock,
+            long minorityInterest,
+            long cashOnHand,
+            long shortTermInvestments
+    ) {
+        // * Enterprise value (EV)
+        // it captures the total value of a company’s operations, including debt and cash
+        // represents the total theoretical takeover price of a company
+
+        // ! Yahoo finance: statistics: Enterprise value
+
+        long totalDept = shortTermDebt + longTermDebt;
+        long cashAndCashEquivalents = cashOnHand + shortTermInvestments;
+
+        return marketCapitalization + totalDept + preferredStock + minorityInterest - cashAndCashEquivalents;
+    }
+
+    public static double calculateInstitutionalOwnership(long sharedHeldByInstitutions, long totalSharesOutstanding) {
+        // * Institutional Ownership
+        // How much of a company's shares are held by large professional investors, which can indicate confidence, liquidity
+        // High institutional ownership: professional investors trust the company, adds liquidity, may stabilize stock price.
+        // Very low institutional ownership: less market attention, possibly more volatile or illiquid.
+
+        // ! Yahoo finance: statistics: % Held by Institutions
+
+        return ((double) sharedHeldByInstitutions / totalSharesOutstanding) * 100;
+    }
+
+    public static double calculateInsiderOwnership(long sharesHeldByInsiders, long totalSharesOutstanding) {
+        // * Insider ownership
+        // How much of a company is owned by executives, directors, and key insiders
+        // Higher insider ownership: management’s interests are aligned with shareholders, less likely to act against minority investors.
+        // Lower insider ownership: potential agency problems, less skin in the game.
+
+        // ! Yahoo finance: statistics: % Held by Insiders
+
+        return ((double) sharesHeldByInsiders / totalSharesOutstanding) * 100;
     }
 
     public static double calculateInventoryTurnoverRatio(double costOfGoodsSold, double inventory) {
@@ -107,7 +175,7 @@ public class Main {
         // ! Yahoo finance: financials: income statement: total revenue
         // ! Yahoo finance: balance sheet: total assets
 
-//        double totalAssets = beginningAssets + (double) endingAssets / 2;
+        // double totalAssets = beginningAssets + (double) endingAssets / 2;
         return totalRevenue / totalAssets;
     }
 
