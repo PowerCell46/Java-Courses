@@ -21,8 +21,11 @@ import java.util.UUID;
 public class UrlMapper {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID) // TODO: Change to Snowflake id
     private UUID id;
+
+    @Column(unique = true, nullable = false)
+    private String alias;
 
     @Column(nullable = false)
     private String URL;
