@@ -1,9 +1,5 @@
 public final class LiquidityMetrics {
 
-    private LiquidityMetrics() {
-        throw new AssertionError("Utility class");
-    }
-
     public static double calculateCurrentRatio(long currentAssets, long currentLiabilities) {
         // * Current ratio
         // Measures a company's ability to meet its short-term obligations using its short-term assets.

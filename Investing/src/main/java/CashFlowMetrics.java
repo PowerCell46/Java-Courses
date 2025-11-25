@@ -72,4 +72,3 @@ public final class CashFlowMetrics {
         return (dividendsPerShare / earningsPerShare) * 100;
     }
 }
-
