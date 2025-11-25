@@ -15,15 +15,15 @@ public class SnowflakeUtils {
 
     private static final int TIMESTAMP_SHIFT = WORKER_ID_BITS + SEQUENCE_BITS; // 22
 
-    private final AtomicLong sequence = new AtomicLong(0);
+    private static final AtomicLong sequence = new AtomicLong(0);
 
-    public String convert(String value) {
+    public static String convert(String value) {
         final String UNIQUE_SEED = "PowerCell46"; // TODO: ENV VAR?
 
         return toBase64String(generateSnowflakeId(UNIQUE_SEED));
     }
 
-    public String toBase64String(long id) {
+    public static String toBase64String(long id) {
         ByteBuffer buffer = ByteBuffer.allocate(8);
 
         buffer.putLong(0, id);
@@ -31,7 +31,7 @@ public class SnowflakeUtils {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(buffer.array());
     }
 
-    public long generateSnowflakeId(String workerIdSeed) {
+    public static long generateSnowflakeId(String workerIdSeed) {
         long timestamp = System.currentTimeMillis() - CUSTOM_EPOCH;
 
         long workerId = Math.abs(workerIdSeed.hashCode() % (1 << WORKER_ID_BITS)); // Max 1023

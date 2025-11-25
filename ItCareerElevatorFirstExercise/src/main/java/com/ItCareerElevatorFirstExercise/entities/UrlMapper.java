@@ -33,8 +33,9 @@ public class UrlMapper {
     @Column(nullable = false)
     private Boolean isHttps;
 
-    public UrlMapper(String URL, Boolean isHttps) {
+    public UrlMapper(String URL, String alias, Boolean isHttps) {
         this.URL = URL;
+        this.alias = alias;
         this.isHttps = isHttps;
     }
 }

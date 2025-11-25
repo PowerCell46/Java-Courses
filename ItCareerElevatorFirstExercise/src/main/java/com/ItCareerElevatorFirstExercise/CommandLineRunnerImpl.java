@@ -16,7 +16,5 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         System.out.println("Message from the CommandLineRunner...!");
-
-        urlMapperService.save(new UrlMapper("github.com/PowerCell46?tab=repositories", true));
     }
 }

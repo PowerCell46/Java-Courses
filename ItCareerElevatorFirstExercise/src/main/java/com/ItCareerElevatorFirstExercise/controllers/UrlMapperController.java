@@ -20,6 +20,8 @@ public class UrlMapperController {
     @PostMapping(value = "/")
     public ResponseEntity<UrlMapperCreateResponseDTO> shortenUrl(@RequestBody UrlMapperCreateRequestDTO requestDTO) {
 
-        return ResponseEntity.ok(new UrlMapperCreateResponseDTO("2h8xk6td"));
+        String shortenedUrl = urlMapperService.convertUrlToAlias(requestDTO.getURL());
+
+        return ResponseEntity.ok(new UrlMapperCreateResponseDTO(shortenedUrl));
     }
 }
