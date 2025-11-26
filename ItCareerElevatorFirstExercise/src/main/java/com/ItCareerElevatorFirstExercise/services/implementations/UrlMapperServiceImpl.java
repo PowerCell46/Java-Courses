@@ -2,6 +2,7 @@ package com.ItCareerElevatorFirstExercise.services.implementations;
 
 import com.ItCareerElevatorFirstExercise.entities.CommonEntity;
 import com.ItCareerElevatorFirstExercise.entities.UrlMapper;
+import com.ItCareerElevatorFirstExercise.exceptions.InvalidAliasException;
 import com.ItCareerElevatorFirstExercise.repositories.UrlMapperRepository;
 import com.ItCareerElevatorFirstExercise.services.interfaces.InMemoryStorageService;
 import com.ItCareerElevatorFirstExercise.services.interfaces.SnowflakeIdService;
@@ -51,7 +52,10 @@ public class UrlMapperServiceImpl implements UrlMapperService {
     }
 
     private static String decompressUrl(UrlMapper urlMapper) {
-        return String.format("http%s://%s", urlMapper.getIsHttps() ? "s" : "", urlMapper.getURL());
+        return String.format("http%s://%s",
+                urlMapper.getIsHttps() ? "s" : "",
+                urlMapper.getURL()
+        );
     }
 
     private void setUrlMapperInMemory(UrlMapper urlMapper) {
@@ -80,20 +84,25 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     @Override
     public Optional<String> convertAliasToUrl(String alias) {
-        Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias);
+        try {
+            Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias);
 
-        if (optionalInMemoryUrl.isPresent()) {
-            log.info("Getting the urlMapper URL from InMemoryStorage.");
-            return optionalInMemoryUrl;
+            if (optionalInMemoryUrl.isPresent()) {
+                log.info("Getting the urlMapper URL from InMemoryStorage.");
+                return optionalInMemoryUrl;
+            }
+
+            log.info("Making a request to the database to fetch the alias.");
+
+            Optional<UrlMapper> optionalUrlMapper = urlMapperRepository
+                    .findById(CommonEntity.convertSnowflakeIdToId(alias));
+
+            optionalUrlMapper.ifPresent(this::setUrlMapperInMemory);
+
+            return optionalUrlMapper.map(UrlMapperServiceImpl::decompressUrl);
+
+        } catch (Exception e) {
+            throw new InvalidAliasException(String.format("No such alias [%s] exists.", alias));
         }
-
-        log.info("Making a request to the database to fetch the alias.");
-
-        Optional<UrlMapper> optionalUrlMapper = urlMapperRepository
-                .findById(CommonEntity.convertSnowflakeIdToId(alias));
-
-        optionalUrlMapper.ifPresent(this::setUrlMapperInMemory);
-
-        return optionalUrlMapper.map(UrlMapperServiceImpl::decompressUrl);
     }
 }
