@@ -32,10 +32,10 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
         Optional<UrlMapper> optionalUrlMapper = urlMapperRepository.findByURL(normalizeUrl(URL));
 
-        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set
+        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly in memory
             log.info("Getting the urlMapper alias from the Database.");
-            inMemoryStorageService
-                    .setValue(optionalUrlMapper.get().getAlias(), optionalUrlMapper.get().getURL());
+            setUrlMapperInMemory(optionalUrlMapper.get().getAlias(), optionalUrlMapper.get().getURL());
+
             return optionalUrlMapper.get().getAlias();
         }
 
@@ -46,6 +46,11 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         final String URL_PREFIX_REGEX = ".*://";
 
         return URL.replaceFirst(URL_PREFIX_REGEX, "");
+    }
+
+    private void setUrlMapperInMemory(String alias, String URL) {
+        log.info("Saving the urlMapper with URL: {} to the InMemoryStorage.", URL);
+        inMemoryStorageService.setValue(alias, URL);
     }
 
     private UrlMapper constructUrlMapperFromUrl(String URL) {
@@ -61,8 +66,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         log.info("Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
         urlMapper = urlMapperRepository.save(urlMapper);
 
-        log.info("Saving the urlMapper to the InMemoryStorage.");
-        inMemoryStorageService.setValue(urlMapper.getAlias(), urlMapper.getURL());
+        setUrlMapperInMemory(urlMapper.getAlias(), urlMapper.getURL());
 
         return urlMapper;
     }
