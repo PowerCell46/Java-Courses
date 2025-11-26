@@ -1,5 +1,6 @@
 package com.ItCareerElevatorFirstExercise.services.implementations;
 
+import com.ItCareerElevatorFirstExercise.entities.CommonEntity;
 import com.ItCareerElevatorFirstExercise.entities.UrlMapper;
 import com.ItCareerElevatorFirstExercise.repositories.UrlMapperRepository;
 import com.ItCareerElevatorFirstExercise.services.interfaces.InMemoryStorageService;
@@ -33,16 +34,15 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
         Optional<UrlMapper> optionalUrlMapper = urlMapperRepository.findByURL(compressUrl(URL));
 
-        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly in memory
+        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly (in memory storage)
             log.info("Getting the urlMapper alias from the Database.");
-            String alias = snowflakeIdService.encodeIdToBase64(optionalUrlMapper.get().getSnowflakeId());
+            String alias = optionalUrlMapper.get().getSnowflakeId();
 
             setUrlMapperInMemory(alias, URL);
             return alias;
         }
 
-        UrlMapper urlMapper = save(constructUrlMapperFromUrl(URL));
-        return snowflakeIdService.encodeIdToBase64(urlMapper.getSnowflakeId());
+        return save(constructUrlMapperFromUrl(URL)).getSnowflakeId();
     }
 
     private static String compressUrl(String URL) {
@@ -72,10 +72,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         log.info("Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
         urlMapper = urlMapperRepository.save(urlMapper);
 
-        setUrlMapperInMemory(
-                snowflakeIdService.encodeIdToBase64(urlMapper.getSnowflakeId()),
-                decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL())
-        );
+        setUrlMapperInMemory(urlMapper.getSnowflakeId(), decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL()));
 
         return urlMapper;
     }
@@ -91,7 +88,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
         log.info("Making a request to the database to fetch the alias.");
         return urlMapperRepository
-                .findBySnowflakeId(snowflakeIdService.decodeIdFromBase64(alias))
+                .findBySnowflakeId(CommonEntity.convertSnowflakeIdToId(alias))
                 .map(urlMapper -> decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL()));
     }
 }
