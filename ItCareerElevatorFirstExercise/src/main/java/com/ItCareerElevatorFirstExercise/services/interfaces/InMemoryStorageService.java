@@ -6,5 +6,7 @@ public interface InMemoryStorageService {
 
     Boolean setValue(String key, String value);
 
-    Optional<String> getValue(String key);
+    Optional<String> getByValue(String value);
+
+    Optional<String> getByKey(String key);
 }

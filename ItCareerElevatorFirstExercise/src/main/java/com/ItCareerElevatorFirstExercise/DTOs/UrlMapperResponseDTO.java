@@ -7,7 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UrlMapperCreateResponseDTO {
+public class UrlMapperResponseDTO {
+
+    private String URL;
 
     private String shortenedUrl;
 }

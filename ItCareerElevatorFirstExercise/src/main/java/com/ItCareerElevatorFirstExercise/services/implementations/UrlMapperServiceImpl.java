@@ -17,35 +17,53 @@ import java.util.Optional;
 public class UrlMapperServiceImpl implements UrlMapperService {
 
     private final UrlMapperRepository urlMapperRepository;
+
     private final InMemoryStorageService inMemoryStorageService;
 
     @Override
-    public UrlMapper save(UrlMapper urlMapper) {
-        log.info("Saving urlMapper with URL: {}.", urlMapper.getURL());
+    public String convertUrlToAlias(String URL) {
+        Optional<String> optionalInMemoryAlias = inMemoryStorageService
+                .getByValue(normalizeUrl(URL)); // ! O(n)
 
-        return urlMapperRepository.save(urlMapper);
+        if (optionalInMemoryAlias.isPresent()) {
+            log.info("Getting the urlMapper alias from InMemoryStorage.");
+            return optionalInMemoryAlias.get();
+        }
+
+        Optional<UrlMapper> optionalUrlMapper = urlMapperRepository.findByURL(normalizeUrl(URL));
+
+        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set
+            log.info("Getting the urlMapper alias from the Database.");
+            inMemoryStorageService
+                    .setValue(optionalUrlMapper.get().getAlias(), optionalUrlMapper.get().getURL());
+            return optionalUrlMapper.get().getAlias();
+        }
+
+        return save(constructUrlMapperFromUrl(URL)).getAlias();
+    }
+
+    private static String normalizeUrl(String URL) {
+        final String URL_PREFIX_REGEX = ".*://";
+
+        return URL.replaceFirst(URL_PREFIX_REGEX, "");
+    }
+
+    private UrlMapper constructUrlMapperFromUrl(String URL) {
+        Boolean isHttps = URL.startsWith("https://");
+        URL = normalizeUrl(URL);
+        String snowflakeAlias = SnowflakeUtils.convert(URL);
+
+        return new UrlMapper(URL, snowflakeAlias, isHttps);
     }
 
     @Override
-    public String convertUrlToAlias(String URL) {
-        Optional<String> optionalInMemory = inMemoryStorageService
-                .getValue(URL.replaceFirst(".*://", ""));
+    public UrlMapper save(UrlMapper urlMapper) {
+        log.info("Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
+        urlMapper = urlMapperRepository.save(urlMapper);
 
-        if (optionalInMemory.isPresent()) {
-            log.info("Getting the urlMapper alias from InMemoryStorage.");
-            return optionalInMemory.get();
-        }
-        // * 1. First check if it's present in the database, don't rush to construct and create it
-        return save(constructUrlMapper(URL)).getAlias();
-    }
+        log.info("Saving the urlMapper to the InMemoryStorage.");
+        inMemoryStorageService.setValue(urlMapper.getAlias(), urlMapper.getURL());
 
-    private UrlMapper constructUrlMapper(String URL) {
-        Boolean isHttps = URL.startsWith("https://");
-        URL = URL.replaceFirst(".*://", ""); // * 2. This repeats to times. It's not OK.
-        String alias = SnowflakeUtils.convert(URL);
-
-        inMemoryStorageService.setValue(URL, alias);
-
-        return new UrlMapper(URL, alias, isHttps);
+        return urlMapper;
     }
 }
