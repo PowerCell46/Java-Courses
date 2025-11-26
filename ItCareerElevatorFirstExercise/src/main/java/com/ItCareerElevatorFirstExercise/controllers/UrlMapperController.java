@@ -28,7 +28,7 @@ public class UrlMapperController {
 
     @PostMapping(value = "")
     public ResponseEntity<UrlMapperResponseDTO> shortenUrl(@RequestBody UrlMapperCreateRequestDTO requestDTO) {
-        log.info("POST request for URL: {}", requestDTO.getURL());
+        log.info("--- POST request for URL: {}", requestDTO.getURL());
 
         String shortenedUrl = urlMapperService.convertUrlToAlias(requestDTO.getURL());
 
@@ -38,7 +38,7 @@ public class UrlMapperController {
 
     @GetMapping(value = "/{alias}")
     public ResponseEntity<Void> redirectShortenedUrL(@PathVariable String alias) {
-        log.info("GET request for alias: {}", alias);
+        log.info("--- GET request for alias: {}", alias);
 
         Optional<String> redirectUrl = urlMapperService.convertAliasToUrl(alias);
 

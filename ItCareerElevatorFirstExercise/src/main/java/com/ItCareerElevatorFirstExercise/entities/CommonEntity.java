@@ -24,7 +24,9 @@ public class CommonEntity {
     private static final Base64.Decoder decoder = Base64.getUrlDecoder();
 
     public String getSnowflakeId() {
-        byte[] bytes = ByteBuffer.allocate(8).putLong(id).array(); // Long: 8 bytes
+        final int LONG_BYTES = Long.BYTES;
+
+        byte[] bytes = ByteBuffer.allocate(LONG_BYTES).putLong(id).array();
 
         return encoder.encodeToString(bytes); // 8 bytes: 11-char Base64 (URL-safe, no padding)
     }

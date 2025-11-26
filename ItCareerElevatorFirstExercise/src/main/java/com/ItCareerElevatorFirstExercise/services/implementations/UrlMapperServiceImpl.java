@@ -102,6 +102,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
             return optionalUrlMapper.map(UrlMapperServiceImpl::decompressUrl);
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new InvalidAliasException(String.format("No such alias [%s] exists.", alias));
         }
     }
