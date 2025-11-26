@@ -29,14 +29,14 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         Optional<String> optionalInMemoryAlias = inMemoryStorageService.getByValue(URL);
 
         if (optionalInMemoryAlias.isPresent()) {
-            log.info("Getting the urlMapper alias from InMemoryStorage.");
+            log.info("--> Getting the Alias from the InMemoryStorage.");
             return optionalInMemoryAlias.get();
         }
 
         Optional<UrlMapper> optionalUrlMapper = urlMapperRepository.findByURL(compressUrl(URL));
 
-        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly (in memory storage)
-            log.info("Getting the urlMapper alias from the Database.");
+        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly (in the memory storage)
+            log.info("--> Getting the Alias from the Database.");
 
             setUrlMapperInMemory(optionalUrlMapper.get());
             return optionalUrlMapper.get().getSnowflakeId();
@@ -59,24 +59,24 @@ public class UrlMapperServiceImpl implements UrlMapperService {
     }
 
     private void setUrlMapperInMemory(UrlMapper urlMapper) {
-        String fullUrl = decompressUrl(urlMapper);
+        String nonCompressedUrl = decompressUrl(urlMapper);
 
-        log.info("Persisting urlMapper with URL: {} to the InMemoryStorage.", fullUrl);
-        inMemoryStorageService.setKeyValuePair(urlMapper.getSnowflakeId(), fullUrl);
+        log.info("*** Persisting urlMapper with URL: {} to the InMemoryStorage.", nonCompressedUrl);
+        inMemoryStorageService.setKeyValuePair(urlMapper.getSnowflakeId(), nonCompressedUrl);
     }
 
     private UrlMapper constructNonPersistedUrlMapperFromUrl(String URL) {
         Boolean isHttps = URL.startsWith("https://");
-        URL = compressUrl(URL);
+        String compressedUrl = compressUrl(URL);
 
-        return new UrlMapper(snowflakeIdService.generateId(), URL, isHttps);
+        return new UrlMapper(snowflakeIdService.generateId(), compressedUrl, isHttps);
     }
 
     @Override
     public UrlMapper save(UrlMapper urlMapper) {
-        log.info("Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
-        urlMapper = urlMapperRepository.save(urlMapper);
+        log.info("===> Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
 
+        urlMapper = urlMapperRepository.save(urlMapper);
         setUrlMapperInMemory(urlMapper);
 
         return urlMapper;
@@ -88,22 +88,23 @@ public class UrlMapperServiceImpl implements UrlMapperService {
             Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias);
 
             if (optionalInMemoryUrl.isPresent()) {
-                log.info("Getting the urlMapper URL from InMemoryStorage.");
+                log.info("--> Getting the URL from the InMemoryStorage.");
                 return optionalInMemoryUrl;
             }
-
-            log.info("Making a request to the database to fetch the alias.");
 
             Optional<UrlMapper> optionalUrlMapper = urlMapperRepository
                     .findById(CommonEntity.convertSnowflakeIdToId(alias));
 
-            optionalUrlMapper.ifPresent(this::setUrlMapperInMemory);
+            if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly (in the memory storage)
+                log.info("--> Getting the URL from the Database.");
+                setUrlMapperInMemory(optionalUrlMapper.get());
+            }
 
             return optionalUrlMapper.map(UrlMapperServiceImpl::decompressUrl);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new InvalidAliasException(String.format("No such alias [%s] exists.", alias));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            log.error("Error occurred with alias: {}{}\t{}", alias, System.lineSeparator(), e.getMessage());
+            throw new InvalidAliasException(String.format("Invalid alias [%s].", alias));
         }
     }
 }

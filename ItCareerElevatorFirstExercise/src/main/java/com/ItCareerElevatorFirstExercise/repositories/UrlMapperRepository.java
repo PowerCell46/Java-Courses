@@ -5,12 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface UrlMapperRepository extends JpaRepository<UrlMapper, UUID> {
+public interface UrlMapperRepository extends JpaRepository<UrlMapper, Long> {
 
     Optional<UrlMapper> findByURL(String URL);
-
-    Optional<UrlMapper> findById(Long id);
 }

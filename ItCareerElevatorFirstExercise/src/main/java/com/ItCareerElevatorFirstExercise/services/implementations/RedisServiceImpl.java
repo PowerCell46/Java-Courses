@@ -12,6 +12,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+// ! Using block() inside a reactive stack is generally discouraged; it breaks the non-blocking model.
 public class RedisServiceImpl implements InMemoryStorageService {
 
     private static final Duration ENTRY_TIME_TO_LIVE = Duration.ofDays(1);
@@ -27,13 +28,13 @@ public class RedisServiceImpl implements InMemoryStorageService {
             // * key -> value
             redis.opsForValue().set(key, value, ENTRY_TIME_TO_LIVE);
 
-            // * (prefixed) value -> key
+            // * (prefixed) v:value -> key
             redis.opsForValue().set(valueAsKey, key, ENTRY_TIME_TO_LIVE);
 
             return true;
 
         } catch (Exception e) {
-            log.error("Failed to store Redis key-value pair. key='{}', value='{}'", key, value, e);
+            log.error("Failed to store Redis key-value pair: key='{}', value='{}'.", key, value, e);
             return false;
         }
     }
@@ -53,5 +54,3 @@ public class RedisServiceImpl implements InMemoryStorageService {
         return Optional.ofNullable(result);
     }
 }
-
-// ! Using .block() inside a reactive stack is generally discouraged; it breaks the non-blocking model.
