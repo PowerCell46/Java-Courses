@@ -2,17 +2,23 @@ package com.ItCareerElevatorFirstExercise.controllers;
 
 import com.ItCareerElevatorFirstExercise.DTOs.UrlMapperCreateRequestDTO;
 import com.ItCareerElevatorFirstExercise.DTOs.UrlMapperResponseDTO;
+import com.ItCareerElevatorFirstExercise.exceptions.InvalidAliasException;
 import com.ItCareerElevatorFirstExercise.services.interfaces.UrlMapperService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/api/url-mapper")
+@RequestMapping("/url-mapper")
 @RequiredArgsConstructor
 public class UrlMapperController {
 
@@ -22,13 +28,21 @@ public class UrlMapperController {
     public ResponseEntity<UrlMapperResponseDTO> shortenUrl(@RequestBody UrlMapperCreateRequestDTO requestDTO) {
 
         String shortenedUrl = urlMapperService.convertUrlToAlias(requestDTO.getURL());
-
         UrlMapperResponseDTO responseDTO = new UrlMapperResponseDTO(requestDTO.getURL(), shortenedUrl);
 
         return ResponseEntity.ok(responseDTO);
     }
 
-//    @GetMapping(value = "")
-    // ! If the entry exist, redirect with one of the 302/304?
-//    public ResponseEntity<UrlMapperResponseDTO>
+    @GetMapping(value = "/{alias}")
+    public ResponseEntity<Void> redirectShortenedUrL(@PathVariable String alias) {
+        Optional<String> redirectUrl = urlMapperService.convertAliasToUrl(alias);
+
+        if (redirectUrl.isPresent()) {
+            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+                    .header(HttpHeaders.LOCATION, redirectUrl.get())
+                    .build();
+        }
+
+        throw new InvalidAliasException(String.format("No such alias [%s] exists.", alias));
+    }
 }

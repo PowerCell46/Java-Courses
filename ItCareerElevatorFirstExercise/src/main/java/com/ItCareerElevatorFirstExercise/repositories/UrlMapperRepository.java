@@ -26,4 +26,6 @@ public interface UrlMapperRepository extends JpaRepository<UrlMapper, UUID> {
     UrlMapper upsertByUrl(@Param("url") String url, @Param("alias") String alias, @Param("isHttps") Boolean isHttps);
 
     Optional<UrlMapper> findByURL(String URL);
+
+    Optional<UrlMapper> findByAlias(String alias);
 }
