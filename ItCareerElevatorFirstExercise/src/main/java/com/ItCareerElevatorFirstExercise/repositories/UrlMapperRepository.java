@@ -12,5 +12,5 @@ public interface UrlMapperRepository extends JpaRepository<UrlMapper, UUID> {
 
     Optional<UrlMapper> findByURL(String URL);
 
-    Optional<UrlMapper> findBySnowflakeId(Long snowflakeId);
+    Optional<UrlMapper> findById(Long id);
 }

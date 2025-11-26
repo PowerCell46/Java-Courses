@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public interface InMemoryStorageService {
 
-    Boolean setValue(String key, String value);
+    Boolean setKeyValuePair(String key, String value);
 
     Optional<String> getByValue(String value);
 

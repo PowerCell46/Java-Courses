@@ -25,7 +25,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     @Override
     public String convertUrlToAlias(String URL) {
-        Optional<String> optionalInMemoryAlias = inMemoryStorageService.getByValue(URL); // ! timeComplexity: O(n)
+        Optional<String> optionalInMemoryAlias = inMemoryStorageService.getByValue(URL);
 
         if (optionalInMemoryAlias.isPresent()) {
             log.info("Getting the urlMapper alias from InMemoryStorage.");
@@ -36,10 +36,9 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
         if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly (in memory storage)
             log.info("Getting the urlMapper alias from the Database.");
-            String alias = optionalUrlMapper.get().getSnowflakeId();
 
             setUrlMapperInMemory(optionalUrlMapper.get());
-            return alias;
+            return optionalUrlMapper.get().getSnowflakeId();
         }
 
         return save(constructUrlMapperFromUrl(URL)).getSnowflakeId();
@@ -57,7 +56,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     private void setUrlMapperInMemory(UrlMapper urlMapper) {
         log.info("Saving the urlMapper with URL: {} to the InMemoryStorage.", urlMapper.getURL());
-        inMemoryStorageService.setValue(urlMapper.getSnowflakeId(), urlMapper.getURL());
+        inMemoryStorageService.setKeyValuePair(urlMapper.getSnowflakeId(), decompressUrl(urlMapper));
     }
 
     private UrlMapper constructUrlMapperFromUrl(String URL) {
@@ -79,7 +78,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     @Override
     public Optional<String> convertAliasToUrl(String alias) {
-        Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias); // ! timeComplexity: O(1)
+        Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias);
 
         if (optionalInMemoryUrl.isPresent()) {
             log.info("Getting the urlMapper URL from InMemoryStorage.");
@@ -88,7 +87,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
         log.info("Making a request to the database to fetch the alias.");
         return urlMapperRepository
-                .findBySnowflakeId(CommonEntity.convertSnowflakeIdToId(alias))
+                .findById(CommonEntity.convertSnowflakeIdToId(alias))
                 .map(UrlMapperServiceImpl::decompressUrl);
     }
 }
