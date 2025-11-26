@@ -3,8 +3,8 @@ package com.ItCareerElevatorFirstExercise.services.implementations;
 import com.ItCareerElevatorFirstExercise.entities.UrlMapper;
 import com.ItCareerElevatorFirstExercise.repositories.UrlMapperRepository;
 import com.ItCareerElevatorFirstExercise.services.interfaces.InMemoryStorageService;
+import com.ItCareerElevatorFirstExercise.services.interfaces.SnowflakeIdService;
 import com.ItCareerElevatorFirstExercise.services.interfaces.UrlMapperService;
-import com.ItCareerElevatorFirstExercise.utils.SnowflakeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,8 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     private final InMemoryStorageService inMemoryStorageService;
 
+    private final SnowflakeIdService snowflakeIdService;
+
     @Override
     public String convertUrlToAlias(String URL) {
         Optional<String> optionalInMemoryAlias = inMemoryStorageService.getByValue(URL); // ! O(n)
@@ -33,12 +35,14 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
         if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly in memory
             log.info("Getting the urlMapper alias from the Database.");
-            setUrlMapperInMemory(optionalUrlMapper.get().getAlias(), URL);
+            String alias = snowflakeIdService.encodeIdToBase64(optionalUrlMapper.get().getSnowflakeId());
 
-            return optionalUrlMapper.get().getAlias();
+            setUrlMapperInMemory(alias, URL);
+            return alias;
         }
 
-        return save(constructUrlMapperFromUrl(URL)).getAlias();
+        UrlMapper urlMapper = save(constructUrlMapperFromUrl(URL));
+        return snowflakeIdService.encodeIdToBase64(urlMapper.getSnowflakeId());
     }
 
     private static String compressUrl(String URL) {
@@ -59,9 +63,8 @@ public class UrlMapperServiceImpl implements UrlMapperService {
     private UrlMapper constructUrlMapperFromUrl(String URL) {
         Boolean isHttps = URL.startsWith("https://");
         URL = compressUrl(URL);
-        String snowflakeAlias = SnowflakeUtils.convert(URL);
 
-        return new UrlMapper(URL, snowflakeAlias, isHttps);
+        return new UrlMapper(snowflakeIdService.generateId(), URL, isHttps);
     }
 
     @Override
@@ -69,7 +72,10 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         log.info("Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
         urlMapper = urlMapperRepository.save(urlMapper);
 
-        setUrlMapperInMemory(urlMapper.getAlias(), decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL()));
+        setUrlMapperInMemory(
+                snowflakeIdService.encodeIdToBase64(urlMapper.getSnowflakeId()),
+                decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL())
+        );
 
         return urlMapper;
     }
@@ -85,7 +91,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
         log.info("Making a request to the database to fetch the alias.");
         return urlMapperRepository
-                .findByAlias(alias)
+                .findBySnowflakeId(snowflakeIdService.decodeIdFromBase64(alias))
                 .map(urlMapper -> decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL()));
     }
 }

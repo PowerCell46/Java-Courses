@@ -2,15 +2,10 @@ package com.ItCareerElevatorFirstExercise.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.UUID;
 
 
 @Entity
@@ -18,24 +13,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UrlMapper {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID) // TODO: Change to Snowflake id
-    private UUID id;
+public class UrlMapper extends CommonEntity {
 
     @Column(unique = true, nullable = false)
-    private String alias;
-
-    @Column(unique = true, nullable = false)
-    private String URL;
+    private String URL; // Make index on the column
 
     @Column(nullable = false)
     private Boolean isHttps;
 
-    public UrlMapper(String URL, String alias, Boolean isHttps) {
+    public UrlMapper(Long snowflakeId, String URL, Boolean isHttps) {
+        super(snowflakeId);
+
         this.URL = URL;
-        this.alias = alias;
         this.isHttps = isHttps;
     }
 }
