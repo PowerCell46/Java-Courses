@@ -25,7 +25,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     @Override
     public String convertUrlToAlias(String URL) {
-        Optional<String> optionalInMemoryAlias = inMemoryStorageService.getByValue(URL); // ! O(n)
+        Optional<String> optionalInMemoryAlias = inMemoryStorageService.getByValue(URL); // ! timeComplexity: O(n)
 
         if (optionalInMemoryAlias.isPresent()) {
             log.info("Getting the urlMapper alias from InMemoryStorage.");
@@ -38,7 +38,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
             log.info("Getting the urlMapper alias from the Database.");
             String alias = optionalUrlMapper.get().getSnowflakeId();
 
-            setUrlMapperInMemory(alias, URL);
+            setUrlMapperInMemory(optionalUrlMapper.get());
             return alias;
         }
 
@@ -51,13 +51,13 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         return URL.replaceFirst(URL_PREFIX_REGEX, "");
     }
 
-    private static String decompressUrl(Boolean isHttps, String URL) {
-        return String.format("http%s://%s", isHttps ? "s" : "", URL);
+    private static String decompressUrl(UrlMapper urlMapper) {
+        return String.format("http%s://%s", urlMapper.getIsHttps() ? "s" : "", urlMapper.getURL());
     }
 
-    private void setUrlMapperInMemory(String alias, String URL) {
-        log.info("Saving the urlMapper with URL: {} to the InMemoryStorage.", URL);
-        inMemoryStorageService.setValue(alias, URL);
+    private void setUrlMapperInMemory(UrlMapper urlMapper) {
+        log.info("Saving the urlMapper with URL: {} to the InMemoryStorage.", urlMapper.getURL());
+        inMemoryStorageService.setValue(urlMapper.getSnowflakeId(), urlMapper.getURL());
     }
 
     private UrlMapper constructUrlMapperFromUrl(String URL) {
@@ -72,14 +72,14 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         log.info("Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
         urlMapper = urlMapperRepository.save(urlMapper);
 
-        setUrlMapperInMemory(urlMapper.getSnowflakeId(), decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL()));
+        setUrlMapperInMemory(urlMapper);
 
         return urlMapper;
     }
 
     @Override
     public Optional<String> convertAliasToUrl(String alias) {
-        Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias); // ! O(1)
+        Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias); // ! timeComplexity: O(1)
 
         if (optionalInMemoryUrl.isPresent()) {
             log.info("Getting the urlMapper URL from InMemoryStorage.");
@@ -89,6 +89,6 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         log.info("Making a request to the database to fetch the alias.");
         return urlMapperRepository
                 .findBySnowflakeId(CommonEntity.convertSnowflakeIdToId(alias))
-                .map(urlMapper -> decompressUrl(urlMapper.getIsHttps(), urlMapper.getURL()));
+                .map(UrlMapperServiceImpl::decompressUrl);
     }
 }
