@@ -41,7 +41,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
             return optionalUrlMapper.get().getSnowflakeId();
         }
 
-        return save(constructUrlMapperFromUrl(URL)).getSnowflakeId();
+        return save(constructNonPersistedUrlMapperFromUrl(URL)).getSnowflakeId();
     }
 
     private static String compressUrl(String URL) {
@@ -55,11 +55,13 @@ public class UrlMapperServiceImpl implements UrlMapperService {
     }
 
     private void setUrlMapperInMemory(UrlMapper urlMapper) {
-        log.info("Saving the urlMapper with URL: {} to the InMemoryStorage.", urlMapper.getURL());
-        inMemoryStorageService.setKeyValuePair(urlMapper.getSnowflakeId(), decompressUrl(urlMapper));
+        String fullUrl = decompressUrl(urlMapper);
+
+        log.info("Persisting urlMapper with URL: {} to the InMemoryStorage.", fullUrl);
+        inMemoryStorageService.setKeyValuePair(urlMapper.getSnowflakeId(), fullUrl);
     }
 
-    private UrlMapper constructUrlMapperFromUrl(String URL) {
+    private UrlMapper constructNonPersistedUrlMapperFromUrl(String URL) {
         Boolean isHttps = URL.startsWith("https://");
         URL = compressUrl(URL);
 
@@ -86,8 +88,12 @@ public class UrlMapperServiceImpl implements UrlMapperService {
         }
 
         log.info("Making a request to the database to fetch the alias.");
-        return urlMapperRepository
-                .findById(CommonEntity.convertSnowflakeIdToId(alias))
-                .map(UrlMapperServiceImpl::decompressUrl);
+
+        Optional<UrlMapper> optionalUrlMapper = urlMapperRepository
+                .findById(CommonEntity.convertSnowflakeIdToId(alias));
+
+        optionalUrlMapper.ifPresent(this::setUrlMapperInMemory);
+
+        return optionalUrlMapper.map(UrlMapperServiceImpl::decompressUrl);
     }
 }
