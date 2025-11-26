@@ -5,6 +5,7 @@ import com.ItCareerElevatorFirstExercise.DTOs.UrlMapperResponseDTO;
 import com.ItCareerElevatorFirstExercise.exceptions.InvalidAliasException;
 import com.ItCareerElevatorFirstExercise.services.interfaces.UrlMapperService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/url-mapper")
 @RequiredArgsConstructor
+@Slf4j
 public class UrlMapperController {
 
     private final UrlMapperService urlMapperService;
 
     @PostMapping(value = "")
     public ResponseEntity<UrlMapperResponseDTO> shortenUrl(@RequestBody UrlMapperCreateRequestDTO requestDTO) {
+        log.info("POST request for URL: {}", requestDTO.getURL());
 
         String shortenedUrl = urlMapperService.convertUrlToAlias(requestDTO.getURL());
         UrlMapperResponseDTO responseDTO = new UrlMapperResponseDTO(requestDTO.getURL(), shortenedUrl);
@@ -35,6 +38,8 @@ public class UrlMapperController {
 
     @GetMapping(value = "/{alias}")
     public ResponseEntity<Void> redirectShortenedUrL(@PathVariable String alias) {
+        log.info("GET request for alias: {}", alias);
+
         Optional<String> redirectUrl = urlMapperService.convertAliasToUrl(alias);
 
         if (redirectUrl.isPresent()) {
