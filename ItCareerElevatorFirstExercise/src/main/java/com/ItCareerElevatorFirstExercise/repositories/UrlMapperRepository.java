@@ -12,15 +12,15 @@ import java.util.UUID;
 @Repository
 public interface UrlMapperRepository extends JpaRepository<UrlMapper, UUID> {
 
+    // * Possible optimization: instead of checking if it exists (1st query) in the DB and then (2nd query) inserting - do it in one query.
     @Query(
-            value =
-                    """
-                            INSERT INTO url_mappers(url, alias, isHttps)
-                            VALUES (:url, :alias, :isHttps)
-                            ON CONFLICT (url)
-                            DO NOTHING
-                            RETURNING *
-                            """,
+            value = """
+                    INSERT INTO url_mappers(url, alias, isHttps)
+                    VALUES (:url, :alias, :isHttps)
+                    ON CONFLICT (url)
+                    DO NOTHING
+                    RETURNING *
+                    """,
             nativeQuery = true
     )
     UrlMapper upsertByUrl(@Param("url") String url, @Param("alias") String alias, @Param("isHttps") Boolean isHttps);

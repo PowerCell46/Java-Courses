@@ -22,8 +22,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     @Override
     public String convertUrlToAlias(String URL) {
-        Optional<String> optionalInMemoryAlias = inMemoryStorageService
-                .getByValue(URL); // ! O(n)
+        Optional<String> optionalInMemoryAlias = inMemoryStorageService.getByValue(URL); // ! O(n)
 
         if (optionalInMemoryAlias.isPresent()) {
             log.info("Getting the urlMapper alias from InMemoryStorage.");

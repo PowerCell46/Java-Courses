@@ -31,8 +31,8 @@ public class UrlMapperController {
         log.info("POST request for URL: {}", requestDTO.getURL());
 
         String shortenedUrl = urlMapperService.convertUrlToAlias(requestDTO.getURL());
-        UrlMapperResponseDTO responseDTO = new UrlMapperResponseDTO(requestDTO.getURL(), shortenedUrl);
 
+        UrlMapperResponseDTO responseDTO = new UrlMapperResponseDTO(requestDTO.getURL(), shortenedUrl);
         return ResponseEntity.ok(responseDTO);
     }
 

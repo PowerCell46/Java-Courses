@@ -25,7 +25,8 @@ public class RedisServiceImpl implements InMemoryStorageService {
     @Override
     public Optional<String> getByKey(String key) { // ! O(1)
         return redis.opsForValue()
-                .get(key).blockOptional();
+                .get(key)
+                .blockOptional();
     }
 
     @Override

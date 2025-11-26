@@ -18,7 +18,7 @@ public class SnowflakeUtils {
     private static final AtomicLong sequence = new AtomicLong(0);
 
     public static String convert(String value) {
-        final String UNIQUE_SEED = "PowerCell46"; // TODO: ENV VAR?
+        final String UNIQUE_SEED = "PowerCell46"; // TODO: ENV VAR OR application.properties?
 
         return toBase64String(generateSnowflakeId(UNIQUE_SEED));
     }
