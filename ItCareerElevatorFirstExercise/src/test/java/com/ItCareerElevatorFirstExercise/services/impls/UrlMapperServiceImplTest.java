@@ -80,7 +80,7 @@ public class UrlMapperServiceImplTest {
 
             String result = urlMapperService.convertUrlToAlias(HTTPS_URL);
 
-            assertEquals(ALIAS, result, "In memory entry should return the correct ALIAS");
+            assertEquals(ALIAS, result);
             // * verify() checks that a mocked method was called with specific arguments
             verify(inMemoryStorageService).getByValue(HTTPS_URL);
             verifyNoInteractions(urlMapperRepository, snowflakeIdService);
@@ -97,7 +97,7 @@ public class UrlMapperServiceImplTest {
 
             String result = urlMapperService.convertUrlToAlias(HTTPS_URL);
 
-            assertEquals(ALIAS, result, "If entry is missing from InMemory but it's present in the DB, it should be returned.");
+            assertEquals(ALIAS, result);
             verify(urlMapperRepository).findByURL(COMPRESSED_HTTPS_URL);
             verify(inMemoryStorageService).setKeyValuePair(ALIAS, HTTPS_URL);
             verify(snowflakeIdService, never()).generateId();
@@ -116,7 +116,7 @@ public class UrlMapperServiceImplTest {
 
             String result = urlMapperService.convertUrlToAlias(HTTPS_URL);
 
-            assertEquals(ALIAS, result, "If entry is missing both from InMemory and DB, it should be saved as a new entry.");
+            assertEquals(ALIAS, result);
             verify(snowflakeIdService).generateId();
             verify(urlMapperRepository)
                     .save(argThat(um ->
@@ -130,6 +130,7 @@ public class UrlMapperServiceImplTest {
         @Test
         @DisplayName("Should handle HTTP URLs correctly (not just HTTPS)")
         void testConvertUrlToAliasWithHttpUrl() {
+            // * Entry is missing both from InMemoryStorage and DB
             when(inMemoryStorageService.getByValue(HTTP_URL)).thenReturn(Optional.empty());
             when(urlMapperRepository.findByURL(COMPRESSED_HTTP_URL)).thenReturn(Optional.empty());
             when(snowflakeIdService.generateId()).thenReturn(SNOWFLAKE_LONG_ID);
@@ -163,7 +164,7 @@ public class UrlMapperServiceImplTest {
 
             UrlMapper result = urlMapperService.save(entityToBeSaved);
 
-            assertSame(savedEntity, result, "Save UrlMapper should save it to the DB and to the InMemoryStorage.");
+            assertSame(savedEntity, result);
             verify(urlMapperRepository).save(entityToBeSaved);
             verify(inMemoryStorageService).setKeyValuePair(ALIAS, HTTPS_URL);
         }
@@ -218,8 +219,6 @@ public class UrlMapperServiceImplTest {
         void testConvertAliasToUrlWithNonParsableAlias() {
             when(inMemoryStorageService.getByKey(INVALID_ALIAS)).thenReturn(Optional.empty());
 
-            // The exception will be thrown naturally by CommonEntity.convertSnowflakeIdToId()
-            // No need to mock static method - let it throw naturally
             InvalidAliasException exception = assertThrows(
                     InvalidAliasException.class,
                     () -> urlMapperService.convertAliasToUrl(INVALID_ALIAS)
