@@ -52,8 +52,11 @@ public class UrlMapperServiceImpl implements UrlMapperService {
     }
 
     private static String decompressUrl(UrlMapper urlMapper) {
-        return String.format("http%s://%s",
-                urlMapper.getIsHttps() ? "s" : "",
+        final String HTTPS_prefix = "https";
+        final String HTTP_prefix = "http";
+
+        return String.format("%s://%s",
+                urlMapper.getIsHttps() ? HTTPS_prefix : HTTP_prefix,
                 urlMapper.getURL()
         );
     }
@@ -66,7 +69,8 @@ public class UrlMapperServiceImpl implements UrlMapperService {
     }
 
     private UrlMapper constructNonPersistedUrlMapperFromUrl(String URL) {
-        Boolean isHttps = URL.startsWith("https://");
+        final String HTTPS_prefix = "https://";
+        Boolean isHttps = URL.startsWith(HTTPS_prefix);
         String compressedUrl = compressUrl(URL);
 
         return new UrlMapper(snowflakeIdService.generateId(), compressedUrl, isHttps);
@@ -74,7 +78,7 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     @Override
     public UrlMapper save(UrlMapper urlMapper) {
-        log.info("===> Saving urlMapper with URL: {} to the Database.", urlMapper.getURL());
+        log.info("===> Saving urlMapper with URL: {} to the Database.", decompressUrl(urlMapper));
 
         urlMapper = urlMapperRepository.save(urlMapper);
         setUrlMapperInMemory(urlMapper);
