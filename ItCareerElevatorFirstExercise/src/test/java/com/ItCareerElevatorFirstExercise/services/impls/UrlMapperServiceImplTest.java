@@ -27,9 +27,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+/**
+ * ExtendWith: Enables Mockito annotations for dependency injection in tests.
+ */
 @ExtendWith(MockitoExtension.class)
 public class UrlMapperServiceImplTest {
 
+    /**
+     * Mock: Creates a mock instance of the repository for testing.
+     */
     @Mock
     private UrlMapperRepository urlMapperRepository;
 
@@ -75,6 +81,7 @@ public class UrlMapperServiceImplTest {
             String result = urlMapperService.convertUrlToAlias(HTTPS_URL);
 
             assertEquals(ALIAS, result, "In memory entry should return the correct ALIAS");
+            // * verify() checks that a mocked method was called with specific arguments
             verify(inMemoryStorageService).getByValue(HTTPS_URL);
             verifyNoInteractions(urlMapperRepository, snowflakeIdService);
         }
