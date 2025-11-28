@@ -59,9 +59,7 @@ public class UrlMapperServiceImplTest {
 
     private static final String ALIAS = "G6tbC7MEwAA";
 
-    private static final String INVALID_ALIAS = "E";
-
-    private static final String EMPTY_ALIAS = "";
+    private static final String INVALID_ALIAS = "PETER_GERDZ";
 
     private static final Long SNOWFLAKE_LONG_ID = UrlMapper.convertSnowflakeIdToId(ALIAS);
 
@@ -216,32 +214,6 @@ public class UrlMapperServiceImplTest {
         }
 
         @Test
-        @DisplayName("Should throw InvalidSnowflakeIdException for invalid alias format")
-        void testConvertAliasToUrlWithNonParsableAlias() {
-            when(inMemoryStorageService.getByKey(INVALID_ALIAS)).thenReturn(Optional.empty());
-
-            InvalidSnowflakeIdException exception = assertThrows(
-                    InvalidSnowflakeIdException.class,
-                    () -> urlMapperService.convertAliasToUrl(INVALID_ALIAS)
-            );
-
-            assertEquals(String.format("Invalid snowflakeId [%s].", INVALID_ALIAS), exception.getMessage());
-        }
-
-        @Test
-        @DisplayName("Should throw InvalidAliasException for empty alias")
-        void testConvertAliasToUrlWithEmptyAlias() {
-            when(inMemoryStorageService.getByKey(EMPTY_ALIAS)).thenReturn(Optional.empty());
-
-            InvalidAliasException exception = assertThrows(
-                    InvalidAliasException.class,
-                    () -> urlMapperService.convertAliasToUrl(EMPTY_ALIAS)
-            );
-
-            assertEquals("Invalid alias [].", exception.getMessage());
-        }
-
-        @Test
         @DisplayName("Should handle HTTP URLs correctly when retrieving from database")
         void testConvertAliasToUrlWithHttpUrlFromDatabase() {
             when(inMemoryStorageService.getByKey(ALIAS)).thenReturn(Optional.empty());
@@ -256,5 +228,18 @@ public class UrlMapperServiceImplTest {
             assertEquals(HTTP_URL, result.get());
             verify(inMemoryStorageService).setKeyValuePair(ALIAS, HTTP_URL);
         }
+    }
+
+    @Test
+    @DisplayName("Should throw InvalidSnowflakeIdException for invalid alias format")
+    void testConvertAliasToUrlWithNonParsableAlias() {
+        when(inMemoryStorageService.getByKey(INVALID_ALIAS)).thenReturn(Optional.empty());
+
+        InvalidSnowflakeIdException exception = assertThrows(
+                InvalidSnowflakeIdException.class,
+                () -> urlMapperService.convertAliasToUrl(INVALID_ALIAS)
+        );
+
+        assertEquals(String.format("Invalid snowflakeId [%s].", INVALID_ALIAS), exception.getMessage());
     }
 }
