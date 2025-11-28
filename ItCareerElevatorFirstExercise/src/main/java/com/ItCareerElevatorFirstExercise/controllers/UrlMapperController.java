@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -36,9 +37,12 @@ public class UrlMapperController {
         log.info("--- POST request for URL: {}", requestDTO.getURL());
 
         String shortenedUrl = urlMapperService.convertUrlToAlias(requestDTO.getURL());
-
+        // TODO: Lecturer said it's better if a/the service directly returns UrlMapperDTO
         UrlMapperResponseDTO responseDTO = new UrlMapperResponseDTO(requestDTO.getURL(), shortenedUrl);
-        return ResponseEntity.ok(responseDTO);
+
+        URI location = URI.create("/url-mapper/" + shortenedUrl);
+
+        return ResponseEntity.created(location).body(responseDTO);
     }
 
     @GetMapping(value = "/{alias}")
