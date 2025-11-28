@@ -1,11 +1,13 @@
 package com.ItCareerElevatorFirstExercise.entities;
 
+import com.ItCareerElevatorFirstExercise.exceptions.InvalidSnowflakeIdException;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.util.Base64;
@@ -15,6 +17,7 @@ import java.util.Base64;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class CommonEntity {
 
     @Id
@@ -34,7 +37,8 @@ public class CommonEntity {
 
     public static Long convertSnowflakeIdToId(String snowflakeId) {
         if (snowflakeId == null || snowflakeId.isEmpty()) {
-            throw new IllegalArgumentException("Cannot convert snowflakeId, because it's null or empty.");
+            log.error("Cannot convert snowflakeId, because it's null or empty.");
+            throw new InvalidSnowflakeIdException(String.format("Invalid snowflakeId [%s].", snowflakeId));
         }
 
         byte[] bytes;
@@ -43,15 +47,13 @@ public class CommonEntity {
             bytes = DECODER.decode(snowflakeId);
 
         } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Invalid Base64 URL-safe snowflake id: " + snowflakeId, ex);
+            log.error("Invalid Base64 URL-safe snowflake id: {}", snowflakeId);
+            throw new InvalidSnowflakeIdException(String.format("Invalid snowflakeId [%s].", snowflakeId));
         }
 
         if (bytes.length != Long.BYTES) {
-            throw new IllegalArgumentException(String.format(
-                    "Invalid snowflake id length: expected %d  bytes but got %d",
-                    Long.BYTES,
-                    bytes.length)
-            );
+            log.error("Invalid snowflake id length: expected {}  bytes but got {}", Long.BYTES, bytes.length);
+            throw new InvalidSnowflakeIdException(String.format("Invalid snowflakeId [%s].", snowflakeId));
         }
 
         return ByteBuffer.wrap(bytes).getLong();

@@ -2,7 +2,6 @@ package com.ItCareerElevatorFirstExercise.services.implementations;
 
 import com.ItCareerElevatorFirstExercise.entities.CommonEntity;
 import com.ItCareerElevatorFirstExercise.entities.UrlMapper;
-import com.ItCareerElevatorFirstExercise.exceptions.InvalidAliasException;
 import com.ItCareerElevatorFirstExercise.repositories.UrlMapperRepository;
 import com.ItCareerElevatorFirstExercise.services.interfaces.InMemoryStorageService;
 import com.ItCareerElevatorFirstExercise.services.interfaces.SnowflakeIdService;
@@ -88,27 +87,21 @@ public class UrlMapperServiceImpl implements UrlMapperService {
 
     @Override
     public Optional<String> convertAliasToUrl(String alias) {
-        try {
-            Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias);
+        Optional<String> optionalInMemoryUrl = inMemoryStorageService.getByKey(alias);
 
-            if (optionalInMemoryUrl.isPresent()) {
-                log.info("--> Getting the URL from the InMemoryStorage.");
-                return optionalInMemoryUrl;
-            }
-
-            Optional<UrlMapper> optionalUrlMapper = urlMapperRepository
-                    .findById(CommonEntity.convertSnowflakeIdToId(alias));
-
-            if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly (in the memory storage)
-                log.info("--> Getting the URL from the Database.");
-                setUrlMapperInMemory(optionalUrlMapper.get());
-            }
-
-            return optionalUrlMapper.map(UrlMapperServiceImpl::decompressUrl);
-
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            log.error("Error occurred with alias: {}{}\t{}", alias, System.lineSeparator(), e.getMessage());
-            throw new InvalidAliasException(String.format("Invalid alias [%s].", alias));
+        if (optionalInMemoryUrl.isPresent()) {
+            log.info("--> Getting the URL from the InMemoryStorage.");
+            return optionalInMemoryUrl;
         }
+
+        Optional<UrlMapper> optionalUrlMapper = urlMapperRepository
+                .findById(CommonEntity.convertSnowflakeIdToId(alias));
+
+        if (optionalUrlMapper.isPresent()) { // Value has expired or was not set properly (in the memory storage)
+            log.info("--> Getting the URL from the Database.");
+            setUrlMapperInMemory(optionalUrlMapper.get());
+        }
+
+        return optionalUrlMapper.map(UrlMapperServiceImpl::decompressUrl);
     }
 }

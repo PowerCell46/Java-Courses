@@ -2,6 +2,7 @@ package com.ItCareerElevatorFirstExercise.services.impls;
 
 import com.ItCareerElevatorFirstExercise.entities.UrlMapper;
 import com.ItCareerElevatorFirstExercise.exceptions.InvalidAliasException;
+import com.ItCareerElevatorFirstExercise.exceptions.InvalidSnowflakeIdException;
 import com.ItCareerElevatorFirstExercise.repositories.UrlMapperRepository;
 import com.ItCareerElevatorFirstExercise.services.implementations.UrlMapperServiceImpl;
 import com.ItCareerElevatorFirstExercise.services.interfaces.InMemoryStorageService;
@@ -215,16 +216,16 @@ public class UrlMapperServiceImplTest {
         }
 
         @Test
-        @DisplayName("Should throw InvalidAliasException for invalid alias format")
+        @DisplayName("Should throw InvalidSnowflakeIdException for invalid alias format")
         void testConvertAliasToUrlWithNonParsableAlias() {
             when(inMemoryStorageService.getByKey(INVALID_ALIAS)).thenReturn(Optional.empty());
 
-            InvalidAliasException exception = assertThrows(
-                    InvalidAliasException.class,
+            InvalidSnowflakeIdException exception = assertThrows(
+                    InvalidSnowflakeIdException.class,
                     () -> urlMapperService.convertAliasToUrl(INVALID_ALIAS)
             );
 
-            assertEquals("Invalid alias [E].", exception.getMessage());
+            assertEquals(String.format("Invalid snowflakeId [%s].", INVALID_ALIAS), exception.getMessage());
         }
 
         @Test
