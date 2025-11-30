@@ -15,6 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ElectricityInvoiceResponseDTO {
 
+    private String snowflakeId;
+
     private String accessPoint;
 
     private String invoiceNumber;

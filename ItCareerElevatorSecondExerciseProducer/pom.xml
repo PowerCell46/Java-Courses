@@ -83,6 +83,12 @@
             <artifactId>hutool-core</artifactId>
             <version>5.8.41</version>
         </dependency>
+        <!-- Jackson Databind (core + annotations) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

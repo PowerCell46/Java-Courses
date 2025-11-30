@@ -40,11 +40,12 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
 
         electricityInvoice = save(electricityInvoice); // ? Do I need to do that reassignment
 
-        // TODO: Kafka produce message here...
-        electricityInvoiceProducerService.send(electricityInvoice);
-        // (make a method responsible for that logic) log message
+        ElectricityInvoiceResponseDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(electricityInvoice);
 
-        return constructElectricityInvoiceResponseDTO(electricityInvoice);
+        log.info("Calling electricityInvoiceProducerService."); // ! move to a method
+        electricityInvoiceProducerService.send(electricityInvoiceResponseDTO);
+
+        return electricityInvoiceResponseDTO;
     }
 
     private void validateRelationships(CreateElectricityInvoiceRequestDTO requestDTO) {
@@ -91,6 +92,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     private ElectricityInvoiceResponseDTO constructElectricityInvoiceResponseDTO(ElectricityInvoice electricityInvoice) {
         return ElectricityInvoiceResponseDTO
                 .builder()
+                .snowflakeId(electricityInvoice.getSnowflakeId())
                 .accessPoint(electricityInvoice.getAccessPoint())
                 .invoiceNumber(electricityInvoice.getInvoiceNumber())
                 .iban(electricityInvoice.getIban())
