@@ -7,6 +7,7 @@ import com.example.ItCareerElevatorSecondExerciseProducer.entities.LoiDocumentTy
 import com.example.ItCareerElevatorSecondExerciseProducer.entities.LoiMeasurementUnit;
 import com.example.ItCareerElevatorSecondExerciseProducer.exceptions.InvalidRelationshipException;
 import com.example.ItCareerElevatorSecondExerciseProducer.repositories.ElectricityInvoiceRepository;
+import com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces.ElectricityInvoiceProducerService;
 import com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces.ElectricityInvoiceService;
 import com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces.LoiDocumentTypeService;
 import com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces.LoiMeasurementUnitService;
@@ -24,6 +25,8 @@ import java.util.function.BiFunction;
 public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService {
 
     private final ElectricityInvoiceRepository electricityInvoiceRepository;
+
+    private final ElectricityInvoiceProducerService electricityInvoiceProducerService;
     private final LoiDocumentTypeService loiDocumentTypeService;
     private final LoiMeasurementUnitService loiMeasurementUnitService;
 
@@ -38,6 +41,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
         electricityInvoice = save(electricityInvoice); // ? Do I need to do that reassignment
 
         // TODO: Kafka produce message here...
+        electricityInvoiceProducerService.send(electricityInvoice);
         // (make a method responsible for that logic) log message
 
         return constructElectricityInvoiceResponseDTO(electricityInvoice);

@@ -27,22 +27,22 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     public void run(String... args) throws Exception {
         System.out.println("Message from CommandLineRunner...!");
 
-        ElectricityInvoice electricityInvoice = new ElectricityInvoice(
-                "BG2004235341",
-                "911",
-                "BGN432455FTG",
-                LocalDate.of(2025, 6, 1),
-                LocalDate.of(2025, 6, 30),
-                new BigDecimal("1.421"),
-                new BigDecimal("15.381"),
-                new BigDecimal("1245.128"),
-                new BigDecimal("12.031"),
-                loiDocumentTypeRepository.findByListOptionItemCode(LoiDocumentType.INVOICE).orElse(null),
-                loiMeasurementUnitRepository.findByListOptionItemCode(LoiMeasurementUnit.MWh).orElse(null)
-        );
+//        ElectricityInvoice electricityInvoice = new ElectricityInvoice(
+//                "BG2004235341",
+//                "911",
+//                "BGN432455FTG",
+//                LocalDate.of(2025, 6, 1),
+//                LocalDate.of(2025, 6, 30),
+//                new BigDecimal("1.421"),
+//                new BigDecimal("15.381"),
+//                new BigDecimal("1245.128"),
+//                new BigDecimal("12.031"),
+//                loiDocumentTypeRepository.findByListOptionItemCode(LoiDocumentType.INVOICE).orElse(null),
+//                loiMeasurementUnitRepository.findByListOptionItemCode(LoiMeasurementUnit.MWh).orElse(null)
+//        );
+//
+//        electricityInvoice = electricityInvoiceRepository.save(electricityInvoice);
 
-        electricityInvoice = electricityInvoiceRepository.save(electricityInvoice);
-
-        System.out.println("SnowflakeId: " + electricityInvoice.getSnowflakeId());
+//        System.out.println("SnowflakeId: " + electricityInvoice.getSnowflakeId());
     }
 }

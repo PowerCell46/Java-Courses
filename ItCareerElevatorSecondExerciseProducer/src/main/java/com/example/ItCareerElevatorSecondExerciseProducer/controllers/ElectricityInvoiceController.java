@@ -30,7 +30,6 @@ public class ElectricityInvoiceController {
 
         // TODO: URL?!
 
-        return ResponseEntity
-                .created(null).body(responseDTO);
+        return ResponseEntity.created(null).body(responseDTO);
     }
 }
