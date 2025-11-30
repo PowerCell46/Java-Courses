@@ -1,8 +1,8 @@
 package com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces;
 
-import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.ElectricityInvoiceResponseDTO;
+import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.ElectricityInvoiceDTO;
 
 public interface ElectricityInvoiceProducerService {
 
-    void send(ElectricityInvoiceResponseDTO electricityInvoice);
+    void send(ElectricityInvoiceDTO electricityInvoice);
 }

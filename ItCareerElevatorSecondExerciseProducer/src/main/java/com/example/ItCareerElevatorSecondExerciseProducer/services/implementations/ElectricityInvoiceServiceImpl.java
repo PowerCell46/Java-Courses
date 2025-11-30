@@ -1,7 +1,7 @@
 package com.example.ItCareerElevatorSecondExerciseProducer.services.implementations;
 
 import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.CreateElectricityInvoiceRequestDTO;
-import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.ElectricityInvoiceResponseDTO;
+import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.ElectricityInvoiceDTO;
 import com.example.ItCareerElevatorSecondExerciseProducer.entities.ElectricityInvoice;
 import com.example.ItCareerElevatorSecondExerciseProducer.entities.LoiDocumentType;
 import com.example.ItCareerElevatorSecondExerciseProducer.entities.LoiMeasurementUnit;
@@ -33,14 +33,14 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     private static final BigDecimal VAT_VALUE = BigDecimal.valueOf(0.2);
 
     @Override
-    public ElectricityInvoiceResponseDTO processElectricityInvoice(CreateElectricityInvoiceRequestDTO requestDTO) {
+    public ElectricityInvoiceDTO processElectricityInvoice(CreateElectricityInvoiceRequestDTO requestDTO) {
         validateRelationships(requestDTO);
 
         ElectricityInvoice electricityInvoice = constructNonPersistedElectricityInvoice(requestDTO);
 
         electricityInvoice = save(electricityInvoice);
 
-        ElectricityInvoiceResponseDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(electricityInvoice);
+        ElectricityInvoiceDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(electricityInvoice);
 
         publishElectricityInvoiceToKafka(electricityInvoiceResponseDTO);
 
@@ -88,8 +88,8 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
                 .build();
     }
 
-    private ElectricityInvoiceResponseDTO constructElectricityInvoiceResponseDTO(ElectricityInvoice electricityInvoice) {
-        return ElectricityInvoiceResponseDTO
+    private ElectricityInvoiceDTO constructElectricityInvoiceResponseDTO(ElectricityInvoice electricityInvoice) {
+        return ElectricityInvoiceDTO
                 .builder()
                 .snowflakeId(electricityInvoice.getSnowflakeId())
                 .accessPoint(electricityInvoice.getAccessPoint())
@@ -106,7 +106,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
                 .build();
     }
 
-    private void publishElectricityInvoiceToKafka(ElectricityInvoiceResponseDTO responseDTO) {
+    private void publishElectricityInvoiceToKafka(ElectricityInvoiceDTO responseDTO) {
         log.info("Publishing electricity invoice to Kafka: snowflakeId={}.", responseDTO.getSnowflakeId());
         electricityInvoiceProducerService.send(responseDTO);
     }

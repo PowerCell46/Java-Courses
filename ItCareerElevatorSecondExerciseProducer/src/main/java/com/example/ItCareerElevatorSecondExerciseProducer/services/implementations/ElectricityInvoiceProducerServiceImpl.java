@@ -1,6 +1,6 @@
 package com.example.ItCareerElevatorSecondExerciseProducer.services.implementations;
 
-import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.ElectricityInvoiceResponseDTO;
+import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.ElectricityInvoiceDTO;
 import com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces.ElectricityInvoiceProducerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class ElectricityInvoiceProducerServiceImpl implements ElectricityInvoice
     private static final String TOPIC_NAME = "electricityInvoice"; // TODO: Why hardcoded?
 
     @Override
-    public void send(ElectricityInvoiceResponseDTO electricityInvoice) {
+    public void send(ElectricityInvoiceDTO electricityInvoice) {
         try {
             String key = String.format("invoice-%s", electricityInvoice.getSnowflakeId());
             String value = objectMapper.writeValueAsString(electricityInvoice);
