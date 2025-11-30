@@ -38,12 +38,11 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
 
         ElectricityInvoice electricityInvoice = constructNonPersistedElectricityInvoice(requestDTO);
 
-        electricityInvoice = save(electricityInvoice); // ? Do I need to do that reassignment
+        electricityInvoice = save(electricityInvoice);
 
         ElectricityInvoiceResponseDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(electricityInvoice);
 
-        log.info("Calling electricityInvoiceProducerService."); // ! move to a method
-        electricityInvoiceProducerService.send(electricityInvoiceResponseDTO);
+        publishElectricityInvoiceToKafka(electricityInvoiceResponseDTO);
 
         return electricityInvoiceResponseDTO;
     }
@@ -107,9 +106,14 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
                 .build();
     }
 
+    private void publishElectricityInvoiceToKafka(ElectricityInvoiceResponseDTO responseDTO) {
+        log.info("Publishing electricity invoice to Kafka: snowflakeId={}.", responseDTO.getSnowflakeId());
+        electricityInvoiceProducerService.send(responseDTO);
+    }
+
     @Override
     public ElectricityInvoice save(ElectricityInvoice electricityInvoice) {
-        log.info("===> Saving ElectricityInvoice with access point: {} to the Database", electricityInvoice.getAccessPoint());
+        log.info("===> Saving ElectricityInvoice with access point: {} to the Database.", electricityInvoice.getAccessPoint());
 
         return electricityInvoiceRepository.save(electricityInvoice);
     }
