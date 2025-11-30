@@ -28,19 +28,25 @@ public class ElectricityInvoice extends CommonEntity {
     private String invoiceNumber;
 
     @Column
+	private String iban;
+
+    @Column
     private LocalDate periodFrom;
 
     @Column
     private LocalDate periodTo;
 
     @Column(precision = 15, scale = 3)
-    private BigDecimal totalQuantity;
+    private BigDecimal quantity;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal singlePrice;
 
     @Column(precision = 15, scale = 2)
-    private BigDecimal totalSum;
+    private BigDecimal totalSumWithoutVAT;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal VAT;
 
     @ManyToOne
     private LoiDocumentType loiDocumentType;

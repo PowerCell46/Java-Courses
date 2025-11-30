@@ -1,7 +1,5 @@
 package com.example.ItCareerElevatorSecondExerciseProducer.entities;
 
-import cn.hutool.core.lang.Snowflake;
-import cn.hutool.core.util.IdUtil;
 import com.example.ItCareerElevatorSecondExerciseProducer.entities.listeners.CommonEntityListener;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
@@ -27,8 +25,6 @@ public class CommonEntity {
 
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
     private static final Base64.Decoder DECODER = Base64.getUrlDecoder();
-
-    private static final Snowflake SNOWFLAKE = IdUtil.getSnowflake(1, 1);
 
     public String getSnowflakeId() {
         if (id == null) {

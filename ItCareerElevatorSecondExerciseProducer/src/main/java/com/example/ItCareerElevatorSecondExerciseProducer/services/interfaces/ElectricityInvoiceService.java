@@ -1,0 +1,9 @@
+package com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces;
+
+import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.CreateElectricityInvoiceRequestDTO;
+import com.example.ItCareerElevatorSecondExerciseProducer.DTOs.ElectricityInvoiceResponseDTO;
+
+public interface ElectricityInvoiceService {
+
+    ElectricityInvoiceResponseDTO processElectricityInvoice(CreateElectricityInvoiceRequestDTO requestDTO);
+}
