@@ -1,5 +1,6 @@
-package com.example.ItCareerElevatorSecondExerciseProducer.entities;
+package com.example.ItCareerElevatorSecondExerciseProducer.entities.listeners;
 
+import com.example.ItCareerElevatorSecondExerciseProducer.entities.CommonEntity;
 import com.example.ItCareerElevatorSecondExerciseProducer.services.interfaces.SnowflakeIdGeneratorService;
 import jakarta.persistence.PrePersist;
 import lombok.RequiredArgsConstructor;

@@ -3,6 +3,7 @@ package com.example.ItCareerElevatorSecondExerciseProducer.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,5 +37,14 @@ public class ElectricityInvoice extends CommonEntity {
     private BigDecimal totalQuantity;
 
     @Column(precision = 15, scale = 2)
+    private BigDecimal singlePrice;
+
+    @Column(precision = 15, scale = 2)
     private BigDecimal totalSum;
+
+    @ManyToOne
+    private LoiDocumentType loiDocumentType;
+
+    @ManyToOne
+    private LoiMeasurementUnit loiMeasurementUnit;
 }
