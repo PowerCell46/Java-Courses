@@ -28,6 +28,8 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                 new BigDecimal("1245.128")
         );
 
-        electricityInvoiceRepository.save(electricityInvoice);
+        electricityInvoice = electricityInvoiceRepository.save(electricityInvoice);
+
+        System.out.println("SnowflakeId: " + electricityInvoice.getSnowflakeId());
     }
 }

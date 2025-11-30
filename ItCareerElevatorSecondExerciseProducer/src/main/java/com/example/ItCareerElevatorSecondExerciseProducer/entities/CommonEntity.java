@@ -2,20 +2,19 @@ package com.example.ItCareerElevatorSecondExerciseProducer.entities;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.util.Base64;
 
 @MappedSuperclass
+@EntityListeners(CommonEntityListener.class)
 @Getter
-@Setter
 @NoArgsConstructor
 @Slf4j
 public class CommonEntity {
@@ -35,13 +34,5 @@ public class CommonEntity {
 
         byte[] bytes = ByteBuffer.allocate(Long.BYTES).putLong(id).array();
         return ENCODER.encodeToString(bytes);
-    }
-
-    @PrePersist
-    protected void prePersist() {
-        if (this.id == null) {
-            this.id = SNOWFLAKE.nextId();
-            log.debug("Generated Snowflake id: {}", this.id);
-        }
     }
 }
