@@ -23,7 +23,6 @@ public class CreateElectricityInvoiceRequestDTO {
 
     @NotNull(message = "Access point is required.")
     @Pattern(regexp = "^BG\\d{8}$", message = "Access point must start with 'BG' followed by 8 digits.")
-    @Size(max = 10, min = 10, message = "Access point must be 10 characters long.")
     private String accessPoint;
 
     @JsonProperty("email")
@@ -33,8 +32,7 @@ public class CreateElectricityInvoiceRequestDTO {
     private String recipientEmail;
 
     @NotNull(message = "Iban is required.")
-    @Size(max = 22, min = 22, message = "IBAN must be 22 characters long.")
-    @Pattern(regexp = "^BG[0-9A-Za-z]{20}$", message = "IBAN must start with 'BG' and contain only letters and digits.")
+    @Pattern(regexp = "^BG[0-9A-Za-z]{20}$", message = "IBAN must start with 'BG' followed by 18 letters and digits.")
     private String iban;
 
     @JsonFormat(pattern = "dd.MM.yyyy")
