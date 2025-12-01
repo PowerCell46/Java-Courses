@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -39,17 +39,17 @@ public class CreateElectricityInvoiceRequestDTO {
 
     @JsonFormat(pattern = "dd.MM.yyyy")
     @NotNull(message = "Tax event date is required.")
-    @Future(message = "Tax event date must be in the future.")
+    @PastOrPresent(message = "Period to cannot be in the future.")
     private LocalDate taxEventDate;
 
     @JsonFormat(pattern = "dd.MM.yyyy")
     @NotNull(message = "Period from is required.")
-    @Future(message = "Period from must be in the future.")
+    @PastOrPresent(message = "Period to cannot be in the future.")
     private LocalDate periodFrom;
 
     @JsonFormat(pattern = "dd.MM.yyyy")
     @NotNull(message = "Period to is required.")
-    @Future(message = "Period to must be in the future.")
+    @PastOrPresent(message = "Period to cannot be in the future.")
     private LocalDate periodTo;
 
     @NotNull(message = "Quantity is required.")

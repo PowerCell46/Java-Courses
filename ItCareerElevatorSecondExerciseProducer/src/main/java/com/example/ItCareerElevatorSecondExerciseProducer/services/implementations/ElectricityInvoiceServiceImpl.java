@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -32,6 +33,8 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     private final LoiMeasurementUnitService loiMeasurementUnitService;
 
     private static final BigDecimal VAT_VALUE = BigDecimal.valueOf(0.2);
+    private static final int QUANTITY_SCALE = 3;
+    private static final int PRICE_SCALE = 2;
 
     @Override
     public ElectricityInvoiceDTO processElectricityInvoice(CreateElectricityInvoiceRequestDTO requestDTO) {
@@ -84,10 +87,10 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
                 .taxEventDate(requestDTO.getTaxEventDate())
                 .periodFrom(requestDTO.getPeriodFrom())
                 .periodTo(requestDTO.getPeriodTo())
-                .quantity(requestDTO.getQuantity())
-                .singlePrice(requestDTO.getSinglePrice())
-                .totalSumWithoutVAT(totalSumWithoutVAT)
-                .VAT(VAT)
+                .quantity(requestDTO.getQuantity().setScale(QUANTITY_SCALE, RoundingMode.HALF_UP))
+                .singlePrice(requestDTO.getSinglePrice().setScale(PRICE_SCALE, RoundingMode.HALF_UP))
+                .totalSumWithoutVAT(totalSumWithoutVAT.setScale(PRICE_SCALE, RoundingMode.HALF_UP))
+                .VAT(VAT.setScale(PRICE_SCALE, RoundingMode.HALF_UP))
                 .loiDocumentType(loiDocumentType)
                 .loiMeasurementUnit(loiMeasurementUnit)
                 .build();
