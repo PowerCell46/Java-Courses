@@ -17,7 +17,7 @@ public class HtmlUtils {
 
     public static InputStream fillHtmlTemplate(String[] fillData, String htmlTemplateFilePath) throws IOException {
         int currentIndex = -1; // Using pre-incrementation: start from -1
-        StringBuilder resultHtml = new StringBuilder();
+        StringBuilder resultHtmlBuilder = new StringBuilder();
 
         try (
                 BufferedReader reader = new BufferedReader(
@@ -27,22 +27,22 @@ public class HtmlUtils {
                         )
                 )
         ) {
-            String line;
+            String currentLine;
 
-            while ((line = reader.readLine()) != null) {
-                StringBuilder lineBuilder = new StringBuilder(line);
+            while ((currentLine = reader.readLine()) != null) {
+                StringBuilder currentLineBuilder = new StringBuilder(currentLine);
 
                 int index;
-                while ((index = lineBuilder.indexOf(HTML_REPLACE_SYMBOL)) != -1)
-                    lineBuilder.replace(index, index + HTML_REPLACE_SYMBOL.length(), fillData[++currentIndex]);
+                while ((index = currentLineBuilder.indexOf(HTML_REPLACE_SYMBOL)) != -1)
+                    currentLineBuilder.replace(index, index + HTML_REPLACE_SYMBOL.length(), fillData[++currentIndex]);
 
-                resultHtml.append(lineBuilder).append(System.lineSeparator());
+                resultHtmlBuilder.append(currentLineBuilder).append(System.lineSeparator());
             }
         }
 
         if (currentIndex < (fillData.length - 1)) // Replace elements are less than the number of parameters
             throw new ArrayIndexOutOfBoundsException();
 
-        return new ByteArrayInputStream(resultHtml.toString().getBytes(StandardCharsets.UTF_8));
+        return new ByteArrayInputStream(resultHtmlBuilder.toString().getBytes(StandardCharsets.UTF_8));
     }
 }

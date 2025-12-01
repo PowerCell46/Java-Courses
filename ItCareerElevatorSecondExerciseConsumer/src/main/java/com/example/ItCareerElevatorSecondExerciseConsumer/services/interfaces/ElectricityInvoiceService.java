@@ -4,5 +4,5 @@ import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoic
 
 public interface ElectricityInvoiceService {
 
-    void sendInvoice(ElectricityInvoiceDTO electricityInvoiceDTO);
+    void sendPdfInvoiceThroughEmail(ElectricityInvoiceDTO electricityInvoiceDTO);
 }

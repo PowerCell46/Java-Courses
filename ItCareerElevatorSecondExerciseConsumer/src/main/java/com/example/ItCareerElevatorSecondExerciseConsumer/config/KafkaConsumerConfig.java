@@ -23,7 +23,7 @@ public class KafkaConsumerConfig {
         Map<String, Object> properties = new HashMap<>();
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "pdf-mailer-consumer"); // ? What
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, "pdf-mailer-consumer"); // Any consumer instance that runs with this specific groupId will be considered part of the PDF Mailer application
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         JacksonJsonDeserializer<ElectricityInvoiceDTO> jsonDeserializer = new JacksonJsonDeserializer<>(ElectricityInvoiceDTO.class);

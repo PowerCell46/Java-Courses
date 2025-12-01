@@ -1,6 +1,7 @@
 package com.example.ItCareerElevatorSecondExerciseConsumer.services.implementations;
 
 import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoiceDTO;
+import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.DatabaseFileService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.ElectricityInvoiceService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.EmailService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.utils.FillHtmlTemplate;
@@ -23,18 +24,30 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     @Value("${config.invoice.template}")
     private String htmlTemplateFilePath;
 
+    private final DatabaseFileService databaseService;
     private final EmailService emailService;
 
     @Override
-    public void sendInvoice(ElectricityInvoiceDTO electricityInvoiceDTO) {
+    public void sendPdfInvoiceThroughEmail(ElectricityInvoiceDTO electricityInvoiceDTO) {
         byte[] pdfByteArray = createPdfInvoiceByteArray(electricityInvoiceDTO);
 
-        log.info("Sending the PDF document by email.");
+        databaseService.savePdf(electricityInvoiceDTO.getSnowflakeId(), pdfByteArray);
+
+        log.info("Sending the PDF document to the User through email.");
 
         emailService.sendInvoiceEmail(
                 electricityInvoiceDTO.getRecipientEmail(),
-                "PDF electricity invoice",
-                "You are receiving a PDF invoice for the Electricity invoice that you previously created.",
+                "Electricity invoice #" + electricityInvoiceDTO.getInvoiceNumber(),
+                """
+                        Dear customer,
+
+                        Your electricity invoice #%s is attached as a PDF document.
+                        Please review it at your convenience. If you have any questions,
+                        reply to this email.
+
+                        Best regards,
+                        Your Electricity Provider
+                        """.formatted(electricityInvoiceDTO.getInvoiceNumber()),
                 pdfByteArray
         );
     }
@@ -45,7 +58,6 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
         String[] fillData = fillHtmlTemplate.getData();
 
         try {
-            System.out.println("INPUT_HTML_FILE_PATH: " + htmlTemplateFilePath);
             InputStream htmlInputStream = fillHtmlTemplate(fillData, htmlTemplateFilePath);
 
             return convertHtmlInputStreamToPdfByteArray(htmlInputStream);

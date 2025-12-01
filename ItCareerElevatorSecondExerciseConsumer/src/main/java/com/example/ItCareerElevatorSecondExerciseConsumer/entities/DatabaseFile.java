@@ -1,10 +1,11 @@
-package com.example.ItCareerElevatorSecondExerciseProducer.entities;
+package com.example.ItCareerElevatorSecondExerciseConsumer.entities;
 
-import com.example.ItCareerElevatorSecondExerciseProducer.entities.listeners.CommonEntityListener;
-import com.example.ItCareerElevatorSecondExerciseProducer.exceptions.InvalidSnowflakeIdException;
-import jakarta.persistence.EntityListeners;
+import com.example.ItCareerElevatorSecondExerciseConsumer.exceptions.InvalidSnowflakeIdException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,16 +14,23 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.ByteBuffer;
 import java.util.Base64;
 
-@MappedSuperclass
-@EntityListeners(CommonEntityListener.class)
+@Entity
+@Table(name = "database_files")
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
-public class CommonEntity {
+public class DatabaseFile {
 
     @Id
     private Long id;
+
+    @Column
+    private byte[] content;
+
+    @Column
+    private String contentType;
 
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
     private static final Base64.Decoder DECODER = Base64.getUrlDecoder();

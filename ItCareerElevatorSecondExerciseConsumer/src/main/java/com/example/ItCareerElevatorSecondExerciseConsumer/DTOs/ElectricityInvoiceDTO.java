@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@ToString // * FOR TEST
+@ToString
 @Builder
 @AllArgsConstructor
 public class ElectricityInvoiceDTO {
@@ -52,3 +52,5 @@ public class ElectricityInvoiceDTO {
 
     private String loiMeasurementUnitName;
 }
+
+// TODO: Do i need to validate the upcoming data?

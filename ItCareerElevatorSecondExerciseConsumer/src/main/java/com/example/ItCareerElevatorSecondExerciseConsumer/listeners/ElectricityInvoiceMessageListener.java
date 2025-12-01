@@ -3,10 +3,12 @@ package com.example.ItCareerElevatorSecondExerciseConsumer.listeners;
 import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoiceDTO;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.ElectricityInvoiceService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class ElectricityInvoiceMessageListener {
 
@@ -18,14 +20,14 @@ public class ElectricityInvoiceMessageListener {
             containerFactory = "invoiceKafkaListenerContainerFactory"
     )
     public void handleElectricityInvoiceMessage(ElectricityInvoiceDTO electricityInvoiceDTO) {
+        log.info("--- Handling message in the 'electricityInvoice' topic.");
+
         if (electricityInvoiceDTO == null || electricityInvoiceDTO.getSnowflakeId() == null) {
-            // TODO: log or throw error
+            log.error("Invalid ElectricityInvoiceDTO: {}", electricityInvoiceDTO);
             return;
         }
-        // TODO: Do i need to validate the upcoming data?
 
-        System.out.println(electricityInvoiceDTO);
-
-        electricityInvoiceService.sendInvoice(electricityInvoiceDTO);
+        log.info("Received data: {}", electricityInvoiceDTO);
+        electricityInvoiceService.sendPdfInvoiceThroughEmail(electricityInvoiceDTO);
     }
 }
