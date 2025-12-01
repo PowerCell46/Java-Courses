@@ -147,6 +147,7 @@ public class FillHtmlTemplate {
             resultList.add(this.invoiceNUmber); // Фактура Номер
             resultList.add(this.generationDateName); // Generation Date
             resultList.add(this.taxEventDateName); // Tax Event Date
+            resultList.add(""); // Relationship to invoice
             resultList.add("Петър Герджиков"); // Legal Person Name
             resultList.add("Бул. Христо Ботев"); // Legal Person Address
             resultList.add("0338135678"); // Идентификационен № | ЕИК
