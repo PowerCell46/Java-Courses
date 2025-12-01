@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 public class CurrencyUtils {
 
-    public static String convertNumbersToBgnCurrency(int number) {
+    public static String convertNumberToBulgarianWords(int number) {
         String[] units = {
                 "нула", "един", "два", "три", "четири", "пет", "шест",
                 "седем", "осем", "девет", "десет", "единадесет", "дванадесет"
@@ -41,7 +41,7 @@ public class CurrencyUtils {
         if (number > 19 && number < 100) {
             String temp = units[division_10] + "десет";
             if (modularDivision_10 != 0)
-                temp += " и " + convertNumbersToBgnCurrency(modularDivision_10);
+                temp += " и " + convertNumberToBulgarianWords(modularDivision_10);
 
             return temp;
         }
@@ -53,13 +53,13 @@ public class CurrencyUtils {
                 temp += " и";
 
             if (modularDivision_100 != 0)
-                temp += " " + convertNumbersToBgnCurrency(modularDivision_100);
+                temp += " " + convertNumberToBulgarianWords(modularDivision_100);
 
             return temp;
         }
 
         if (number > 999 && number < 1_000_000) {
-            String temp = (division_1_000 == 1) ? "хиляда" : ((division_1_000 == 2) ? "две хиляди" : convertNumbersToBgnCurrency(division_1_000) + " хиляди");
+            String temp = (division_1_000 == 1) ? "хиляда" : ((division_1_000 == 2) ? "две хиляди" : convertNumberToBulgarianWords(division_1_000) + " хиляди");
 
             if ((modular_division_1_000 % 10 == 0 || modular_division_1_000 < 20) && modular_division_1_000 != 0) {
                 if (!((modularDivision_100 % 10 == 0 || modularDivision_100 < 20) && modularDivision_100 != 0))
@@ -70,13 +70,13 @@ public class CurrencyUtils {
                 temp += " и";
 
             if (modular_division_1_000 != 0)
-                temp += " " + convertNumbersToBgnCurrency(modular_division_1_000);
+                temp += " " + convertNumberToBulgarianWords(modular_division_1_000);
 
             return temp;
         }
 
         if (number > 999_999 && number < 1_000_000_000) {
-            String tmp = (division_1_000_000 == 1) ? "един милион" : convertNumbersToBgnCurrency(division_1_000_000) + " милиона";
+            String tmp = (division_1_000_000 == 1) ? "един милион" : convertNumberToBulgarianWords(division_1_000_000) + " милиона";
 
             if ((modular_division_1_000_000 % 10 == 0 || modular_division_1_000_000 < 20) && modular_division_1_000_000 != 0) {
                 if (!((modular_division_1_000 % 10 == 0 || modular_division_1_000 < 20) && modular_division_1_000 != 0)) {
@@ -93,7 +93,7 @@ public class CurrencyUtils {
             }
 
             if (modular_division_1_000_000 != 0)
-                tmp += " " + convertNumbersToBgnCurrency(modular_division_1_000_000);
+                tmp += " " + convertNumberToBulgarianWords(modular_division_1_000_000);
 
             return tmp;
         }
@@ -104,7 +104,7 @@ public class CurrencyUtils {
             tmp = (division_1_000_000_000 == 2) ? "два милиарда" : tmp;
 
             if (modular_division_1_000_000_000 != 0)
-                tmp += " " + convertNumbersToBgnCurrency(modular_division_1_000_000_000);
+                tmp += " " + convertNumberToBulgarianWords(modular_division_1_000_000_000);
 
             return tmp;
         }

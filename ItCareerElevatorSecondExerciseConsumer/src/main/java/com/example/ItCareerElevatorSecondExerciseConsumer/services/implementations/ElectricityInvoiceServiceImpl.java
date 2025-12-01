@@ -29,6 +29,8 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
 
     @Override
     public void sendPdfInvoiceThroughEmail(ElectricityInvoiceDTO electricityInvoiceDTO) {
+        log.info("Starting the generation process of the PDF.");
+
         byte[] pdfByteArray = createPdfInvoiceByteArray(electricityInvoiceDTO);
 
         databaseService.savePdf(electricityInvoiceDTO.getSnowflakeId(), pdfByteArray);

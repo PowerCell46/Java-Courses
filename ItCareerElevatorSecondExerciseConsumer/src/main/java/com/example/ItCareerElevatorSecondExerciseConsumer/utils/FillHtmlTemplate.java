@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.ItCareerElevatorSecondExerciseConsumer.utils.CurrencyUtils.convertNumbersToBgnCurrency;
+import static com.example.ItCareerElevatorSecondExerciseConsumer.utils.CurrencyUtils.convertNumberToBulgarianWords;
 
 public class FillHtmlTemplate {
 
@@ -82,25 +82,37 @@ public class FillHtmlTemplate {
 
         this.vatAmountInLevsName = formatBigDecimalWithScale(convertEuroToLev(electricityInvoiceDTO.getVAT()), 2);
 
-        this.totalAmountInEurosWithVatName = formatBigDecimalWithScale(calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getTotalSumWithoutVAT()), 2);
-
-        this.totalAmountInLevsWithVatName = formatBigDecimalWithScale(calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT())), 2);
-
-        this.paymentAmountInEurosName = convertNumbersToBgnCurrency(
-                calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getTotalSumWithoutVAT())
-                        .setScale(2, RoundingMode.HALF_UP)
-                        .remainder(BigDecimal.ONE)
-                        .multiply(BigDecimal.valueOf(100))
-                        .intValue()
+        this.totalAmountInEurosWithVatName = formatBigDecimalWithScale(
+                calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT()), 2
         );
 
-        this.paymentAmountInLevsName = convertNumbersToBgnCurrency(
-                calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()))
-                        .setScale(2, RoundingMode.HALF_UP)
-                        .remainder(BigDecimal.ONE)
-                        .multiply(BigDecimal.valueOf(100))
-                        .intValue()
+        this.totalAmountInLevsWithVatName = formatBigDecimalWithScale(
+                calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT())), 2
         );
+
+        this.paymentAmountInEurosName =
+                String.format(
+                        "%s евро, %d цента",
+                        convertNumberToBulgarianWords(calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT())
+                                .intValue()),
+                        calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT())
+                                .setScale(2, RoundingMode.HALF_UP)
+                                .remainder(BigDecimal.ONE)
+                                .multiply(BigDecimal.valueOf(100))
+                                .intValue()
+                );
+
+        this.paymentAmountInLevsName =
+                String.format(
+                        "%s лева, %d стотинки",
+                        convertNumberToBulgarianWords(calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()))
+                                .intValue()),
+                        calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()))
+                                .setScale(2, RoundingMode.HALF_UP)
+                                .remainder(BigDecimal.ONE)
+                                .multiply(BigDecimal.valueOf(100))
+                                .intValue()
+                );
     }
 
     private static String formatBigDecimalWithScale(BigDecimal value, int scale) {
