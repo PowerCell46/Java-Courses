@@ -1,4 +1,4 @@
-package com.example.ItCareerElevatorSecondExerciseConsumer;
+package com.example.ItCareerElevatorSecondExerciseConsumer.listeners;
 
 import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoiceDTO;
 import lombok.RequiredArgsConstructor;

@@ -83,6 +83,12 @@
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>4.0.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.itextpdf/html2pdf -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>html2pdf</artifactId>
+            <version>6.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>
