@@ -41,7 +41,10 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
 
         electricityInvoice = save(electricityInvoice);
 
-        ElectricityInvoiceDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(electricityInvoice, requestDTO.getRecipientEmail());
+        ElectricityInvoiceDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(
+                electricityInvoice,
+                requestDTO.getRecipientEmail()
+        );
 
         publishElectricityInvoiceToKafka(electricityInvoiceResponseDTO);
 

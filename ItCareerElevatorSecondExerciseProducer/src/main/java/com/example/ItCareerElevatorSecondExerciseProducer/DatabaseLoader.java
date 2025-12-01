@@ -31,9 +31,9 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private void seedLoiDocumentTypes() {
         if (loiDocumentTypeRepository.findAll().isEmpty()) {
-            LoiDocumentType invoice = new LoiDocumentType("Invoice", LoiDocumentType.INVOICE);
-            LoiDocumentType debitNote = new LoiDocumentType("Debit Note", LoiDocumentType.DEBIT_NOTE);
-            LoiDocumentType creditNote = new LoiDocumentType("Credit Note", LoiDocumentType.CREDIT_NOTE);
+            LoiDocumentType invoice = new LoiDocumentType("Фактура", LoiDocumentType.INVOICE);
+            LoiDocumentType debitNote = new LoiDocumentType("Дебитно известие", LoiDocumentType.DEBIT_NOTE);
+            LoiDocumentType creditNote = new LoiDocumentType("Кредитно известие", LoiDocumentType.CREDIT_NOTE);
 
             loiDocumentTypeRepository.saveAll(List.of(invoice, debitNote, creditNote));
             log.debug("Seeded LoiDocumentType entries.");
