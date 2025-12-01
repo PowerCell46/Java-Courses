@@ -19,6 +19,7 @@ public class ElectricityInvoiceMessageListener {
             // TODO: log or throw error
             return;
         }
+        // TODO: Do i need to validate the upcoming data?
 
         System.out.println(electricityInvoiceDTO);
     }

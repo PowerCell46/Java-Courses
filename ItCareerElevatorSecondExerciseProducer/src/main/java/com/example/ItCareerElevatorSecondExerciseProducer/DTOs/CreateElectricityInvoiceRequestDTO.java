@@ -17,6 +17,10 @@ public class CreateElectricityInvoiceRequestDTO {
 
     private String iban;
 
+    // TODO: recipientEmail
+
+    // TODO: taxEventDate
+
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate periodFrom;
 

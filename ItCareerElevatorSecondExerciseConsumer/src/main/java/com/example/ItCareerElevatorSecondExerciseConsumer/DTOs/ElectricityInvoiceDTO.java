@@ -21,11 +21,17 @@ public class ElectricityInvoiceDTO {
     @JsonProperty("id")
     private String snowflakeId;
 
+    @JsonProperty("email")
+    private String emailRecipient;
+
     private String accessPoint;
 
     private String invoiceNumber;
 
     private String iban;
+
+    @JsonFormat(pattern = "dd.MM.yyyy")
+    private LocalDate taxEventDate;
 
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate periodFrom;

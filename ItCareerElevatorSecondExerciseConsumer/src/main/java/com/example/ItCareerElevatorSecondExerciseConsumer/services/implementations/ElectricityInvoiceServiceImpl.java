@@ -2,6 +2,7 @@ package com.example.ItCareerElevatorSecondExerciseConsumer.services.implementati
 
 import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoiceDTO;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.ElectricityInvoiceService;
+import com.example.ItCareerElevatorSecondExerciseConsumer.utils.FillHtmlTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,7 +22,9 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     }
 
     private byte[] createPdfInvoiceByteArray(ElectricityInvoiceDTO electricityInvoiceDTO) {
-        String[] fillData = new String[10];
+        FillHtmlTemplate fillHtmlTemplate = new FillHtmlTemplate(electricityInvoiceDTO);
+
+        String[] fillData = fillHtmlTemplate.getData();
 
         try {
             InputStream htmlInputStream = fillHtmlTemplate(fillData);
@@ -29,6 +32,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
             return convertHtmlInputStreamToPdfByteArray(htmlInputStream);
 
         } catch (IOException e) {
+            // TODO: Throw custom exception
             throw new RuntimeException(e);
         }
     }
