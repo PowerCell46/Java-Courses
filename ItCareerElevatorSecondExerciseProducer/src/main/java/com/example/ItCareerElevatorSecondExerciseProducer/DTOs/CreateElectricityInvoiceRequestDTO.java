@@ -1,6 +1,7 @@
 package com.example.ItCareerElevatorSecondExerciseProducer.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,11 +16,13 @@ public class CreateElectricityInvoiceRequestDTO {
 
     private String accessPoint;
 
+    @JsonProperty("email")
+    private String recipientEmail;
+
     private String iban;
 
-    // TODO: recipientEmail
-
-    // TODO: taxEventDate
+    @JsonFormat(pattern = "dd.MM.yyyy")
+    private LocalDate taxEventDate;
 
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate periodFrom;

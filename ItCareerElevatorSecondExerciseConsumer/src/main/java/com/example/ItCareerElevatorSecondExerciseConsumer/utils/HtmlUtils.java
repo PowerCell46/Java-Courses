@@ -13,19 +13,16 @@ import java.nio.file.Paths;
 
 public class HtmlUtils {
 
-    @Value("${config.invoice.template}")
-    private static String INPUT_HTML_FILE_PATH;
-
     private static final String HTML_REPLACE_SYMBOL = "※"; // Rare unicode char: avoid collisions and ensure cross-platform safety
 
-    public static InputStream fillHtmlTemplate(String[] fillData) throws IOException {
+    public static InputStream fillHtmlTemplate(String[] fillData, String htmlTemplateFilePath) throws IOException {
         int currentIndex = -1; // Using pre-incrementation: start from -1
         StringBuilder resultHtml = new StringBuilder();
 
         try (
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(
-                                Files.newInputStream(Paths.get(INPUT_HTML_FILE_PATH)),
+                                Files.newInputStream(Paths.get(htmlTemplateFilePath)),
                                 StandardCharsets.UTF_8
                         )
                 )

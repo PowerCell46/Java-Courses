@@ -41,7 +41,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
 
         electricityInvoice = save(electricityInvoice);
 
-        ElectricityInvoiceDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(electricityInvoice);
+        ElectricityInvoiceDTO electricityInvoiceResponseDTO = constructElectricityInvoiceResponseDTO(electricityInvoice, requestDTO.getRecipientEmail());
 
         publishElectricityInvoiceToKafka(electricityInvoiceResponseDTO);
 
@@ -78,6 +78,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
                 .accessPoint(requestDTO.getAccessPoint())
                 .invoiceNumber(generateInvoiceNumber())
                 .iban(requestDTO.getIban())
+                .taxEventDate(requestDTO.getTaxEventDate())
                 .periodFrom(requestDTO.getPeriodFrom())
                 .periodTo(requestDTO.getPeriodTo())
                 .quantity(requestDTO.getQuantity())
@@ -89,13 +90,15 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
                 .build();
     }
 
-    private ElectricityInvoiceDTO constructElectricityInvoiceResponseDTO(ElectricityInvoice electricityInvoice) {
+    private ElectricityInvoiceDTO constructElectricityInvoiceResponseDTO(ElectricityInvoice electricityInvoice, String recipientEmail) {
         return ElectricityInvoiceDTO
                 .builder()
                 .snowflakeId(electricityInvoice.getSnowflakeId())
+                .email(recipientEmail)
                 .accessPoint(electricityInvoice.getAccessPoint())
                 .invoiceNumber(electricityInvoice.getInvoiceNumber())
                 .iban(electricityInvoice.getIban())
+                .taxEventDate(electricityInvoice.getTaxEventDate())
                 .periodFrom(electricityInvoice.getPeriodFrom())
                 .periodTo(electricityInvoice.getPeriodTo())
                 .quantity(electricityInvoice.getQuantity())

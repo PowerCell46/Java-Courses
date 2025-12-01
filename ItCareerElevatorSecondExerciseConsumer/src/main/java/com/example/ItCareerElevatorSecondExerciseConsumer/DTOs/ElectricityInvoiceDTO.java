@@ -22,7 +22,7 @@ public class ElectricityInvoiceDTO {
     private String snowflakeId;
 
     @JsonProperty("email")
-    private String emailRecipient;
+    private String recipientEmail;
 
     private String accessPoint;
 
@@ -45,10 +45,10 @@ public class ElectricityInvoiceDTO {
 
     private BigDecimal totalSumWithoutVAT;
 
+    @JsonProperty("VAT")
     private BigDecimal VAT;
 
     private String loiDocumentTypeName;
 
     private String loiMeasurementUnitName;
 }
-

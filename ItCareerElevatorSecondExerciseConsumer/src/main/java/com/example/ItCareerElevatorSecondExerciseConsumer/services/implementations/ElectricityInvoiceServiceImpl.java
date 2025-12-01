@@ -2,7 +2,11 @@ package com.example.ItCareerElevatorSecondExerciseConsumer.services.implementati
 
 import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoiceDTO;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.ElectricityInvoiceService;
+import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.EmailService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.utils.FillHtmlTemplate;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -12,13 +16,27 @@ import static com.example.ItCareerElevatorSecondExerciseConsumer.utils.HtmlUtils
 import static com.example.ItCareerElevatorSecondExerciseConsumer.utils.PdfUtils.convertHtmlInputStreamToPdfByteArray;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService {
+
+    @Value("${config.invoice.template}")
+    private String htmlTemplateFilePath;
+
+    private final EmailService emailService;
 
     @Override
     public void sendInvoice(ElectricityInvoiceDTO electricityInvoiceDTO) {
         byte[] pdfByteArray = createPdfInvoiceByteArray(electricityInvoiceDTO);
 
-        // TODO: Send logic...
+        log.info("Sending the PDF document by email.");
+
+        emailService.sendInvoiceEmail(
+                electricityInvoiceDTO.getRecipientEmail(),
+                "PDF electricity invoice",
+                "You are receiving a PDF invoice for the Electricity invoice that you previously created.",
+                pdfByteArray
+        );
     }
 
     private byte[] createPdfInvoiceByteArray(ElectricityInvoiceDTO electricityInvoiceDTO) {
@@ -27,7 +45,8 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
         String[] fillData = fillHtmlTemplate.getData();
 
         try {
-            InputStream htmlInputStream = fillHtmlTemplate(fillData);
+            System.out.println("INPUT_HTML_FILE_PATH: " + htmlTemplateFilePath);
+            InputStream htmlInputStream = fillHtmlTemplate(fillData, htmlTemplateFilePath);
 
             return convertHtmlInputStreamToPdfByteArray(htmlInputStream);
 

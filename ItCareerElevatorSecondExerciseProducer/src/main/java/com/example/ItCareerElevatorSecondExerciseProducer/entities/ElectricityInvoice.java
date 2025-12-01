@@ -33,6 +33,9 @@ public class ElectricityInvoice extends CommonEntity {
 	private String iban;
 
     @Column
+    private LocalDate taxEventDate;
+
+    @Column
     private LocalDate periodFrom;
 
     @Column

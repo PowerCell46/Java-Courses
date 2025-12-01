@@ -19,11 +19,16 @@ public class ElectricityInvoiceDTO {
     @JsonProperty("id")
     private String snowflakeId;
 
+    private String email;
+
     private String accessPoint;
 
     private String invoiceNumber;
 
     private String iban;
+
+    @JsonFormat(pattern = "dd.MM.yyyy")
+    private LocalDate taxEventDate;
 
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate periodFrom;
@@ -37,6 +42,7 @@ public class ElectricityInvoiceDTO {
 
     private BigDecimal totalSumWithoutVAT;
 
+    @JsonProperty("VAT")
     private BigDecimal VAT;
 
     private String loiDocumentTypeName;
