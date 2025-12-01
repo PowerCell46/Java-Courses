@@ -17,7 +17,6 @@ public class FillHtmlTemplate {
 
     private static final BigDecimal LEV_EURO_RATIO = BigDecimal.valueOf(1.95583);
 
-
     private final String documentTypeName;
 
     private final String invoiceNUmber;
@@ -54,14 +53,19 @@ public class FillHtmlTemplate {
 
     private final String paymentAmountInLevsName;
 
-
     public FillHtmlTemplate(ElectricityInvoiceDTO electricityInvoiceDTO) {
         this.documentTypeName = electricityInvoiceDTO.getLoiDocumentTypeName();
+
         this.invoiceNUmber = electricityInvoiceDTO.getInvoiceNumber();
+
         this.generationDateName = LocalDate.now().format(DateTimeFormatter.ofPattern(STANDARD_EUROPEAN_DATE_FORMAT));
+
         this.taxEventDateName = electricityInvoiceDTO.getTaxEventDate().format(DateTimeFormatter.ofPattern(STANDARD_EUROPEAN_DATE_FORMAT));
+
         this.periodFromName = electricityInvoiceDTO.getPeriodFrom().format(DateTimeFormatter.ofPattern(STANDARD_EUROPEAN_DATE_FORMAT));
+
         this.periodToName = electricityInvoiceDTO.getPeriodTo().format(DateTimeFormatter.ofPattern(STANDARD_EUROPEAN_DATE_FORMAT));
+
         this.measurementUnitName = electricityInvoiceDTO.getLoiMeasurementUnitName();
 
         this.totalQuantityName = formatBigDecimalWithScale(electricityInvoiceDTO.getQuantity(), 3);
@@ -78,20 +82,24 @@ public class FillHtmlTemplate {
 
         this.vatAmountInLevsName = formatBigDecimalWithScale(convertEuroToLev(electricityInvoiceDTO.getVAT()), 2);
 
-        this.totalAmountInEurosWithVatName = calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT());
+        this.totalAmountInEurosWithVatName = formatBigDecimalWithScale(calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getTotalSumWithoutVAT()), 2);
 
-        this.totalAmountInLevsWithVatName = calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()));
+        this.totalAmountInLevsWithVatName = formatBigDecimalWithScale(calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT())), 2);
 
         this.paymentAmountInEurosName = convertNumbersToBgnCurrency(
-                electricityInvoiceDTO.getTotalSumWithoutVAT().add(electricityInvoiceDTO.getVAT())
+                calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getTotalSumWithoutVAT())
                         .setScale(2, RoundingMode.HALF_UP)
-                        .remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(100)).intValue()
+                        .remainder(BigDecimal.ONE)
+                        .multiply(BigDecimal.valueOf(100))
+                        .intValue()
         );
 
         this.paymentAmountInLevsName = convertNumbersToBgnCurrency(
-                electricityInvoiceDTO.getTotalSumWithoutVAT().multiply(LEV_EURO_RATIO).add(electricityInvoiceDTO.getVAT().multiply(LEV_EURO_RATIO))
+                calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()))
                         .setScale(2, RoundingMode.HALF_UP)
-                        .remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(100)).intValue()
+                        .remainder(BigDecimal.ONE)
+                        .multiply(BigDecimal.valueOf(100))
+                        .intValue()
         );
     }
 
@@ -106,12 +114,8 @@ public class FillHtmlTemplate {
         return value.multiply(LEV_EURO_RATIO);
     }
 
-    private String calculateTotalAmount(BigDecimal totalSumWithoutVAT, BigDecimal VAT) {
-        return totalSumWithoutVAT
-                .add(VAT)
-                .setScale(2, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+    private BigDecimal calculateTotalAmount(BigDecimal totalSumWithoutVAT, BigDecimal VAT) {
+        return totalSumWithoutVAT.add(VAT);
     }
 
     public String[] getData() {
@@ -128,21 +132,21 @@ public class FillHtmlTemplate {
             resultList.add(this.generationDateName); // Generation Date
             resultList.add(this.taxEventDateName); // Tax Event Date
             resultList.add(""); // Relationship to invoice
-            resultList.add("Петър Герджиков"); // Legal Person Name
-            resultList.add("Бул. Христо Ботев"); // Legal Person Address
-            resultList.add("0338135678"); // Идентификационен № | ЕИК
-            resultList.add("BG352042342"); // Идентификационен № по ДДС
-            resultList.add("BGN4234234234"); // Банкова сметка
+            resultList.add("Електро Енерджи ООД"); // Legal Person Name
+            resultList.add("гр. София, бул. България 100"); // Legal Person Address
+            resultList.add("123456789"); // Идентификационен № | ЕИК
+            resultList.add("BG123456789"); // Идентификационен № по ДДС
+            resultList.add("BG12AAAA12341234123456"); // Банкова сметка
 
             // Получател
-            resultList.add("Получател 1"); // Получател име
-            resultList.add("Варна, ул. ..."); // Адрес на получателя
-            resultList.add("7138110618"); // Идентификационен Номер | ЕИК
-            resultList.add("BG35242342"); // Идентификационен № по ДДС
+            resultList.add("Клиент 1"); // Получател име
+            resultList.add("гр. Варна, ул. Морска 10"); // Адрес на получателя
+            resultList.add("987654321"); // Идентификационен Номер | ЕИК
+            resultList.add("BG987654321"); // Идентификационен № по ДДС
 
             // Таблица
-            resultList.add("Произведена енергия"); // Име на кода на услугата
-            resultList.add("Централа 1"); // Име на централата
+            resultList.add("Консумирана електроенергия"); // Име на кода на услугата
+            resultList.add("Фотоволтаична централа 1"); // Име на централата
             resultList.add(this.periodFromName); // Период от
             resultList.add(this.periodToName); // Период до
             resultList.add(this.measurementUnitName); // Loi Measurement Unit
