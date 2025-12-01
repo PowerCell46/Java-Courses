@@ -23,11 +23,11 @@ public class ElectricityInvoiceMessageListener {
         log.info("--- Handling message in the 'electricityInvoice' topic.");
 
         if (electricityInvoiceDTO == null || electricityInvoiceDTO.getSnowflakeId() == null) {
-            log.error("Invalid ElectricityInvoiceDTO: {}", electricityInvoiceDTO);
+            log.error("Invalid ElectricityInvoiceDTO: {}{}", System.lineSeparator(), electricityInvoiceDTO);
             return;
         }
 
-        log.info("Received data: {}", electricityInvoiceDTO);
+        log.info("Received data: {}{}", System.lineSeparator(), electricityInvoiceDTO);
         electricityInvoiceService.sendPdfInvoiceThroughEmail(electricityInvoiceDTO);
     }
 }

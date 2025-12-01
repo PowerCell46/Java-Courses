@@ -14,7 +14,6 @@ public class CurrencyUtils {
                 "", "сто", "двеста", "триста"
         };
 
-
         Function<Integer, Integer> divideBy = num -> number / num;
         Function<Integer, Integer> integerDivision = num -> number % num;
 
@@ -32,7 +31,6 @@ public class CurrencyUtils {
 
         int division_1_000_000_000 = divideBy.apply(1_000_000_000);
         int modular_division_1_000_000_000 = integerDivision.apply(1_000_000_000);
-
 
         if (number == 0)
             return units[0];

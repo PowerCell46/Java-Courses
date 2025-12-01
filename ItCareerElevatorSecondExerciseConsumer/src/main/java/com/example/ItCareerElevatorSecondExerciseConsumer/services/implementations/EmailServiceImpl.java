@@ -27,7 +27,11 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(body, false);
 
             ByteArrayResource pdfResource = new ByteArrayResource(pdfBytes);
-            helper.addAttachment("electricity-invoice.pdf", pdfResource, "application/pdf");
+            helper.addAttachment(
+                    "electricity-invoice.pdf",
+                    pdfResource,
+                    "application/pdf"
+            );
 
             mailSender.send(message);
 

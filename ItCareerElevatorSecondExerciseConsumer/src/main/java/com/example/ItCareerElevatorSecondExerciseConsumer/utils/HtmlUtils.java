@@ -1,7 +1,5 @@
 package com.example.ItCareerElevatorSecondExerciseConsumer.utils;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

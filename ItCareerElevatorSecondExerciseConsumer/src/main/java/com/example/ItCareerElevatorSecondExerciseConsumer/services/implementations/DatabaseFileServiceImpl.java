@@ -16,13 +16,16 @@ public class DatabaseFileServiceImpl implements DatabaseFileService {
 
     @Override
     public DatabaseFile savePdf(String snowflakeId, byte[] pdfByteArray) {
+        Long referenceEntityId = DatabaseFile.convertSnowflakeIdToId(snowflakeId);
+        final String CONTENT_TYPE = "application/pdf";
+
         DatabaseFile dbFile = new DatabaseFile(
-                DatabaseFile.convertSnowflakeIdToId(snowflakeId),
+                referenceEntityId,
                 pdfByteArray,
-                "application/pdf"
+                CONTENT_TYPE
         );
 
-        log.info("Saving PDF document, generated for: {}.", snowflakeId);
+        log.info("Saving PDF document, generated for entity with id: {}.", referenceEntityId);
 
         return databaseFileRepository.save(dbFile);
     }

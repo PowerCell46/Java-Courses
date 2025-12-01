@@ -18,41 +18,41 @@ public class FillHtmlTemplate {
     private static final BigDecimal LEV_EURO_RATIO = BigDecimal.valueOf(1.95583);
 
 
-    private String documentTypeName;
+    private final String documentTypeName;
 
-    private String invoiceNUmber;
+    private final String invoiceNUmber;
 
-    private String generationDateName;
+    private final String generationDateName;
 
-    private String taxEventDateName;
+    private final String taxEventDateName;
 
-    private String periodFromName;
+    private final String periodFromName;
 
-    private String periodToName;
+    private final String periodToName;
 
-    private String measurementUnitName;
+    private final String measurementUnitName;
 
-    private String totalQuantityName;
+    private final String totalQuantityName;
 
-    private String priceInLevsName;
+    private final String priceInLevsName;
 
-    private String priceInEurosName;
+    private final String priceInEurosName;
 
-    private String totalSumInLevsName;
+    private final String totalSumInLevsName;
 
-    private String totalSumInEurosName;
+    private final String totalSumInEurosName;
 
-    private String vatAmountInLevsName;
+    private final String vatAmountInLevsName;
 
-    private String vatAmountInEurosName;
+    private final String vatAmountInEurosName;
 
-    private String totalAmountInLevsWithVatName;
+    private final String totalAmountInLevsWithVatName;
 
-    private String totalAmountInEurosWithVatName;
+    private final String totalAmountInEurosWithVatName;
 
-    private String paymentAmountInEurosName;
+    private final String paymentAmountInEurosName;
 
-    private String paymentAmountInLevsName;
+    private final String paymentAmountInLevsName;
 
 
     public FillHtmlTemplate(ElectricityInvoiceDTO electricityInvoiceDTO) {
@@ -64,54 +64,23 @@ public class FillHtmlTemplate {
         this.periodToName = electricityInvoiceDTO.getPeriodTo().format(DateTimeFormatter.ofPattern(STANDARD_EUROPEAN_DATE_FORMAT));
         this.measurementUnitName = electricityInvoiceDTO.getLoiMeasurementUnitName();
 
-        this.totalQuantityName = electricityInvoiceDTO
-                .getQuantity()
-                .setScale(3, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+        this.totalQuantityName = formatBigDecimalWithScale(electricityInvoiceDTO.getQuantity(), 3);
 
-        this.priceInEurosName = electricityInvoiceDTO
-                .getSinglePrice()
-                .setScale(2, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+        this.priceInEurosName = formatBigDecimalWithScale(electricityInvoiceDTO.getSinglePrice(), 2);
 
-        this.priceInLevsName = electricityInvoiceDTO
-                .getSinglePrice()
-                .multiply(LEV_EURO_RATIO)
-                .setScale(2, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+        this.priceInLevsName = formatBigDecimalWithScale(convertEuroToLev(electricityInvoiceDTO.getSinglePrice()), 2);
 
-        this.totalSumInEurosName = electricityInvoiceDTO
-                .getTotalSumWithoutVAT()
-                .setScale(2, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+        this.totalSumInEurosName = formatBigDecimalWithScale(electricityInvoiceDTO.getTotalSumWithoutVAT(), 2);
 
-        this.totalSumInLevsName = electricityInvoiceDTO
-                .getTotalSumWithoutVAT()
-                .multiply(LEV_EURO_RATIO)
-                .setScale(2, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+        this.totalSumInLevsName = formatBigDecimalWithScale(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), 2);
 
-        this.vatAmountInEurosName = electricityInvoiceDTO
-                .getVAT()
-                .setScale(2, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+        this.vatAmountInEurosName = formatBigDecimalWithScale(electricityInvoiceDTO.getVAT(), 2);
 
-        this.vatAmountInLevsName = electricityInvoiceDTO
-                .getVAT()
-                .multiply(LEV_EURO_RATIO)
-                .setScale(2, RoundingMode.HALF_UP)
-                .toString()
-                .replace('.', ',');
+        this.vatAmountInLevsName = formatBigDecimalWithScale(convertEuroToLev(electricityInvoiceDTO.getVAT()), 2);
 
         this.totalAmountInEurosWithVatName = calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT());
 
-        this.totalAmountInLevsWithVatName = calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT().multiply(LEV_EURO_RATIO), electricityInvoiceDTO.getVAT().multiply(LEV_EURO_RATIO));
+        this.totalAmountInLevsWithVatName = calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()));
 
         this.paymentAmountInEurosName = convertNumbersToBgnCurrency(
                 electricityInvoiceDTO.getTotalSumWithoutVAT().add(electricityInvoiceDTO.getVAT())
@@ -124,6 +93,17 @@ public class FillHtmlTemplate {
                         .setScale(2, RoundingMode.HALF_UP)
                         .remainder(BigDecimal.ONE).multiply(BigDecimal.valueOf(100)).intValue()
         );
+    }
+
+    private static String formatBigDecimalWithScale(BigDecimal value, int scale) {
+        return value
+                .setScale(scale, RoundingMode.HALF_UP)
+                .toString()
+                .replace('.', ',');
+    }
+
+    private static BigDecimal convertEuroToLev(BigDecimal value) {
+        return value.multiply(LEV_EURO_RATIO);
     }
 
     private String calculateTotalAmount(BigDecimal totalSumWithoutVAT, BigDecimal VAT) {
