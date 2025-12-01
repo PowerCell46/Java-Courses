@@ -42,8 +42,8 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private void seedLoiMeasurementUnits() {
         if (loiMeasurementUnitRepository.findAll().isEmpty()) {
-            LoiMeasurementUnit Mwh = new LoiMeasurementUnit("Invoice", LoiMeasurementUnit.MWh);
-            LoiMeasurementUnit KWh = new LoiMeasurementUnit("Debit Note", LoiMeasurementUnit.KWh);
+            LoiMeasurementUnit Mwh = new LoiMeasurementUnit("MWh", LoiMeasurementUnit.MWh);
+            LoiMeasurementUnit KWh = new LoiMeasurementUnit("KWh", LoiMeasurementUnit.KWh);
 
             loiMeasurementUnitRepository.saveAll(List.of(Mwh, KWh));
             log.debug("Seeded LoiMeasurementUnit entries.");

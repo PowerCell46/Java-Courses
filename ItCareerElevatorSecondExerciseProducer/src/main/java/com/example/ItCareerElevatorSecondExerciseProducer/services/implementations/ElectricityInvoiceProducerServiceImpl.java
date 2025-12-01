@@ -43,6 +43,7 @@ public class ElectricityInvoiceProducerServiceImpl implements ElectricityInvoice
 
         } catch (JsonProcessingException ex) {
             log.error("Failed to serialize ElectricityInvoice to JSON", ex);
+            // TODO: Return smth to the user, notifying there's some problem.
         }
     }
 }

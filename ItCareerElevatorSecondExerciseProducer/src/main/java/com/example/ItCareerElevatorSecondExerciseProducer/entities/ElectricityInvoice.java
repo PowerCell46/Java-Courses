@@ -56,3 +56,5 @@ public class ElectricityInvoice extends CommonEntity {
     @ManyToOne
     private LoiMeasurementUnit loiMeasurementUnit;
 }
+
+// TODO: Add validations here also (custom Builder: validations to the build() method)

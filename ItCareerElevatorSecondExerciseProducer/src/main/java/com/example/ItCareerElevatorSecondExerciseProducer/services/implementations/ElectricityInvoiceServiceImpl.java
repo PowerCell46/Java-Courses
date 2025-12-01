@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -59,12 +60,12 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
 
     private ElectricityInvoice constructNonPersistedElectricityInvoice(CreateElectricityInvoiceRequestDTO requestDTO) {
         BiFunction<BigDecimal, BigDecimal, BigDecimal> calculateTotalSumWithoutVAT = BigDecimal::multiply;
-        BiFunction<BigDecimal, BigDecimal, BigDecimal> calculateVAT = BigDecimal::multiply;
+        Function<BigDecimal, BigDecimal> calculateVAT = (totalSumWithoutVat) -> totalSumWithoutVat.multiply(VAT_VALUE);
 
         BigDecimal totalSumWithoutVAT = calculateTotalSumWithoutVAT
                 .apply(requestDTO.getSinglePrice(), requestDTO.getQuantity());
 
-        BigDecimal VAT = calculateVAT.apply(totalSumWithoutVAT, VAT_VALUE);
+        BigDecimal VAT = calculateVAT.apply(totalSumWithoutVAT);
 
         LoiDocumentType loiDocumentType = loiDocumentTypeService
                 .getByListOptionItemCode(requestDTO.getLoiDocumentTypeCode()).get();

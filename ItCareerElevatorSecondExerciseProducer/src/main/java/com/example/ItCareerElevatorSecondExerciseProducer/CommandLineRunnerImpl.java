@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Component
-@Order(2)
+@Order(2) // ! Check whether for all components, or only for CommandLineRunner
 @RequiredArgsConstructor
 public class CommandLineRunnerImpl implements CommandLineRunner {
 
