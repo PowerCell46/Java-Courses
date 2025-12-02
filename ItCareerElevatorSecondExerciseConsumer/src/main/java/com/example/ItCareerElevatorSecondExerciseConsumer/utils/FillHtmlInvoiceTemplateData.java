@@ -11,7 +11,7 @@ import java.util.List;
 
 import static com.example.ItCareerElevatorSecondExerciseConsumer.utils.CurrencyUtils.convertAmountToBulgarianWords;
 
-public class FillHtmlTemplateData {
+public class FillHtmlInvoiceTemplateData {
 
     private static final String STANDARD_EUROPEAN_DATE_FORMAT = "dd-MM-yyyy";
 
@@ -53,7 +53,7 @@ public class FillHtmlTemplateData {
 
     private final String paymentAmountInLevsName;
 
-    public FillHtmlTemplateData(ElectricityInvoiceDTO electricityInvoiceDTO) {
+    public FillHtmlInvoiceTemplateData(ElectricityInvoiceDTO electricityInvoiceDTO) {
         this.documentTypeName = electricityInvoiceDTO.getLoiDocumentTypeName();
 
         this.invoiceNUmber = electricityInvoiceDTO.getInvoiceNumber();
@@ -82,20 +82,18 @@ public class FillHtmlTemplateData {
 
         this.vatAmountInLevsName = formatBigDecimalWithScale(convertEuroToLev(electricityInvoiceDTO.getVAT()), 2);
 
-        this.totalAmountInEurosWithVatName = formatBigDecimalWithScale(
-                calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT()), 2
-        );
+        BigDecimal TOTAL_AMOUNT_WITH_VAT_IN_EUROS = calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT());
+        BigDecimal TOTAL_AMOUNT_WITH_VAT_IN_LEVS = calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()));
 
-        this.totalAmountInLevsWithVatName = formatBigDecimalWithScale(
-                calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT())), 2
-        );
+        this.totalAmountInEurosWithVatName = formatBigDecimalWithScale(TOTAL_AMOUNT_WITH_VAT_IN_EUROS, 2);
+
+        this.totalAmountInLevsWithVatName = formatBigDecimalWithScale(TOTAL_AMOUNT_WITH_VAT_IN_LEVS, 2);
 
         this.paymentAmountInEurosName =
                 String.format(
                         "%s евро, %d цента",
-                        convertAmountToBulgarianWords(calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT())
-                                .intValue()),
-                        calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT())
+                        convertAmountToBulgarianWords(TOTAL_AMOUNT_WITH_VAT_IN_EUROS.intValue()),
+                        TOTAL_AMOUNT_WITH_VAT_IN_EUROS
                                 .setScale(2, RoundingMode.HALF_UP)
                                 .remainder(BigDecimal.ONE)
                                 .multiply(BigDecimal.valueOf(100))
@@ -105,9 +103,8 @@ public class FillHtmlTemplateData {
         this.paymentAmountInLevsName =
                 String.format(
                         "%s лева, %d стотинки",
-                        convertAmountToBulgarianWords(calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()))
-                                .intValue()),
-                        calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()))
+                        convertAmountToBulgarianWords(TOTAL_AMOUNT_WITH_VAT_IN_LEVS.intValue()),
+                        TOTAL_AMOUNT_WITH_VAT_IN_LEVS
                                 .setScale(2, RoundingMode.HALF_UP)
                                 .remainder(BigDecimal.ONE)
                                 .multiply(BigDecimal.valueOf(100))
@@ -131,11 +128,11 @@ public class FillHtmlTemplateData {
     }
 
     public String[] toArray() {
-        final int numberOfCopies = 2;
+        final int NUMBER_OF_COPIES = 2;
 
         List<String> resultList = new ArrayList<>();
 
-        for (int currentCopyNumber = 0; currentCopyNumber < numberOfCopies; ++currentCopyNumber) {
+        for (int currentCopyNumber = 0; currentCopyNumber < NUMBER_OF_COPIES; ++currentCopyNumber) {
             resultList.add(String.format("%s - САМОФАКТУРИРАНЕ", this.documentTypeName));
 
             // Доставчик

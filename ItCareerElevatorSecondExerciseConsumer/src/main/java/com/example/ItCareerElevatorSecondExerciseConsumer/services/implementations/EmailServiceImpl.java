@@ -1,5 +1,6 @@
 package com.example.ItCareerElevatorSecondExerciseConsumer.services.implementations;
 
+import com.example.ItCareerElevatorSecondExerciseConsumer.exceptions.ErrorMailingPdfInvoiceException;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -37,9 +38,9 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
 
         } catch (MessagingException ex) {
-            log.warn("Messaging exception occurred.");
+            log.warn("Exception occurred while constructing/sending the email.", ex);
 
-            throw new RuntimeException("Failed to send invoice email", ex); // TODO: There has to be a better way
+            throw new ErrorMailingPdfInvoiceException("Failed to send invoice email.", ex);
         }
     }
 }

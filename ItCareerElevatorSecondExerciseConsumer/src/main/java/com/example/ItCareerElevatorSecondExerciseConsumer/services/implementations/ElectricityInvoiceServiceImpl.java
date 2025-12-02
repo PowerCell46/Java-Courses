@@ -1,10 +1,11 @@
 package com.example.ItCareerElevatorSecondExerciseConsumer.services.implementations;
 
 import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoiceDTO;
+import com.example.ItCareerElevatorSecondExerciseConsumer.exceptions.ErrorMailingPdfInvoiceException;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.DatabaseFileService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.ElectricityInvoiceService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.EmailService;
-import com.example.ItCareerElevatorSecondExerciseConsumer.utils.FillHtmlTemplateData;
+import com.example.ItCareerElevatorSecondExerciseConsumer.utils.FillHtmlInvoiceTemplateData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     public void sendPdfInvoiceThroughEmail(ElectricityInvoiceDTO electricityInvoiceDTO) {
         log.info("Starting the generation process of the PDF.");
 
-        byte[] pdfByteArray = createPdfInvoiceByteArray(electricityInvoiceDTO);
+        byte[] pdfByteArray = createPdfInvoiceByteArrayForElectricityInvoice(electricityInvoiceDTO);
 
         databaseService.savePdf(electricityInvoiceDTO.getSnowflakeId(), pdfByteArray);
 
@@ -54,19 +55,25 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
         );
     }
 
-    private byte[] createPdfInvoiceByteArray(ElectricityInvoiceDTO electricityInvoiceDTO) {
-        FillHtmlTemplateData fillHtmlTemplateData = new FillHtmlTemplateData(electricityInvoiceDTO);
+    private byte[] createPdfInvoiceByteArrayForElectricityInvoice(ElectricityInvoiceDTO electricityInvoiceDTO) {
+        FillHtmlInvoiceTemplateData fillHtmlInvoiceTemplateData = new FillHtmlInvoiceTemplateData(electricityInvoiceDTO);
 
-        String[] fillData = fillHtmlTemplateData.toArray();
+        String[] fillData = fillHtmlInvoiceTemplateData.toArray();
 
         try {
             InputStream htmlInputStream = fillHtmlTemplate(fillData, htmlTemplateFilePath);
 
             return convertHtmlInputStreamToPdfByteArray(htmlInputStream);
 
-        } catch (IOException e) {
-            // TODO: Throw custom exception
-            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            log.error("Error occurred in the generation process.", ex);
+
+            throw new ErrorMailingPdfInvoiceException("Failed to generate PDF document.", ex);
+
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            log.error("Dynamic entries and template placeholders don't match.", ex);
+
+            throw new ErrorMailingPdfInvoiceException("Failed to generate PDF document.", ex);
         }
     }
 }
