@@ -9,9 +9,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.ItCareerElevatorSecondExerciseConsumer.utils.CurrencyUtils.convertNumberToBulgarianWords;
+import static com.example.ItCareerElevatorSecondExerciseConsumer.utils.CurrencyUtils.convertAmountToBulgarianWords;
 
-public class FillHtmlTemplate {
+public class FillHtmlTemplateData {
 
     private static final String STANDARD_EUROPEAN_DATE_FORMAT = "dd-MM-yyyy";
 
@@ -53,7 +53,7 @@ public class FillHtmlTemplate {
 
     private final String paymentAmountInLevsName;
 
-    public FillHtmlTemplate(ElectricityInvoiceDTO electricityInvoiceDTO) {
+    public FillHtmlTemplateData(ElectricityInvoiceDTO electricityInvoiceDTO) {
         this.documentTypeName = electricityInvoiceDTO.getLoiDocumentTypeName();
 
         this.invoiceNUmber = electricityInvoiceDTO.getInvoiceNumber();
@@ -93,7 +93,7 @@ public class FillHtmlTemplate {
         this.paymentAmountInEurosName =
                 String.format(
                         "%s евро, %d цента",
-                        convertNumberToBulgarianWords(calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT())
+                        convertAmountToBulgarianWords(calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT())
                                 .intValue()),
                         calculateTotalAmount(electricityInvoiceDTO.getTotalSumWithoutVAT(), electricityInvoiceDTO.getVAT())
                                 .setScale(2, RoundingMode.HALF_UP)
@@ -105,7 +105,7 @@ public class FillHtmlTemplate {
         this.paymentAmountInLevsName =
                 String.format(
                         "%s лева, %d стотинки",
-                        convertNumberToBulgarianWords(calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()))
+                        convertAmountToBulgarianWords(calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()))
                                 .intValue()),
                         calculateTotalAmount(convertEuroToLev(electricityInvoiceDTO.getTotalSumWithoutVAT()), convertEuroToLev(electricityInvoiceDTO.getVAT()))
                                 .setScale(2, RoundingMode.HALF_UP)
@@ -130,7 +130,7 @@ public class FillHtmlTemplate {
         return totalSumWithoutVAT.add(VAT);
     }
 
-    public String[] getData() {
+    public String[] toArray() {
         final int numberOfCopies = 2;
 
         List<String> resultList = new ArrayList<>();

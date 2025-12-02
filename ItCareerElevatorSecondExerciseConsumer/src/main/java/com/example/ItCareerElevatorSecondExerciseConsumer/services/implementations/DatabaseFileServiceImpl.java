@@ -25,7 +25,7 @@ public class DatabaseFileServiceImpl implements DatabaseFileService {
                 CONTENT_TYPE
         );
 
-        log.info("Saving PDF document, generated for entity with id: {}.", referenceEntityId);
+        log.info("Saving PDF document, generated for entity with id: {} to the Database.", referenceEntityId);
 
         return databaseFileRepository.save(dbFile);
     }

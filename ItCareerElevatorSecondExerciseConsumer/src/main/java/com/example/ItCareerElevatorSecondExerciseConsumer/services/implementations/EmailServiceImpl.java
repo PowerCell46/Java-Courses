@@ -4,12 +4,14 @@ import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.Em
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
@@ -26,18 +28,18 @@ public class EmailServiceImpl implements EmailService {
             helper.setSubject(subject);
             helper.setText(body, false);
 
+            final String FILE_NAME = "electricity-invoice.pdf";
+            final String CONTENT_TYPE = "application/pdf";
+
             ByteArrayResource pdfResource = new ByteArrayResource(pdfBytes);
-            helper.addAttachment(
-                    "electricity-invoice.pdf",
-                    pdfResource,
-                    "application/pdf"
-            );
+            helper.addAttachment(FILE_NAME, pdfResource, CONTENT_TYPE);
 
             mailSender.send(message);
 
         } catch (MessagingException ex) {
-            // TODO: custom exception / logging
-            throw new RuntimeException("Failed to send invoice email", ex);
+            log.warn("Messaging exception occurred.");
+
+            throw new RuntimeException("Failed to send invoice email", ex); // TODO: There has to be a better way
         }
     }
 }

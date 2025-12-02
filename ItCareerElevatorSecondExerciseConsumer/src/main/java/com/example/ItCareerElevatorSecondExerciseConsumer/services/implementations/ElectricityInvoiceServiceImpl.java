@@ -4,7 +4,7 @@ import com.example.ItCareerElevatorSecondExerciseConsumer.DTOs.ElectricityInvoic
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.DatabaseFileService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.ElectricityInvoiceService;
 import com.example.ItCareerElevatorSecondExerciseConsumer.services.interfaces.EmailService;
-import com.example.ItCareerElevatorSecondExerciseConsumer.utils.FillHtmlTemplate;
+import com.example.ItCareerElevatorSecondExerciseConsumer.utils.FillHtmlTemplateData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,9 +55,9 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     }
 
     private byte[] createPdfInvoiceByteArray(ElectricityInvoiceDTO electricityInvoiceDTO) {
-        FillHtmlTemplate fillHtmlTemplate = new FillHtmlTemplate(electricityInvoiceDTO);
+        FillHtmlTemplateData fillHtmlTemplateData = new FillHtmlTemplateData(electricityInvoiceDTO);
 
-        String[] fillData = fillHtmlTemplate.getData();
+        String[] fillData = fillHtmlTemplateData.toArray();
 
         try {
             InputStream htmlInputStream = fillHtmlTemplate(fillData, htmlTemplateFilePath);

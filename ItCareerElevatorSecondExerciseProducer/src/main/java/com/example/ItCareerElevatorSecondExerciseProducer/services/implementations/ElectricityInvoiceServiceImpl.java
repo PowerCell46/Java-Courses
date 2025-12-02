@@ -82,7 +82,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
         return ElectricityInvoice
                 .builder()
                 .accessPoint(requestDTO.getAccessPoint())
-                .invoiceNumber(generateInvoiceNumber())
+                .invoiceNumber(generateRandomInvoiceNumber())
                 .iban(requestDTO.getIban())
                 .taxEventDate(requestDTO.getTaxEventDate())
                 .periodFrom(requestDTO.getPeriodFrom())
@@ -117,7 +117,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
     }
 
     private void publishElectricityInvoiceToKafka(ElectricityInvoiceDTO responseDTO) {
-        log.info("Publishing electricity invoice to Kafka: snowflakeId={}.", responseDTO.getSnowflakeId());
+        log.info("Publishing electricity invoice to Kafka with snowflakeId: {}.", responseDTO.getSnowflakeId());
         electricityInvoiceProducerService.send(responseDTO);
     }
 
@@ -128,7 +128,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
         return electricityInvoiceRepository.save(electricityInvoice);
     }
 
-    public static String generateInvoiceNumber() {
+    public static String generateRandomInvoiceNumber() {
         StringBuilder sb = new StringBuilder(10);
         ThreadLocalRandom random = ThreadLocalRandom.current();
 

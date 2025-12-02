@@ -14,7 +14,7 @@ public class HtmlUtils {
     private static final String HTML_REPLACE_SYMBOL = "※"; // Rare unicode char: avoid collisions and ensure cross-platform safety
 
     public static InputStream fillHtmlTemplate(String[] fillData, String htmlTemplateFilePath) throws IOException {
-        int currentIndex = -1; // Using pre-incrementation: start from -1
+        int currentIndex = -1; // Using pre-incrementation, so we start from -1, instead of 0
         StringBuilder resultHtmlBuilder = new StringBuilder();
 
         try (

@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @Table(name = "electricity_invoices")
 @Getter
 @Setter
-@Builder
+@Builder // TODO: Make it custom + validations to the .build() method
 @AllArgsConstructor
 @NoArgsConstructor
 public class ElectricityInvoice extends CommonEntity {
@@ -59,5 +59,3 @@ public class ElectricityInvoice extends CommonEntity {
     @ManyToOne
     private LoiMeasurementUnit loiMeasurementUnit;
 }
-
-// TODO: Add validations here also (custom Builder: validations to the build() method)

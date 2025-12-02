@@ -56,12 +56,12 @@ public class DatabaseFile {
             bytes = DECODER.decode(snowflakeId);
 
         } catch (IllegalArgumentException ex) {
-            log.error("Invalid Base64 URL-safe snowflake id: {}", snowflakeId);
+            log.error("Invalid Base64 URL-safe snowflake id: {}.", snowflakeId);
             throw new InvalidSnowflakeIdException(String.format("Invalid snowflakeId [%s].", snowflakeId));
         }
 
         if (bytes.length != Long.BYTES) {
-            log.error("Invalid snowflake id length: expected {}  bytes but got {}", Long.BYTES, bytes.length);
+            log.error("Invalid snowflake id length: expected {} bytes but got {}.", Long.BYTES, bytes.length);
             throw new InvalidSnowflakeIdException(String.format("Invalid snowflakeId [%s].", snowflakeId));
         }
 

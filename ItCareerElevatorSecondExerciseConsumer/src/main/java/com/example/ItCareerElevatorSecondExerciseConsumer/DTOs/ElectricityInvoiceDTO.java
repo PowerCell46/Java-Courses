@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @ToString
 @Builder
 @AllArgsConstructor
-public class ElectricityInvoiceDTO {
+public class ElectricityInvoiceDTO { // TODO: Add the validations
 
     @JsonProperty("id")
     private String snowflakeId;
@@ -52,5 +52,3 @@ public class ElectricityInvoiceDTO {
 
     private String loiMeasurementUnitName;
 }
-
-// TODO: Do i need to validate the upcoming data?

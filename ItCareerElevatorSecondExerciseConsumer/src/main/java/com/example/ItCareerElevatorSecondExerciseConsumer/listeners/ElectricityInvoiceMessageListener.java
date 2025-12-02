@@ -24,10 +24,12 @@ public class ElectricityInvoiceMessageListener {
 
         if (electricityInvoiceDTO == null || electricityInvoiceDTO.getSnowflakeId() == null) {
             log.error("Invalid ElectricityInvoiceDTO: {}{}", System.lineSeparator(), electricityInvoiceDTO);
+            // TODO: No error is thrown, just silenced.
             return;
         }
 
-        log.info("Received data: {}{}", System.lineSeparator(), electricityInvoiceDTO);
+        log.info("Received data from Kafka: {}{}", System.lineSeparator(), electricityInvoiceDTO);
+
         electricityInvoiceService.sendPdfInvoiceThroughEmail(electricityInvoiceDTO);
     }
 }
