@@ -12,10 +12,13 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        SecretKey key = Jwts.SIG.HS512.key().build();
-        String base64 = Encoders.BASE64.encode(key.getEncoded());
-        System.out.println("base64:");
-        System.out.println(base64);
+        System.out.println("Message from command line runner...!");
+    }
 
+    public String generateBase64Key() {
+        SecretKey key = Jwts.SIG.HS512.key().build();
+        return Encoders
+                .BASE64
+                .encode(key.getEncoded());
     }
 }

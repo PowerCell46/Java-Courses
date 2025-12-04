@@ -3,21 +3,19 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
 
 @Service
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "qwAZS7TCtKxr6ahhUkVGp7lAcdiM98vl2/kzN4ZLJrYqIqdEJyIAZN6CxZJxM4VJ63kEY045TOJryI+c/ewY0w=="; // >= 32 chars
+    private static final String SECRET_KEY = "qwAZS7TCtKxr6ahhUkVGp7lAcdiM98vl2/kzN4ZLJrYqIqdEJyIAZN6CxZJxM4VJ63kEY045TOJryI+c/ewY0w==";
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -62,5 +60,4 @@ public class JwtUtil {
         Date expiration = extractClaim(token, Claims::getExpiration);
         return expiration.before(new Date());
     }
-
 }

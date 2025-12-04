@@ -35,9 +35,9 @@ public class ExceptionHandlerController {
         log.warn("Handling ExpiredJwtException.");
 
         ErrorResponseDTO error = new ErrorResponseDTO(
-            HttpStatus.UNAUTHORIZED.value(),
-            "Token has expired.",
-            System.currentTimeMillis()
+                HttpStatus.UNAUTHORIZED.value(),
+                "Token has expired.",
+                System.currentTimeMillis()
         );
 
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
