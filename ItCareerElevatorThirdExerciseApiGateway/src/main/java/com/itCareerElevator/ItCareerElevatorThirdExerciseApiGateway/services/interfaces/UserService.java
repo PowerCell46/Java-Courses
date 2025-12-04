@@ -1,13 +1,14 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces;
 
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthenticationResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 
 public interface UserService {
 
-    String register(UserRequestDTO userRequest);
+    AuthenticationResponseDTO register(UserRequestDTO userRequest);
 
     User save(User user);
 
-    String authenticate(String username, String password);
+    AuthenticationResponseDTO authenticate(String username, String password);
 }

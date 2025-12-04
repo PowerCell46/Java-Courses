@@ -1,6 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.ErrorResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,19 @@ import io.jsonwebtoken.security.SignatureException;
 @Slf4j
 @RequiredArgsConstructor
 public class ExceptionHandlerController {
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        log.warn("Handling UserAlreadyExistsException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid username or password.",
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ErrorResponseDTO> handleException(SignatureException ex) {

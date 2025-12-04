@@ -1,5 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthenticationResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public String register(UserRequestDTO userRequest) {
+    public AuthenticationResponseDTO register(UserRequestDTO userRequest) {
         if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(
                     String.format("User with username: %s already exists.", userRequest.getUsername())
@@ -59,12 +60,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String authenticate(String username, String password) {
+    public AuthenticationResponseDTO authenticate(String username, String password) {
         authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        return jwtUtil.generateToken(userDetails.getUsername());
+        String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
+
+        return new AuthenticationResponseDTO(username, jwtToken);
     }
 }
