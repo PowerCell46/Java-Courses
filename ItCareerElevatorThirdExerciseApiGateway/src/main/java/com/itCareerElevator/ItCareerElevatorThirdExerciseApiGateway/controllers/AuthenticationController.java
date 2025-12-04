@@ -1,16 +1,9 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.LoginRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.repositories.UserRepository;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations.UserDetailsServiceImpl;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtUtil;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,35 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthenticationController {
 
-    private AuthenticationManager authenticationManager;
-
-    private UserDetailsServiceImpl userDetailsService;
-
-    private UserRepository userRepository;
-
-    private PasswordEncoder encoder;
-
-    private JwtUtil jwtUtil;
+    private final UserService userService;
 
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return "User registered successfully.";
+    public String register(@RequestBody UserRequestDTO userRequest) {
+        return userService.register(userRequest);
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestBody LoginRequestDTO request) {
-        authenticationManager
-                .authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                request.getUsername(),
-                                request.getPassword()
-                        ));
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-
-        return jwtUtil.generateToken(userDetails.getUsername());
+    public String loginUser(@RequestBody UserRequestDTO request) {
+        return userService
+                .authenticate(request.getUsername(), request.getPassword());
     }
 
     @GetMapping("/main")

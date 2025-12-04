@@ -1,0 +1,70 @@
+package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
+
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.repositories.UserRepository;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserServiceImpl implements UserService {
+
+    private final PasswordEncoder encoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+
+    private final UserDetailsServiceImpl userDetailsService;
+    private final UserRepository userRepository;
+
+    @Override
+    public String register(UserRequestDTO userRequest) {
+        if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException(
+                    String.format("User with username: %s already exists.", userRequest.getUsername())
+            );
+        }
+
+        User user = constructNonPersistedUser(userRequest);
+
+        user = save(user);
+
+        return authenticate(user.getUsername(), userRequest.getPassword());
+    }
+
+    private User constructNonPersistedUser(UserRequestDTO userRequest) {
+        String encodedPassword = encodePassword(userRequest.getPassword());
+
+        return new User(userRequest.getUsername(), encodedPassword);
+    }
+
+    private String encodePassword(String password) {
+        return encoder.encode(password);
+    }
+
+    @Override
+    public User save(User user) {
+        log.info("Persisting user with username '{}' to the Database.", user.getUsername());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public String authenticate(String username, String password) {
+        authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        return jwtUtil.generateToken(userDetails.getUsername());
+    }
+}
