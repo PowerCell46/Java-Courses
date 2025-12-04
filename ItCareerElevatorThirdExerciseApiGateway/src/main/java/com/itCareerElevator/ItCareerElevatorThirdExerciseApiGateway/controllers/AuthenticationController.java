@@ -6,6 +6,8 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.int
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,16 +24,16 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody UserRequestDTO userRequest) {
-        log.info("--- POST request /register with username: {}.", userRequest.getUsername());
+        log.info("--- POST request on /register with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService.register(userRequest);
 
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(responseDTO); // created is better, but URL...
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDTO> loginUser(@RequestBody UserRequestDTO userRequest) {
-        log.info("--- POST request /login with username: {}.", userRequest.getUsername());
+        log.info("--- POST request on /login with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService
                 .authenticate(userRequest.getUsername(), userRequest.getPassword());
@@ -40,7 +42,9 @@ public class AuthenticationController {
     }
 
     @GetMapping("/main")
-    public String m() {
+    public String m(@AuthenticationPrincipal UserDetails user) {
+        System.out.println("/main: " + user.getUsername());
+
         return "Secured response";
     }
 }
