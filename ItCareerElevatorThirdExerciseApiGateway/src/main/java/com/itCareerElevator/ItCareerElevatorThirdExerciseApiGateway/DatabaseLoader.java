@@ -33,11 +33,12 @@ public class DatabaseLoader implements CommandLineRunner {
                 .orElseGet(() -> roleService.save(new Role("ROLE_MANAGER")));
 
         final String ADMIN_USERNAME = "PowerCell46";
+        final String ADMIN_PASSWORD = "JsonobJeCT51";
 
         if (userService.findByUsername(ADMIN_USERNAME).isEmpty()) {
             User admin = new User(
                     ADMIN_USERNAME,
-                    encoder.encode("JsonobJeCT51"),
+                    encoder.encode(ADMIN_PASSWORD),
                     Set.of(adminRole, managerRole)
             );
             userService.save(admin);
