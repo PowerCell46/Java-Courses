@@ -1,6 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthenticationResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
@@ -23,15 +23,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final PasswordEncoder encoder;
-    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder encoder;
 
     private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
 
     @Override
-    public AuthenticationResponseDTO register(UserRequestDTO userRequest) {
+    public AuthResponseDTO register(UserRequestDTO userRequest) {
         if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(
                     String.format("User with username: %s already exists.", userRequest.getUsername())
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponseDTO authenticate(String username, String password) {
+    public AuthResponseDTO authenticate(String username, String password) {
         authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
 
-        return new AuthenticationResponseDTO(username, jwtToken);
+        return new AuthResponseDTO(username, jwtToken);
     }
 
     @Override
@@ -83,6 +83,6 @@ public class UserServiceImpl implements UserService {
             return cud.getUser();
         }
 
-        throw new IllegalStateException("No authenticated user");
+        throw new IllegalStateException("No authenticated user.");
     }
 }

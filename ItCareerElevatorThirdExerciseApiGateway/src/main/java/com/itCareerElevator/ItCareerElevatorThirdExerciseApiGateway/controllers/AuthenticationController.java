@@ -1,6 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthenticationResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
@@ -22,7 +22,7 @@ public class AuthenticationController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody UserRequestDTO userRequest) {
+    public ResponseEntity<AuthResponseDTO> register(@RequestBody UserRequestDTO userRequest) {
         log.info("--- POST request on /register with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService.register(userRequest);
@@ -31,7 +31,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDTO> loginUser(@RequestBody UserRequestDTO userRequest) {
+    public ResponseEntity<AuthResponseDTO> loginUser(@RequestBody UserRequestDTO userRequest) {
         log.info("--- POST request on /login with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService
