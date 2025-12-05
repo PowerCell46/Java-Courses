@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponseDTO register(UserRequestDTO userRequest) {
-        if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
+        if (findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(
                     String.format("User with username: %s already exists.", userRequest.getUsername())
             );
@@ -66,7 +68,7 @@ public class UserServiceImpl implements UserService {
     public AuthResponseDTO authenticate(String username, String password) {
         authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(username, password));
-
+        // TODO: Handle invalid credentials
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
@@ -84,5 +86,10 @@ public class UserServiceImpl implements UserService {
         }
 
         throw new IllegalStateException("No authenticated user.");
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

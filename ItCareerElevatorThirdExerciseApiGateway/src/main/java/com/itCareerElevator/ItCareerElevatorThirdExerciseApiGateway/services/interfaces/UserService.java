@@ -4,6 +4,8 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthRes
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 
+import java.util.Optional;
+
 public interface UserService {
 
     AuthResponseDTO register(UserRequestDTO userRequest);
@@ -13,4 +15,6 @@ public interface UserService {
     AuthResponseDTO authenticate(String username, String password);
 
     User getCurrentlyLoggedUser();
+
+    Optional<User> findByUsername(String username);
 }

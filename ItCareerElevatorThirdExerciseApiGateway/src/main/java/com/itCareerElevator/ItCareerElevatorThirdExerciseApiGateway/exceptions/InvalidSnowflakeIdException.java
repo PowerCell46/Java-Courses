@@ -10,4 +10,3 @@ public class InvalidSnowflakeIdException extends RuntimeException {
         super(message, cause);
     }
 }
-
