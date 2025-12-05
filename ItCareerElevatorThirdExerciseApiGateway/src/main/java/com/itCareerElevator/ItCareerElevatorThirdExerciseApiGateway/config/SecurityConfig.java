@@ -1,5 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.config;
 
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JsonAccessDeniedHandler;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,9 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(ex ->
+                        ex.accessDeniedHandler(new JsonAccessDeniedHandler())
                 );
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
