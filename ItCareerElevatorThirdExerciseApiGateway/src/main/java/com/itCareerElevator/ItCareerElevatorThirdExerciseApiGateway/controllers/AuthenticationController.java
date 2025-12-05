@@ -40,12 +40,22 @@ public class AuthenticationController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/main")
+    @GetMapping("/authenticated")
     public String method() {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
         System.out.println("LoggedUser: " + loggedUser.getUsername() + "; " + loggedUser.getId());
 
-        return "Secured response";
+        return "Success GET request on /authenticated";
+    }
+
+    @GetMapping("/role-restricted")
+    public String roleRestricted() {
+        User loggedUser = userService.getCurrentlyLoggedUser();
+
+        System.out.println("LoggedUser: " + loggedUser.getUsername() + "; " + loggedUser.getId());
+        loggedUser.getRoles().forEach(role -> System.out.println("\t-Role: " + role.getName()));
+
+        return "Success GET request on /role-restricted";
     }
 }

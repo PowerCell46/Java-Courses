@@ -28,9 +28,9 @@ public class DatabaseLoader implements CommandLineRunner {
                 .findByName("ROLE_ADMIN")
                 .orElseGet(() -> roleService.save(new Role("ROLE_ADMIN")));
 
-        Role userRole = roleService
-                .findByName("ROLE_USER")
-                .orElseGet(() -> roleService.save(new Role("ROLE_USER")));
+        Role managerRole = roleService
+                .findByName("ROLE_MANAGER")
+                .orElseGet(() -> roleService.save(new Role("ROLE_MANAGER")));
 
         final String ADMIN_USERNAME = "PowerCell46";
 
@@ -38,7 +38,7 @@ public class DatabaseLoader implements CommandLineRunner {
             User admin = new User(
                     ADMIN_USERNAME,
                     encoder.encode("JsonobJeCT51"),
-                    Set.of(adminRole, userRole)
+                    Set.of(adminRole, managerRole)
             );
             userService.save(admin);
         }
