@@ -44,7 +44,7 @@ public class AuthenticationController {
     public String method() {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        System.out.printf("Logged in user: %s; Id: %d.%n", loggedUser.getUsername(), loggedUser.getId());
+        System.out.printf("Logged in user: %s; Id: %s.%n", loggedUser.getUsername(), loggedUser.getSnowflakeId());
 
         return "Success GET request on /authenticated.";
     }
@@ -53,7 +53,7 @@ public class AuthenticationController {
     public String roleRestricted() {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        System.out.printf("Logged in user: %s; Id: %d.%n", loggedUser.getUsername(), loggedUser.getId());
+        System.out.printf("Logged in user: %s; Id: %s.%n", loggedUser.getUsername(), loggedUser.getSnowflakeId());
         loggedUser.getRoles()
                 .forEach(role -> System.out.println("\t- Role: " + role.getName()));
 
