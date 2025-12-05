@@ -11,4 +11,6 @@ public interface UserService {
     User save(User user);
 
     AuthenticationResponseDTO authenticate(String username, String password);
+
+    User getCurrentlyLoggedUser();
 }

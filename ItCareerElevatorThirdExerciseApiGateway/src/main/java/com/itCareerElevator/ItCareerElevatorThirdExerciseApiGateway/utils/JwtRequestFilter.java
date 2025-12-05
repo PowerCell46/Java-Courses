@@ -1,6 +1,9 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations.UserDetailsServiceImpl;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,12 +27,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final UserDetailsServiceImpl userDetailsService;
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-        final String header = request.getHeader("Authorization");
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain fChain) throws ServletException, IOException {
+        boolean isPublic = isPathPublic(req.getRequestURI());
+
+        final String header = req.getHeader("Authorization");
         String username = null;
         String token = null;
 
@@ -39,30 +40,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(token);
 
-            } catch (io.jsonwebtoken.security.SignatureException ex) { // invalid signature
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(
-                        "{\"status\":401,\"message\":\"Invalid token signature.\",\"timestamp\":" + System.currentTimeMillis() + "}"
-                );
+            } catch (SignatureException ex) {
+                writeUnauthorized(res, "Invalid token signature.");
                 return;
 
-            } catch (io.jsonwebtoken.ExpiredJwtException ex) { // expired token
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(
-                        "{\"status\":401,\"message\":\"Token has expired.\",\"timestamp\":" + System.currentTimeMillis() + "}"
-                );
+            } catch (ExpiredJwtException ex) {
+                writeUnauthorized(res, "Token has expired.");
                 return;
 
-            } catch (io.jsonwebtoken.JwtException ex) { // any other JWT parse/validation problem
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(
-                        "{\"status\":401,\"message\":\"Invalid token.\",\"timestamp\":" + System.currentTimeMillis() + "}"
-                );
+            } catch (JwtException ex) {
+                writeUnauthorized(res, "Invalid token.");
                 return;
             }
+
+        } else if (!isPublic) {
+            writeUnauthorized(res, "Missing or malformed Authorization header.");
+            return;
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -74,11 +67,30 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         null,
                         userDetails.getAuthorities()
                 );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            } else if (!isPublic) {
+                writeUnauthorized(res, "Invalid token.");
+                return;
             }
         }
 
-        filterChain.doFilter(request, response);
+        fChain.doFilter(req, res);
+    }
+
+    private boolean isPathPublic(String path) {
+        return path.equals("/api/auth/register") ||
+                path.equals("/api/auth/login");
+    }
+
+    private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        long now = System.currentTimeMillis();
+        response.getWriter().write(
+                "{\"status\":401,\"message\":\"" + message + "\",\"timestamp\":" + now + "}"
+        );
     }
 }

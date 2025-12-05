@@ -2,12 +2,11 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthenticationResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +41,10 @@ public class AuthenticationController {
     }
 
     @GetMapping("/main")
-    public String m(@AuthenticationPrincipal UserDetails user) {
-        System.out.println("/main: " + user.getUsername());
+    public String method() {
+        User loggedUser = userService.getCurrentlyLoggedUser();
+
+        System.out.println("LoggedUser: " + loggedUser.getUsername() + "; " + loggedUser.getId());
 
         return "Secured response";
     }
