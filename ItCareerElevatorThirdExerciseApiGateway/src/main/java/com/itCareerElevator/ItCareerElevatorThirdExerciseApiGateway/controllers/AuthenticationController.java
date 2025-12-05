@@ -44,18 +44,19 @@ public class AuthenticationController {
     public String method() {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        System.out.println("LoggedUser: " + loggedUser.getUsername() + "; " + loggedUser.getId());
+        System.out.printf("Logged in user: %s; Id: %d.%n", loggedUser.getUsername(), loggedUser.getId());
 
-        return "Success GET request on /authenticated";
+        return "Success GET request on /authenticated.";
     }
 
     @GetMapping("/role-restricted")
     public String roleRestricted() {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        System.out.println("LoggedUser: " + loggedUser.getUsername() + "; " + loggedUser.getId());
-        loggedUser.getRoles().forEach(role -> System.out.println("\t-Role: " + role.getName()));
+        System.out.printf("Logged in user: %s; Id: %d.%n", loggedUser.getUsername(), loggedUser.getId());
+        loggedUser.getRoles()
+                .forEach(role -> System.out.println("\t- Role: " + role.getName()));
 
-        return "Success GET request on /role-restricted";
+        return "Success GET request on /role-restricted.";
     }
 }

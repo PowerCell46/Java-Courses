@@ -3,10 +3,11 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.in
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     AuthResponseDTO register(UserRequestDTO userRequest);
 

@@ -43,8 +43,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = constructNonPersistedUser(userRequest);
-
-        user = save(user);
+        save(user);
 
         return authenticate(user.getUsername(), userRequest.getPassword());
     }
@@ -97,5 +96,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User is not found."));
+
+        return new CustomUserDetails(user);
     }
 }

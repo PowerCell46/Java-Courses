@@ -1,6 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils;
 
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations.UserDetailsServiceImpl;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -23,8 +23,7 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain fChain) throws ServletException, IOException {
@@ -59,7 +58,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userService.loadUserByUsername(username);
 
             if (jwtUtil.validateToken(token, userDetails)) {
                 var authToken = new UsernamePasswordAuthenticationToken(

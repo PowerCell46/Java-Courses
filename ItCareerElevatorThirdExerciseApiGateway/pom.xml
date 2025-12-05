@@ -100,7 +100,15 @@
             <version>0.13.0</version>
             <scope>runtime</scope>
         </dependency>
-
+        <!-- Jackson Databind (core + annotations) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
