@@ -1,6 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.controllers;
 
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.CreateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.FollowUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,20 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserRequestDTO requestDTO) {
-        log.info("--- POST request on /api/users");
+        log.info("--- POST request on /api/users.");
 
         UserResponseDTO userResponseDTO = userService.createUser(requestDTO);
 
         return ResponseEntity.created(null).body(userResponseDTO);
+    }
+
+    @PostMapping("/follow")
+    public ResponseEntity<UserResponseDTO> followUser(@RequestBody FollowUserRequestDTO requestDTO) {
+        log.info("--- POST request on /api/users/follow.");
+
+        UserResponseDTO responseDTO = userService.followUser(requestDTO);
+
+        return ResponseEntity.created(null).body(responseDTO);
     }
 
     // PatchMapping
