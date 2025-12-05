@@ -1,5 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.ErrorResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -17,17 +19,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
+
+    private final ObjectMapper objectMapper;
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain fChain) throws ServletException, IOException {
-        boolean isPublic = isPathPublic(req.getRequestURI());
+        boolean isEndpointPublic = isPathPublic(req.getRequestURI());
 
         final String header = req.getHeader("Authorization");
         String username = null;
@@ -40,20 +45,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 username = jwtUtil.extractUsername(token);
 
             } catch (SignatureException ex) {
-                writeUnauthorized(res, "Invalid token signature.");
+                writeJsonErrorResponse(res, "Invalid token signature.");
                 return;
 
             } catch (ExpiredJwtException ex) {
-                writeUnauthorized(res, "Token has expired.");
+                writeJsonErrorResponse(res, "Token has expired.");
                 return;
 
             } catch (JwtException ex) {
-                writeUnauthorized(res, "Invalid token.");
+                writeJsonErrorResponse(res, "Invalid token.");
                 return;
             }
 
-        } else if (!isPublic) {
-            writeUnauthorized(res, "Missing or malformed Authorization header.");
+        } else if (!isEndpointPublic) {
+            writeJsonErrorResponse(res, "Missing or malformed Authorization header.");
             return;
         }
 
@@ -70,8 +75,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            } else if (!isPublic) {
-                writeUnauthorized(res, "Invalid token.");
+            } else if (!isEndpointPublic) {
+                writeJsonErrorResponse(res, "Invalid token.");
                 return;
             }
         }
@@ -80,16 +85,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean isPathPublic(String path) {
-        return path.equals("/api/auth/register") ||
-                path.equals("/api/auth/login");
+        Set<String> PUBLIC_ENDPOINTS = Set.of("/api/auth/register", "/api/auth/login");
+
+        return PUBLIC_ENDPOINTS.contains(path);
     }
 
-    private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
+    private void writeJsonErrorResponse(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        long now = System.currentTimeMillis();
-        response.getWriter().write(
-                "{\"status\":401,\"message\":\"" + message + "\",\"timestamp\":" + now + "}"
+        response.setCharacterEncoding("UTF-8");
+
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+                HttpServletResponse.SC_UNAUTHORIZED,
+                message,
+                System.currentTimeMillis()
         );
+
+        objectMapper.writeValue(response.getWriter(), errorResponse);
     }
 }

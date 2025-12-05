@@ -9,8 +9,8 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.repositories
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.CustomUserDetails;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,15 +24,23 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
-
     private final UserRepository userRepository;
+
+    public UserServiceImpl(
+            JwtUtil jwtUtil, @Lazy AuthenticationManager authenticationManager,
+            PasswordEncoder encoder, UserRepository userRepository
+    ) {
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
+        this.encoder = encoder;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public AuthResponseDTO register(UserRequestDTO userRequest) {
