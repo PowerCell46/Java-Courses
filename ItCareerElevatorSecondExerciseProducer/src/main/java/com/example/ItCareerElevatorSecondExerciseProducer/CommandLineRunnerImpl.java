@@ -6,7 +6,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(2) // ! Check whether for all components, or only for CommandLineRunner
+@Order(2) // ! Check whether for all components, or only for CommandLineRunner implementations
 @RequiredArgsConstructor
 public class CommandLineRunnerImpl implements CommandLineRunner {
 

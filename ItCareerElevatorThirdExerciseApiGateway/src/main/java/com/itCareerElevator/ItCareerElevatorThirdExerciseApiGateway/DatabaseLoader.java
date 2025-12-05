@@ -6,12 +6,14 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.int
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Component
+@Order(1)
 @RequiredArgsConstructor
 public class DatabaseLoader implements CommandLineRunner {
 

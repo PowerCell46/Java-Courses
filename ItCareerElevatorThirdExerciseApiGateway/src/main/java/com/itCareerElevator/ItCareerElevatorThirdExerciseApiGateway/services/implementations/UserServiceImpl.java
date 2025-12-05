@@ -3,6 +3,7 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.im
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.repositories.UserRepository;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
@@ -11,10 +12,12 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtUti
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +32,6 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
 
-    private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
 
     @Override
@@ -66,14 +68,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponseDTO authenticate(String username, String password) {
-        authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        // TODO: Handle invalid credentials
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        try {
+            Authentication auth = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-        String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
 
-        return new AuthResponseDTO(username, jwtToken);
+            return new AuthResponseDTO(userDetails.getUsername(), jwtToken);
+
+        } catch (BadCredentialsException | UsernameNotFoundException ex) {
+            throw new InvalidCredentialsException("Invalid username or password.");
+        }
     }
 
     @Override

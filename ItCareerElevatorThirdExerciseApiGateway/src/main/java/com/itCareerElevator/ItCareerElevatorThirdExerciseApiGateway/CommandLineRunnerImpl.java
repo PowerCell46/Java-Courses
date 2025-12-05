@@ -3,11 +3,13 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Encoders;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 
 import javax.crypto.SecretKey;
 
 @Controller
+@Order(2) // ! Check whether for all components, or only for CommandLineRunner implementations
 public class CommandLineRunnerImpl implements CommandLineRunner {
 
     @Override

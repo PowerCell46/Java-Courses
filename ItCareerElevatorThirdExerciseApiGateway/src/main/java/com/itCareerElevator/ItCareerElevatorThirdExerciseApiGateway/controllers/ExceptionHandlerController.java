@@ -1,6 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.ErrorResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,19 @@ public class ExceptionHandlerController {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "Invalid username or password.",
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        log.warn("Handling InvalidCredentialsException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
                 System.currentTimeMillis()
         );
 
