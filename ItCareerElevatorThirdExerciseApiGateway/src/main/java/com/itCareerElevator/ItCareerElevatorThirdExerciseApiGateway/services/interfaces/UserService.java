@@ -2,8 +2,8 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.in
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.UserResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
 
-    AuthResponseDTO register(UserRequestDTO userRequest);
+    AuthResponseDTO register(AuthRequestDTO userRequest);
 
     User save(User user);
 

@@ -1,11 +1,10 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.CreateUserDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.FollowUserDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.UserResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.CreateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.FollowUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthResponseDTO register(UserRequestDTO userRequest) {
+    public AuthResponseDTO register(AuthRequestDTO userRequest) {
         if (findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(
                     String.format("User with username: %s already exists.", userRequest.getUsername())
@@ -65,7 +64,7 @@ public class UserServiceImpl implements UserService {
         // * Fire and forget
         userServiceWebClient.post()
                 .uri("/api/users")
-                .bodyValue(new CreateUserDTO(
+                .bodyValue(new CreateUserRequestDTO(
                         user.getSnowflakeId(),
                         userRequest.getUsername()
                 ))
@@ -76,7 +75,7 @@ public class UserServiceImpl implements UserService {
         return authenticate(user.getUsername(), userRequest.getPassword());
     }
 
-    private User constructNonPersistedUser(UserRequestDTO userRequest) {
+    private User constructNonPersistedUser(AuthRequestDTO userRequest) {
         String encodedPassword = encodePassword(userRequest.getPassword());
 
         return new User(userRequest.getUsername(), encodedPassword);
@@ -127,12 +126,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO follow(FollowUserRequestDTO requestDTO) {
+    public UserResponseDTO follow(com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO requestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
         return userServiceWebClient.post()
                 .uri("/api/users/follow")
-                .bodyValue(new FollowUserDTO(
+                .bodyValue(new FollowUserRequestDTO(
                         loggedUser.getSnowflakeId(),
                         requestDTO.getUsername()
                 ))

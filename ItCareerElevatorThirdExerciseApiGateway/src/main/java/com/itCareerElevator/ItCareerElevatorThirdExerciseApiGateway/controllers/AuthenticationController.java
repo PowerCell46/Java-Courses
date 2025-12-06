@@ -1,15 +1,11 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.UserResponseDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +20,7 @@ public class AuthenticationController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody UserRequestDTO userRequest) {
+    public ResponseEntity<AuthResponseDTO> register(@RequestBody AuthRequestDTO userRequest) {
         log.info("--- POST request on api/auth/register with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService.register(userRequest);
@@ -33,7 +29,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> loginUser(@RequestBody UserRequestDTO userRequest) {
+    public ResponseEntity<AuthResponseDTO> loginUser(@RequestBody AuthRequestDTO userRequest) {
         log.info("--- POST request on api/auth/login with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService
@@ -42,15 +38,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PostMapping("/follow") // TODO: Move to userController
-    public ResponseEntity<UserResponseDTO> followUser(@RequestBody FollowUserRequestDTO userRequestDTO) {
-        log.info("--- POST request on api/auth/follow.");
-
-        UserResponseDTO responseDTO = userService.follow(userRequestDTO);
-
-        return ResponseEntity.created(null).body(responseDTO); // TODO: Empty URL
-    }
-
+    // ! For testing authorization
 /*
     @GetMapping("/authenticated")
     public String method() {
@@ -71,5 +59,5 @@ public class AuthenticationController {
 
         return "Success GET request on /role-restricted.";
     }
- */
+*/
 }
