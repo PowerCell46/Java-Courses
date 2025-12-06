@@ -7,9 +7,9 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.ent
 
 public interface UserService {
 
-    UserResponseDTO createUser(CreateUserRequestDTO requestDTO);
+    UserResponseDTO create(CreateUserRequestDTO requestDTO);
 
-    UserResponseDTO followUser(FollowUserRequestDTO requestDTO);
+    UserResponseDTO follow(FollowUserRequestDTO requestDTO);
 
     User save(User user);
 

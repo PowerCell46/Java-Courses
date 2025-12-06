@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserResponseDTO createUser(CreateUserRequestDTO requestDTO) {
+    public UserResponseDTO create(CreateUserRequestDTO requestDTO) {
         User user = constructNonPersistedUser(requestDTO);
         user = save(user);
 
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO followUser(FollowUserRequestDTO requestDTO) {
+    public UserResponseDTO follow(FollowUserRequestDTO requestDTO) {
         User follower = getBySnowflakeId(requestDTO.getFollowerId()); // Current logged-in user
         User followed = getBySnowflakeId(requestDTO.getFollowedId());
 

@@ -24,7 +24,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserRequestDTO requestDTO) {
         log.info("--- POST request on /api/users.");
 
-        UserResponseDTO userResponseDTO = userService.createUser(requestDTO);
+        UserResponseDTO userResponseDTO = userService.create(requestDTO);
 
         return ResponseEntity.created(null).body(userResponseDTO);
     }
@@ -33,7 +33,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> followUser(@RequestBody FollowUserRequestDTO requestDTO) {
         log.info("--- POST request on /api/users/follow.");
 
-        UserResponseDTO responseDTO = userService.followUser(requestDTO);
+        UserResponseDTO responseDTO = userService.follow(requestDTO);
 
         return ResponseEntity.created(null).body(responseDTO);
     }
