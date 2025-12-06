@@ -11,6 +11,8 @@ public interface UserService {
 
     UserResponseDTO follow(FollowUserRequestDTO requestDTO);
 
+    UserResponseDTO unfollow(FollowUserRequestDTO requestDTO);
+
     User save(User user);
 
     User getBySnowflakeId(String snowflakeId);

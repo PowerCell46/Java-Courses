@@ -7,6 +7,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.ser
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +43,12 @@ public class UserController {
         return ResponseEntity.created(null).body(userResponseDTO); // TODO: URL
     }
 
-    // DELETE
-    // unfollow user
+    @DeleteMapping("/follow")
+    public ResponseEntity<UserResponseDTO> unfollowUser(@RequestBody FollowUserRequestDTO requestDTO) {
+        log.info("--- DELETE request on /api/users/follow.");
+
+        UserResponseDTO userResponseDTO = userService.unfollow(requestDTO);
+
+        return ResponseEntity.ok(userResponseDTO);
+    }
 }

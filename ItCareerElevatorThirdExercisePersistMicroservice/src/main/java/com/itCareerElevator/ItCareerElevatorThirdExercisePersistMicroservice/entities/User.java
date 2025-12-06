@@ -69,7 +69,7 @@ public class User extends CommonEntity {
     )
     private Set<User> following;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
     private Set<User> followers;
 
     public User(String username) {

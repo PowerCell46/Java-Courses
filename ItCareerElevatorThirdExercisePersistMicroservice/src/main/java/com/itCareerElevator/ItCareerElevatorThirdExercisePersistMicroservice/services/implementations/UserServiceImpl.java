@@ -6,11 +6,13 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTO
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.CommonEntity;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.NoSuchUserException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.UserNotFollowingException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.repositories.UserRepository;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,18 +58,49 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponseDTO follow(FollowUserRequestDTO requestDTO) {
         User follower = getBySnowflakeId(requestDTO.getFollowerId()); // Current logged-in user
         User followed = getBySnowflakeId(requestDTO.getFollowedId());
 
+        follower.getFollowing().add(followed);
         followed.getFollowers().add(follower);
-        followed = save(followed);
+
+        save(follower);
 
         return UserResponseDTO
                 .builder()
                 .id(followed.getSnowflakeId())
                 .username(followed.getUsername())
                 .followers(followed.getFollowers().stream().map(User::getUsername).toList())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDTO unfollow(FollowUserRequestDTO requestDTO) {
+        User unfollower = getBySnowflakeId(requestDTO.getFollowerId()); // Current logged-in user
+        User unfollowed = getBySnowflakeId(requestDTO.getFollowedId());
+
+        boolean removed = unfollower.getFollowing().remove(unfollowed);
+        if (!removed) {
+            throw new UserNotFollowingException(
+                    String.format(
+                            "User %s is not following %s.",
+                            unfollower.getUsername(),
+                            unfollowed.getUsername()
+                    )
+            );
+        }
+
+        unfollowed.getFollowers().remove(unfollower);
+        save(unfollower);
+        unfollowed = save(unfollowed);
+
+        return UserResponseDTO.builder()
+                .id(unfollowed.getSnowflakeId())
+                .username(unfollowed.getUsername())
+                .followers(unfollowed.getFollowers().stream().map(User::getUsername).toList())
                 .build();
     }
 }
