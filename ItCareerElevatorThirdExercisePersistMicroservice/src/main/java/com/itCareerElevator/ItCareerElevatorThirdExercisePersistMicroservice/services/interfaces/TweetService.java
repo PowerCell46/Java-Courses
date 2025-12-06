@@ -14,4 +14,6 @@ public interface TweetService {
     Tweet getBySnowflakeId(String snowflakeId);
 
     TweetResponseDTO like(LikeTweetRequestDTO requestDTO);
+
+    TweetResponseDTO unlike(LikeTweetRequestDTO requestDTO);
 }

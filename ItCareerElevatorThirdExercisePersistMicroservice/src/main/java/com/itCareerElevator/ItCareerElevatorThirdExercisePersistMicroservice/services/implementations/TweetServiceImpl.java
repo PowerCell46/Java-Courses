@@ -8,6 +8,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.ent
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.NoSuchTweetException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.TweetAlreadyLikedException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.TweetNotLikedException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.repositories.TweetRepository;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.TweetService;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
@@ -29,18 +30,22 @@ public class TweetServiceImpl implements TweetService {
         Tweet tweet = constructNonPersistedTweet(requestDTO);
         tweet = save(tweet);
 
-        return new TweetResponseDTO(
-                tweet.getSnowflakeId(),
-                tweet.getContent(),
-                tweet.getCreatedBy().getUsername(),
-                tweet.getLikedBy().stream().map(User::getUsername).toList()
-        );
+        return constructResponseDTO(tweet);
     }
 
     private Tweet constructNonPersistedTweet(CreateTweetRequestDTO requestDTO) {
         User createdBy = userService.getBySnowflakeId(requestDTO.getUserSnowflakeId());
 
         return new Tweet(requestDTO.getContent(), createdBy);
+    }
+
+    private TweetResponseDTO constructResponseDTO(Tweet tweet) {
+        return new TweetResponseDTO(
+                tweet.getSnowflakeId(),
+                tweet.getContent(),
+                tweet.getCreatedBy().getUsername(),
+                tweet.getLikedBy().stream().map(User::getUsername).toList()
+        );
     }
 
     @Override
@@ -76,11 +81,26 @@ public class TweetServiceImpl implements TweetService {
 
         userService.save(user);
 
-        return new TweetResponseDTO(
-                tweet.getSnowflakeId(),
-                tweet.getContent(),
-                tweet.getCreatedBy().getUsername(),
-                tweet.getLikedBy().stream().map(User::getUsername).toList()
-        );
+        return constructResponseDTO(tweet);
+    }
+
+    @Override
+    public TweetResponseDTO unlike(LikeTweetRequestDTO requestDTO) {
+        User user = userService.getBySnowflakeId(requestDTO.getUserSnowflakeId());
+        Tweet tweet = getBySnowflakeId(requestDTO.getTweetSnowflakeId());
+
+        boolean removed = user.getLikedTweets().remove(tweet);
+        if (!removed) {
+            throw new TweetNotLikedException(String.format(
+               "User %s hasn't liked tweet with id %s.",
+               user.getUsername(),
+               tweet.getSnowflakeId()
+            ));
+        }
+
+        tweet.getLikedBy().remove(user);
+        userService.save(user);
+
+        return constructResponseDTO(tweet);
     }
 }

@@ -7,6 +7,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.ser
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,12 +32,19 @@ public class TweetController {
 
     @PostMapping("/like")
     public ResponseEntity<TweetResponseDTO> likeTweet(@RequestBody LikeTweetRequestDTO requestDTO) {
-        log.info("--- POST request on /api/tweets/like");
+        log.info("--- POST request on /api/tweets/like.");
 
         TweetResponseDTO tweetResponseDTO = tweetService.like(requestDTO);
 
         return ResponseEntity.created(null).body(tweetResponseDTO); // TODO: URL
     }
 
-    // Unlike
+    @DeleteMapping("/like")
+    public ResponseEntity<TweetResponseDTO> unlikeTweet(@RequestBody LikeTweetRequestDTO requestDTO) {
+        log.info("--- DELETE request on /api/tweets/like.");
+
+        TweetResponseDTO tweetResponseDTO = tweetService.unlike(requestDTO);
+
+        return ResponseEntity.ok(tweetResponseDTO);
+    }
 }
