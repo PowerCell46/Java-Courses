@@ -1,6 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.MicroserviceCreateUserDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
 
@@ -28,15 +30,17 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final JwtUtil jwtUtil;
+    private final WebClient userServiceWebClient;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
 
     public UserServiceImpl(
             JwtUtil jwtUtil, @Lazy AuthenticationManager authenticationManager,
-            PasswordEncoder encoder, UserRepository userRepository
+            PasswordEncoder encoder, UserRepository userRepository, WebClient userServiceWebClient
     ) {
         this.jwtUtil = jwtUtil;
+        this.userServiceWebClient = userServiceWebClient;
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
         this.userRepository = userRepository;
@@ -51,7 +55,18 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = constructNonPersistedUser(userRequest);
-        save(user);
+        user = save(user);
+
+        // * Fire and forget
+        userServiceWebClient.post()
+                .uri("/api/users")
+                .bodyValue(new MicroserviceCreateUserDTO(
+                        user.getSnowflakeId(),
+                        userRequest.getUsername()
+                ))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .subscribe();
 
         return authenticate(user.getUsername(), userRequest.getPassword());
     }
