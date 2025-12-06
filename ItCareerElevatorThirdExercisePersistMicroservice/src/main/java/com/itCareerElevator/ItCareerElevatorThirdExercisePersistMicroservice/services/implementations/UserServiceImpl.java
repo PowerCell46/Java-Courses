@@ -58,10 +58,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getByUsername(String username) {
+        return userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new NoSuchUserException(String.format("No user found with username %s.", username)));
+    }
+
+    @Override
     @Transactional
-    public UserResponseDTO follow(FollowUserRequestDTO requestDTO) {
+    public UserResponseDTO follow(FollowUserRequestDTO requestDTO) { // TODO: Don't let the user follow him/herself
         User follower = getBySnowflakeId(requestDTO.getFollowerId()); // Current logged-in user
-        User followed = getBySnowflakeId(requestDTO.getFollowedId());
+        User followed = getByUsername(requestDTO.getFollowedUsername());
 
         follower.getFollowing().add(followed);
         followed.getFollowers().add(follower);
@@ -80,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDTO unfollow(FollowUserRequestDTO requestDTO) {
         User unfollower = getBySnowflakeId(requestDTO.getFollowerId()); // Current logged-in user
-        User unfollowed = getBySnowflakeId(requestDTO.getFollowedId());
+        User unfollowed = getByUsername(requestDTO.getFollowedUsername());
 
         boolean removed = unfollower.getFollowing().remove(unfollowed);
         if (!removed) {

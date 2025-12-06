@@ -16,4 +16,6 @@ public interface UserService {
     User save(User user);
 
     User getBySnowflakeId(String snowflakeId);
+
+    User getByUsername(String username);
 }

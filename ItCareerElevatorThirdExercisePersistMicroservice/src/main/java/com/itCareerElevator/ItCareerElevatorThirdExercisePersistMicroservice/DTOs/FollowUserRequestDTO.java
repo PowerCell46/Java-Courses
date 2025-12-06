@@ -9,5 +9,5 @@ public class FollowUserRequestDTO {
 
     private String followerId; // Currently logged-in user, making the request
 
-    private String followedId;
+    private String followedUsername;
 }

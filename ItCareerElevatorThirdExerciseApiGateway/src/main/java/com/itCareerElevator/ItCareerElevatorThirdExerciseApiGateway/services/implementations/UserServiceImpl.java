@@ -1,8 +1,11 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.MicroserviceCreateUserDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.CreateUserDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.FollowUserDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
@@ -12,6 +15,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.Custom
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
@@ -60,7 +65,7 @@ public class UserServiceImpl implements UserService {
         // * Fire and forget
         userServiceWebClient.post()
                 .uri("/api/users")
-                .bodyValue(new MicroserviceCreateUserDTO(
+                .bodyValue(new CreateUserDTO(
                         user.getSnowflakeId(),
                         userRequest.getUsername()
                 ))
@@ -119,6 +124,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public UserResponseDTO follow(FollowUserRequestDTO requestDTO) {
+        User loggedUser = getCurrentlyLoggedUser();
+
+        return userServiceWebClient.post()
+                .uri("/api/users/follow")
+                .bodyValue(new FollowUserDTO(
+                        loggedUser.getSnowflakeId(),
+                        requestDTO.getUsername()
+                ))
+                .retrieve()
+                .onStatus(HttpStatus.BAD_REQUEST::equals, resp -> Mono.error(new IllegalArgumentException("Error ocrrurred."))) // TODO: Handle errors
+                .bodyToMono(UserResponseDTO.class)
+                .block();
     }
 
     @Override

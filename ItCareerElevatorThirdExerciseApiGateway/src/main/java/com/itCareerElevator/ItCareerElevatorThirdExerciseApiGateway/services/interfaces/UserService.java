@@ -1,7 +1,9 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -18,4 +20,6 @@ public interface UserService extends UserDetailsService {
     User getCurrentlyLoggedUser();
 
     Optional<User> findByUsername(String username);
+
+    UserResponseDTO follow(FollowUserRequestDTO requestDTO);
 }
