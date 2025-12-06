@@ -66,13 +66,13 @@ public class UserServiceImpl implements UserService {
         follower.getFollowing().add(followed);
         followed.getFollowers().add(follower);
 
-        save(follower);
+        follower = save(follower);
 
         return UserResponseDTO
                 .builder()
-                .id(followed.getSnowflakeId())
-                .username(followed.getUsername())
-                .followers(followed.getFollowers().stream().map(User::getUsername).toList())
+                .id(follower.getSnowflakeId())
+                .username(follower.getUsername())
+                .following(follower.getFollowing().stream().map(User::getUsername).toList())
                 .build();
     }
 
@@ -94,13 +94,13 @@ public class UserServiceImpl implements UserService {
         }
 
         unfollowed.getFollowers().remove(unfollower);
-        save(unfollower);
-        unfollowed = save(unfollowed);
+        unfollower = save(unfollower);
+        save(unfollowed);
 
         return UserResponseDTO.builder()
-                .id(unfollowed.getSnowflakeId())
-                .username(unfollowed.getUsername())
-                .followers(unfollowed.getFollowers().stream().map(User::getUsername).toList())
+                .id(unfollower.getSnowflakeId())
+                .username(unfollower.getUsername())
+                .following(unfollower.getFollowing().stream().map(User::getUsername).toList())
                 .build();
     }
 }

@@ -53,7 +53,7 @@ public class User extends CommonEntity {
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private Set<Tweet> tweets;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_liked_tweets",
             joinColumns = @JoinColumn(name = "user_id"),

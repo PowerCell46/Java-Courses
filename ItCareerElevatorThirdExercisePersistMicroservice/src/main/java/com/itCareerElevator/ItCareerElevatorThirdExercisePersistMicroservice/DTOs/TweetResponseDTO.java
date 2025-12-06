@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,4 +18,6 @@ public class TweetResponseDTO {
     private String content;
 
     private String createdBy;
+
+    private Collection<String> likedBy;
 }

@@ -1,6 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.controllers;
 
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.CreateTweetRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.LikeTweetRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.TweetResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.TweetService;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +22,21 @@ public class TweetController {
 
     @PostMapping
     public ResponseEntity<TweetResponseDTO> createTweet(@RequestBody CreateTweetRequestDTO requestDTO) {
-        log.info("--- POST request on /api/tweet.");
+        log.info("--- POST request on /api/tweets.");
 
         TweetResponseDTO tweetResponseDTO = tweetService.create(requestDTO);
 
         return ResponseEntity.created(null).body(tweetResponseDTO); // TODO: URL
     }
 
-    // Like
+    @PostMapping("/like")
+    public ResponseEntity<TweetResponseDTO> likeTweet(@RequestBody LikeTweetRequestDTO requestDTO) {
+        log.info("--- POST request on /api/tweets/like");
+
+        TweetResponseDTO tweetResponseDTO = tweetService.like(requestDTO);
+
+        return ResponseEntity.created(null).body(tweetResponseDTO); // TODO: URL
+    }
 
     // Unlike
 }
