@@ -5,6 +5,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exc
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.NoSuchUserException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.TweetAlreadyLikedException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.TweetNotLikedException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.UserCannotFollowThemselvesException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.UserNotFollowingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,19 @@ public class ExceptionController {
     @ExceptionHandler(UserNotFollowingException.class)
     public ResponseEntity<ErrorResponseDTO> handleError(UserNotFollowingException ex) {
         log.warn("Handling UserNotFollowingException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserCannotFollowThemselvesException.class)
+    public ResponseEntity<ErrorResponseDTO> handleError(UserCannotFollowThemselvesException ex) {
+        log.warn("Handling UserCannotFollowThemselvesException.");
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),

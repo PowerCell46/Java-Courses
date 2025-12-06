@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FollowUserRequestDTO {
+public class UserFollowRequestDTO {
 
     private String username;
 }

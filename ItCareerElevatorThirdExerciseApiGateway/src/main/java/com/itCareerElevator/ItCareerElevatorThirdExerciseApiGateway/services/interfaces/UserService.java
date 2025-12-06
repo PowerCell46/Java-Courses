@@ -1,7 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserFollowRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
@@ -21,5 +21,7 @@ public interface UserService extends UserDetailsService {
 
     Optional<User> findByUsername(String username);
 
-    UserResponseDTO follow(FollowUserRequestDTO requestDTO);
+    UserResponseDTO follow(UserFollowRequestDTO requestDTO);
+
+    UserResponseDTO unfollow(UserFollowRequestDTO requestDTO);
 }

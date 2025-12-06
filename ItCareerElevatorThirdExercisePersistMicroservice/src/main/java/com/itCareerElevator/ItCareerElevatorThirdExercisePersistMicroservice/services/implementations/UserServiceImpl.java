@@ -6,6 +6,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTO
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.CommonEntity;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.NoSuchUserException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.UserCannotFollowThemselvesException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.UserNotFollowingException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.repositories.UserRepository;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
@@ -66,9 +67,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponseDTO follow(FollowUserRequestDTO requestDTO) { // TODO: Don't let the user follow him/herself
+    public UserResponseDTO follow(FollowUserRequestDTO requestDTO) {
         User follower = getBySnowflakeId(requestDTO.getFollowerId()); // Current logged-in user
         User followed = getByUsername(requestDTO.getFollowedUsername());
+
+        if (follower.equals(followed)) {
+            throw new UserCannotFollowThemselvesException("User cannot follow themselves.");
+        }
 
         follower.getFollowing().add(followed);
         followed.getFollowers().add(follower);

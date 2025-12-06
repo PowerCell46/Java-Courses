@@ -1,6 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserFollowRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.CreateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.AuthRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.persistMicroservice.FollowUserRequestDTO;
@@ -14,6 +15,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.Custom
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -126,7 +128,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO follow(com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.FollowUserRequestDTO requestDTO) {
+    public UserResponseDTO follow(UserFollowRequestDTO requestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
         return userServiceWebClient.post()
@@ -137,6 +139,24 @@ public class UserServiceImpl implements UserService {
                 ))
                 .retrieve()
                 .onStatus(HttpStatus.BAD_REQUEST::equals, resp -> Mono.error(new IllegalArgumentException("Error ocrrurred."))) // TODO: Handle errors
+                .bodyToMono(UserResponseDTO.class)
+                .block();
+    }
+
+    @Override
+    public UserResponseDTO unfollow(UserFollowRequestDTO requestDTO) {
+        User loggedUser = getCurrentlyLoggedUser();
+
+        return userServiceWebClient
+                .method(HttpMethod.DELETE)
+                .uri("/api/users/follow")
+                .bodyValue(new FollowUserRequestDTO(
+                        loggedUser.getSnowflakeId(),
+                        requestDTO.getUsername()
+                ))
+                .retrieve()
+                .onStatus(HttpStatus.BAD_REQUEST::equals,
+                        resp -> Mono.error(new IllegalArgumentException("Error occurred.")))
                 .bodyToMono(UserResponseDTO.class)
                 .block();
     }
