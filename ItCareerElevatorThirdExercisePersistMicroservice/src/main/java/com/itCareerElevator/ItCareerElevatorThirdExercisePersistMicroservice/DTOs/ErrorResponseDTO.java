@@ -1,4 +1,4 @@
-package com.example.ItCareerElevatorSecondExerciseProducer.entities;
+package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

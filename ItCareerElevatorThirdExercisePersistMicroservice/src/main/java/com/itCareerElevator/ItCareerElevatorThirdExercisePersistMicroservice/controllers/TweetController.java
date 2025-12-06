@@ -21,10 +21,10 @@ public class TweetController {
 
     @PostMapping
     public ResponseEntity<TweetResponseDTO> createTweet(@RequestBody CreateTweetRequestDTO requestDTO) {
-        log.info("--- POST request on \"/api/tweet\".");
+        log.info("--- POST request on /api/tweet.");
 
-        TweetResponseDTO responseDTO = tweetService.create(requestDTO);
+        TweetResponseDTO tweetResponseDTO = tweetService.create(requestDTO);
 
-        return ResponseEntity.created(null).body(responseDTO);
+        return ResponseEntity.created(null).body(tweetResponseDTO); // TODO: URL
     }
 }

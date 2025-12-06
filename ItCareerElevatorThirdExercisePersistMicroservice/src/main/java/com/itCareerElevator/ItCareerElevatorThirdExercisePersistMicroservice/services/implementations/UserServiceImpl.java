@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     private User constructNonPersistedUser(CreateUserRequestDTO requestDTO) {
         User nonPersistedUser = new User(requestDTO.getUsername());
 
-        // * Set manually the id, not letting the @PrePersist assign a new one (use the request one)
+        // * Manually set the id, not letting the @PrePersist assign a new one (reuse the request one)
         nonPersistedUser
                 .setId(CommonEntity.convertSnowflakeIdToId(requestDTO.getSnowflakeId()));
 

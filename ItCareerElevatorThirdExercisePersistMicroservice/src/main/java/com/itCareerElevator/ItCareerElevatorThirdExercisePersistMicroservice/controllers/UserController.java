@@ -26,18 +26,22 @@ public class UserController {
 
         UserResponseDTO userResponseDTO = userService.create(requestDTO);
 
-        return ResponseEntity.created(null).body(userResponseDTO);
+        return ResponseEntity.created(null).body(userResponseDTO); // TODO: URL
     }
+
+    // PatchMapping
+    // UpdateInfo
+    // set the other fields (all should be optional)
 
     @PostMapping("/follow")
     public ResponseEntity<UserResponseDTO> followUser(@RequestBody FollowUserRequestDTO requestDTO) {
         log.info("--- POST request on /api/users/follow.");
 
-        UserResponseDTO responseDTO = userService.follow(requestDTO);
+        UserResponseDTO userResponseDTO = userService.follow(requestDTO);
 
-        return ResponseEntity.created(null).body(responseDTO);
+        return ResponseEntity.created(null).body(userResponseDTO); // TODO: URL
     }
 
-    // PatchMapping
-    // set the other fields (all should be optional)
+    // DELETE
+    // unfollow user
 }

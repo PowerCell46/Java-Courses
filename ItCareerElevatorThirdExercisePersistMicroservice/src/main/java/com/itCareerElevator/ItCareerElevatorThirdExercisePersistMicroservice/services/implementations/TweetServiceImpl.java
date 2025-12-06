@@ -39,7 +39,7 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public Tweet save(Tweet tweet) {
-        log.info("Persisting tweet with content {} to the Database.", tweet.getContent());
+        log.info("Persisting tweet with content '{}' to the Database.", tweet.getContent());
 
         return tweetRepository.save(tweet);
     }
