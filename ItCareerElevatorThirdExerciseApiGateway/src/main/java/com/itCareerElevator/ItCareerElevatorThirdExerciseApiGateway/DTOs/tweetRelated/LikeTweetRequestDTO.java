@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LikeTweetRequestDTO {
+public class LikeTweetRequestDTO { // TODO: Validations
 
     @JsonProperty("tweetId")
     private String tweetSnowflakeId;

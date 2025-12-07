@@ -22,11 +22,11 @@ public class UserController {
 
     @PostMapping("/follow")
     public ResponseEntity<UserResponseDTO> followUser(@RequestBody UserFollowRequestDTO userRequestDTO) {
-        log.info("--- POST request on api/users/follow with username {}.", userRequestDTO.getUsername());
+        log.info("--- POST request on api/users/follow with (following) username {}.", userRequestDTO.getUsername());
 
         UserResponseDTO responseDTO = userService.follow(userRequestDTO);
 
-        return ResponseEntity.created(null).body(responseDTO); // TODO: Empty URL
+        return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping("/follow")

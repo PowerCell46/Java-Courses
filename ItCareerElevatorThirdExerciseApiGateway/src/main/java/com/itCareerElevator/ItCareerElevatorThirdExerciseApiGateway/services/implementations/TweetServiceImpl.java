@@ -28,8 +28,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDTO create(CreateTweetRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        log.info("Making a request to the tweets microservice.");
-
+        log.info("Making a request to the microservice.");
         return tweetServiceWebClient
                 .post()
                 .uri("/api/tweets")
@@ -48,8 +47,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDTO like(LikeTweetRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        log.info("Making a request to the tweets microservice.");
-
+        log.info("Making a request to the microservice.");
         return tweetServiceWebClient
                 .post()
                 .uri("/api/tweets/like")
@@ -68,8 +66,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDTO unlike(LikeTweetRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        log.info("Making a request to the tweets microservice.");
-
+        log.info("Making a request to the microservice.");
         return tweetServiceWebClient
                 .method(HttpMethod.DELETE)
                 .uri("/api/tweets/like")

@@ -38,8 +38,9 @@ public class TweetController {
         log.info("--- POST request on /api/tweets/like with tweet id {}.", requestDTO.getTweetSnowflakeId());
 
         TweetResponseDTO responseDTO = tweetService.like(requestDTO);
+        URI location = URI.create(String.format("/api/tweets/%s", responseDTO.getSnowflakeId()));
 
-        return ResponseEntity.created(null).body(responseDTO); // TODO: empty URL
+        return ResponseEntity.created(location).body(responseDTO);
     }
 
     @DeleteMapping("/like")
@@ -48,6 +49,6 @@ public class TweetController {
 
         TweetResponseDTO responseDTO = tweetService.unlike(requestDTO);
 
-        return ResponseEntity.created(null).body(responseDTO); // TODO: empty URL
+        return ResponseEntity.ok(responseDTO);
     }
 }

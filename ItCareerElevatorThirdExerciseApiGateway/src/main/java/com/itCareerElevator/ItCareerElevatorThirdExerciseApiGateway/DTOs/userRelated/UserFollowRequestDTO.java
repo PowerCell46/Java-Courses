@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserFollowRequestDTO {
+public class UserFollowRequestDTO { // TODO: Validations
 
     private String username;
 }

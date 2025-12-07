@@ -2,9 +2,9 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.im
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserFollowRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.CreateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.MsvcCreateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.FollowUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.MsvcFollowUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final WebClient userServiceWebClient;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
+
     private final UserRepository userRepository;
 
     public UserServiceImpl(
@@ -65,15 +66,16 @@ public class UserServiceImpl implements UserService {
         user = save(user);
 
         // ! Fire and forget
+        log.info("Making a request to the microservice.");
         userServiceWebClient
                 .post()
                 .uri("/api/users")
-                .bodyValue(new CreateUserRequestDTO(
+                .bodyValue(new MsvcCreateUserRequestDTO(
                         user.getSnowflakeId(),
                         userRequest.getUsername()
                 ))
                 .retrieve()
-                .bodyToMono(Void.class)
+                .bodyToMono(Void.class) // TODO: Do we need the returned data?
                 .subscribe();
 
         return authenticate(user.getUsername(), userRequest.getPassword());
@@ -126,18 +128,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User is not found."));
+
+        return new CustomUserDetails(user);
+    }
+
+    @Override
     public UserResponseDTO follow(UserFollowRequestDTO requestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
+        log.info("Making a request to the microservice.");
         return userServiceWebClient
                 .post()
                 .uri("/api/users/follow")
-                .bodyValue(new FollowUserRequestDTO(
+                .bodyValue(new MsvcFollowUserRequestDTO(
                         loggedUser.getSnowflakeId(),
                         requestDTO.getUsername()
                 ))
                 .retrieve()
-                .onStatus(HttpStatus.BAD_REQUEST::equals, resp -> Mono.error(new IllegalArgumentException("Error ocrrurred."))) // TODO: Handle errors
+                .onStatus(HttpStatus.BAD_REQUEST::equals,
+                        resp -> Mono.error(new IllegalArgumentException("Error ocrrurred."))) // TODO: Handle errors
                 .bodyToMono(UserResponseDTO.class)
                 .block();
     }
@@ -146,10 +159,11 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO unfollow(UserFollowRequestDTO requestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
+        log.info("Making a request to the microservice.");
         return userServiceWebClient
                 .method(HttpMethod.DELETE)
                 .uri("/api/users/follow")
-                .bodyValue(new FollowUserRequestDTO(
+                .bodyValue(new MsvcFollowUserRequestDTO(
                         loggedUser.getSnowflakeId(),
                         requestDTO.getUsername()
                 ))
@@ -158,14 +172,5 @@ public class UserServiceImpl implements UserService {
                         resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
                 .bodyToMono(UserResponseDTO.class)
                 .block();
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User is not found."));
-
-        return new CustomUserDetails(user);
     }
 }

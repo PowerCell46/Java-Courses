@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CreateUserRequestDTO {
+public class MsvcFollowUserRequestDTO {
 
-    private String id;
+    private String followerId;
 
-    private String username;
+    private String followedUsername;
 }

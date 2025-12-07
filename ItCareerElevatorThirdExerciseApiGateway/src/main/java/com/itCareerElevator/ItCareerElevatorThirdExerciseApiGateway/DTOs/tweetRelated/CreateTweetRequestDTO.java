@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CreateTweetRequestDTO {
+public class CreateTweetRequestDTO { // TODO: Validations
 
     private String content;
 }
