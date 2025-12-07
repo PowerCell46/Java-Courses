@@ -43,7 +43,8 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(
             JwtUtil jwtUtil, @Lazy AuthenticationManager authenticationManager,
-            PasswordEncoder encoder, UserRepository userRepository, WebClient userServiceWebClient
+            PasswordEncoder encoder, UserRepository userRepository,
+            WebClient userServiceWebClient
     ) {
         this.jwtUtil = jwtUtil;
         this.userServiceWebClient = userServiceWebClient;
@@ -63,8 +64,9 @@ public class UserServiceImpl implements UserService {
         User user = constructNonPersistedUser(userRequest);
         user = save(user);
 
-        // * Fire and forget
-        userServiceWebClient.post()
+        // ! Fire and forget
+        userServiceWebClient
+                .post()
                 .uri("/api/users")
                 .bodyValue(new CreateUserRequestDTO(
                         user.getSnowflakeId(),
@@ -78,18 +80,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private User constructNonPersistedUser(AuthRequestDTO userRequest) {
-        String encodedPassword = encodePassword(userRequest.getPassword());
+        String encodedPassword = encoder.encode(userRequest.getPassword());
 
         return new User(userRequest.getUsername(), encodedPassword);
     }
 
-    private String encodePassword(String password) {
-        return encoder.encode(password);
-    }
-
     @Override
     public User save(User user) {
-        log.info("Persisting user with username '{}' to the Database.", user.getUsername());
+        log.info("Persisting user with username {} to the Database.", user.getUsername());
 
         return userRepository.save(user);
     }
@@ -131,7 +129,8 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO follow(UserFollowRequestDTO requestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
-        return userServiceWebClient.post()
+        return userServiceWebClient
+                .post()
                 .uri("/api/users/follow")
                 .bodyValue(new FollowUserRequestDTO(
                         loggedUser.getSnowflakeId(),
@@ -156,7 +155,7 @@ public class UserServiceImpl implements UserService {
                 ))
                 .retrieve()
                 .onStatus(HttpStatus.BAD_REQUEST::equals,
-                        resp -> Mono.error(new IllegalArgumentException("Error occurred.")))
+                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
                 .bodyToMono(UserResponseDTO.class)
                 .block();
     }

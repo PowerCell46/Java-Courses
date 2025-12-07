@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs;
+package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRelated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

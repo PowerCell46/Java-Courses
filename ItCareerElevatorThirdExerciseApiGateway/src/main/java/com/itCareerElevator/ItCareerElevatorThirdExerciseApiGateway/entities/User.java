@@ -29,10 +29,10 @@ import java.util.Set;
 @NoArgsConstructor
 public class User extends CommonEntity {
 
-    @Column
+    @Column(nullable = false)
     private String username;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
