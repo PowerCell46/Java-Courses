@@ -1,5 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway;
 
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UpdateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.Role;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.RoleService;
@@ -7,7 +9,6 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.int
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -20,10 +21,8 @@ public class DatabaseLoader implements CommandLineRunner {
     private final UserService userService;
     private final RoleService roleService;
 
-    private final PasswordEncoder encoder;
-
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         Role adminRole = roleService
                 .findByName("ROLE_ADMIN")
                 .orElseGet(() -> roleService.save(new Role("ROLE_ADMIN")));
@@ -36,12 +35,11 @@ public class DatabaseLoader implements CommandLineRunner {
         final String ADMIN_PASSWORD = "JsonobJeCT51";
 
         if (userService.findByUsername(ADMIN_USERNAME).isEmpty()) {
-            User admin = new User(
-                    ADMIN_USERNAME,
-                    encoder.encode(ADMIN_PASSWORD),
-                    Set.of(adminRole, managerRole)
-            );
-            userService.save(admin);
+            userService.register(new AuthRequestDTO(ADMIN_USERNAME, ADMIN_PASSWORD));
+
+            User adminUser = userService.findByUsername(ADMIN_USERNAME).get();
+            adminUser.setRoles(Set.of(adminRole, managerRole));
+            adminUser = userService.save(adminUser);
         }
     }
 }

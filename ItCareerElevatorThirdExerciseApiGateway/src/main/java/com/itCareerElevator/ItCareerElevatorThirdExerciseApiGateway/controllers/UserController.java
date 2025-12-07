@@ -25,20 +25,20 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/follow")
-    public ResponseEntity<UserResponseDTO> followUser(@RequestBody UserFollowRequestDTO userRequestDTO) {
-        log.info("--- POST request on api/users/follow with (following) username {}.", userRequestDTO.getUsername());
-
-        UserResponseDTO responseDTO = userService.follow(userRequestDTO);
-
-        return ResponseEntity.ok(responseDTO);
-    }
-
     @PatchMapping
     public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UpdateUserRequestDTO userRequestDTO) {
         log.info("--- PATCH request on api/users.");
 
         UserResponseDTO responseDTO = userService.update(userRequestDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PostMapping("/follow")
+    public ResponseEntity<UserResponseDTO> followUser(@RequestBody UserFollowRequestDTO userRequestDTO) {
+        log.info("--- POST request on api/users/follow with (following) username {}.", userRequestDTO.getUsername());
+
+        UserResponseDTO responseDTO = userService.follow(userRequestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }
