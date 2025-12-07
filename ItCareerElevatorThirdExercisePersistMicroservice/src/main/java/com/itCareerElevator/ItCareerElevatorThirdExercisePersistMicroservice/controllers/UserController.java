@@ -1,13 +1,15 @@
 package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.controllers;
 
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.CreateUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.FollowUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.UserResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.CreateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.FollowUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.UpdateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,9 +32,14 @@ public class UserController {
         return ResponseEntity.created(null).body(userResponseDTO); // TODO: URL
     }
 
-    // PatchMapping
-    // UpdateInfo
-    // set the other fields (all should be optional)
+    @PatchMapping
+    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UpdateUserRequestDTO requestDTO) {
+        log.info("--- PATCH request on /api/users.");
+
+        UserResponseDTO userResponseDTO = userService.updateUser(requestDTO);
+
+        return ResponseEntity.ok(userResponseDTO);
+    }
 
     @PostMapping("/follow")
     public ResponseEntity<UserResponseDTO> followUser(@RequestBody FollowUserRequestDTO requestDTO) {

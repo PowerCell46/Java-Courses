@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs;
+package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated;
 
 import lombok.Getter;
 import lombok.Setter;

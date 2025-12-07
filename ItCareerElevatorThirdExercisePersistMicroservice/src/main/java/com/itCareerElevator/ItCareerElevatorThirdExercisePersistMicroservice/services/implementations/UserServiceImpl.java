@@ -1,14 +1,17 @@
 package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.implementations;
 
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.CreateUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.FollowUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.UserResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.CreateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.FollowUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.UpdateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.CommonEntity;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.userRelated.NoSuchUserException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.userRelated.UserCannotFollowThemselvesException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.userRelated.UserNotFollowingException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.repositories.UserRepository;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.CityService;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.CountryService;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,9 @@ import java.time.LocalDateTime;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final CityService cityService;
+    private final CountryService countryService;
+
     private final UserRepository userRepository;
 
     @Override
@@ -29,11 +35,7 @@ public class UserServiceImpl implements UserService {
         User user = constructNonPersistedUser(requestDTO);
         user = save(user);
 
-        return UserResponseDTO
-                .builder()
-                .id(user.getSnowflakeId())
-                .username(user.getUsername())
-                .build();
+        return constructUserResponseDTO(user);
     }
 
     private User constructNonPersistedUser(CreateUserRequestDTO requestDTO) {
@@ -44,6 +46,21 @@ public class UserServiceImpl implements UserService {
                 .setId(CommonEntity.convertSnowflakeIdToId(requestDTO.getSnowflakeId()));
 
         return nonPersistedUser;
+    }
+
+    private UserResponseDTO constructUserResponseDTO(User user) {
+        return UserResponseDTO
+                .builder()
+                .snowflakeId(user.getSnowflakeId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .isMale(user.getIsMale())
+                .bio(user.getBio())
+                .city(user.getCity() != null ? user.getCity().getName() : null)
+                .country(user.getCountry() != null ? user.getCountry().getName() : null)
+                .following(user.getFollowing().stream().map(User::getUsername).toList())
+                .build();
     }
 
     @Override
@@ -68,6 +85,44 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDTO updateUser(UpdateUserRequestDTO requestDTO) {
+        User user = getBySnowflakeId(requestDTO.getSnowflakeId());
+
+        if (requestDTO.getFirstName() != null) {
+            user.setFirstName(requestDTO.getFirstName().strip());
+        }
+        if (requestDTO.getLastName() != null) {
+            user.setLastName(requestDTO.getLastName().strip());
+        }
+        if (requestDTO.getIsMale() != null) {
+            user.setIsMale(requestDTO.getIsMale());
+        }
+        if (requestDTO.getBio() != null) {
+            user.setBio(requestDTO.getBio().strip());
+        }
+        if (requestDTO.getCity() != null) {
+            user.setCity(cityService.getOrCreateByName(requestDTO.getCity().strip()));
+        }
+        if (requestDTO.getCountry() != null) {
+            user.setCountry(countryService.getOrCreateByName(requestDTO.getCountry().strip()));
+        }
+
+        if (
+            // @formatter:off
+                requestDTO.getFirstName() != null || requestDTO.getLastName() != null ||
+                requestDTO.getIsMale() != null || requestDTO.getBio() != null ||
+                requestDTO.getCity() != null || requestDTO.getCountry() != null
+            // @formatter:on
+        ) {
+            user.setLastModifiedAt(LocalDateTime.now());
+        }
+
+        user = save(user);
+
+        return constructUserResponseDTO(user);
+    }
+
+    @Override
     @Transactional
     public UserResponseDTO follow(FollowUserRequestDTO requestDTO) {
         User follower = getBySnowflakeId(requestDTO.getFollowerId()); // Current logged-in user
@@ -83,12 +138,7 @@ public class UserServiceImpl implements UserService {
 
         follower = save(follower);
 
-        return UserResponseDTO
-                .builder()
-                .id(follower.getSnowflakeId())
-                .username(follower.getUsername())
-                .following(follower.getFollowing().stream().map(User::getUsername).toList())
-                .build();
+        return constructUserResponseDTO(follower);
     }
 
     @Override
@@ -114,10 +164,6 @@ public class UserServiceImpl implements UserService {
         unfollower = save(unfollower);
         save(unfollowed);
 
-        return UserResponseDTO.builder()
-                .id(unfollower.getSnowflakeId())
-                .username(unfollower.getUsername())
-                .following(unfollower.getFollowing().stream().map(User::getUsername).toList())
-                .build();
+        return constructUserResponseDTO(unfollower);
     }
 }

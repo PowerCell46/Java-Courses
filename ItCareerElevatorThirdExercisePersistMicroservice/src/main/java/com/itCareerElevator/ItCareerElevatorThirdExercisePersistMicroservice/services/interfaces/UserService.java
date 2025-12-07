@@ -1,8 +1,9 @@
 package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces;
 
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.CreateUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.FollowUserRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.UserResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.CreateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.FollowUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.UpdateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.User;
 
 public interface UserService {
@@ -18,4 +19,6 @@ public interface UserService {
     User getBySnowflakeId(String snowflakeId);
 
     User getByUsername(String username);
+
+    UserResponseDTO updateUser(UpdateUserRequestDTO requestDTO);
 }
