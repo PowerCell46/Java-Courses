@@ -6,14 +6,21 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "tweets")
+@Table(
+        name = "tweets",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"content", "created_by_id"})
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

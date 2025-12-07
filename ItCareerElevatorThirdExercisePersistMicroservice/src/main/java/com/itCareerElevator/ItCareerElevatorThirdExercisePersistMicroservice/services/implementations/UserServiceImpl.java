@@ -5,15 +5,17 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTO
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.CommonEntity;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.User;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.NoSuchUserException;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.UserCannotFollowThemselvesException;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.UserNotFollowingException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.userRelated.NoSuchUserException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.userRelated.UserCannotFollowThemselvesException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.userRelated.UserNotFollowingException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.repositories.UserRepository;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService {
 
         follower.getFollowing().add(followed);
         followed.getFollowers().add(follower);
+        followed.setLastModifiedAt(LocalDateTime.now());
 
         follower = save(follower);
 
@@ -106,6 +109,8 @@ public class UserServiceImpl implements UserService {
         }
 
         unfollowed.getFollowers().remove(unfollower);
+        unfollowed.setLastModifiedAt(LocalDateTime.now());
+
         unfollower = save(unfollower);
         save(unfollowed);
 

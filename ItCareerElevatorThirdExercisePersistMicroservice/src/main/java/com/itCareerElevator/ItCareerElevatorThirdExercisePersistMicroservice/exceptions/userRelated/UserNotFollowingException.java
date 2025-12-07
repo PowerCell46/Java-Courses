@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions;
+package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.userRelated;
 
 public class UserNotFollowingException extends RuntimeException {
 

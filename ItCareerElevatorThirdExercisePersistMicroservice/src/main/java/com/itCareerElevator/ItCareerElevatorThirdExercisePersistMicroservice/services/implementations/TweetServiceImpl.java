@@ -6,9 +6,9 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTO
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.CommonEntity;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.Tweet;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.User;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.NoSuchTweetException;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.TweetAlreadyLikedException;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.TweetNotLikedException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.tweetRelated.NoSuchTweetException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.tweetRelated.TweetAlreadyLikedException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.tweetRelated.TweetNotLikedException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.repositories.TweetRepository;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.TweetService;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -78,6 +79,7 @@ public class TweetServiceImpl implements TweetService {
 
         user.getLikedTweets().add(tweet);
         tweet.getLikedBy().add(user);
+        tweet.setLastModifiedAt(LocalDateTime.now());
 
         userService.save(user);
 
@@ -99,6 +101,7 @@ public class TweetServiceImpl implements TweetService {
         }
 
         tweet.getLikedBy().remove(user);
+        tweet.setLastModifiedAt(LocalDateTime.now());
         userService.save(user);
 
         return constructResponseDTO(tweet);

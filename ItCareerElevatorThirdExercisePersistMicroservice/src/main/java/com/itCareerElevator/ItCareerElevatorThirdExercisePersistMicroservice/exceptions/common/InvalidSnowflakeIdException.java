@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions;
+package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.common;
 
 public class InvalidSnowflakeIdException extends RuntimeException {
 

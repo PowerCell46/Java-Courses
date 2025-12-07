@@ -1,7 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities;
 
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.entities.listeners.CommonEntityListener;
-import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.InvalidSnowflakeIdException;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.common.InvalidSnowflakeIdException;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;

@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions;
+package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.tweetRelated;
 
 public class NoSuchTweetException extends RuntimeException {
 
