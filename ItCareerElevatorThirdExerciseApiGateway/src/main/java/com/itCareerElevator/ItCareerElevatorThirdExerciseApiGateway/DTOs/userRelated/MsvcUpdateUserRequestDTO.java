@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.DTOs.userRelated;
+package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,12 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UpdateUserRequestDTO {
+public class MsvcUpdateUserRequestDTO {
 
     @JsonProperty("id")
     private String snowflakeId;
-
-    // TODO: Should we allow the User to change his/hers username?
 
     private String firstName;
 

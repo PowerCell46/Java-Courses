@@ -1,5 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UpdateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserFollowRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,15 @@ public class UserController {
         log.info("--- POST request on api/users/follow with (following) username {}.", userRequestDTO.getUsername());
 
         UserResponseDTO responseDTO = userService.follow(userRequestDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PatchMapping
+    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UpdateUserRequestDTO userRequestDTO) {
+        log.info("--- PATCH request on api/users.");
+
+        UserResponseDTO responseDTO = userService.update(userRequestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }

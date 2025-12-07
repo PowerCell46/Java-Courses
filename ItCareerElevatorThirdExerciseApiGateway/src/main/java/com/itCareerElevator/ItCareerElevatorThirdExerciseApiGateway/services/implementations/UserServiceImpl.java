@@ -1,6 +1,8 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.MsvcUpdateUserRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UpdateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserFollowRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.MsvcCreateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthRequestDTO;
@@ -166,6 +168,30 @@ public class UserServiceImpl implements UserService {
                 .bodyValue(new MsvcFollowUserRequestDTO(
                         loggedUser.getSnowflakeId(),
                         requestDTO.getUsername()
+                ))
+                .retrieve()
+                .onStatus(HttpStatus.BAD_REQUEST::equals,
+                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
+                .bodyToMono(UserResponseDTO.class)
+                .block();
+    }
+
+    @Override
+    public UserResponseDTO update(UpdateUserRequestDTO userRequestDTO) {
+        User loggedUser = getCurrentlyLoggedUser();
+
+        log.info("Making a request to the microservice.");
+        return userServiceWebClient
+                .patch()
+                .uri("/api/users/follow")
+                .bodyValue(new MsvcUpdateUserRequestDTO(
+                        loggedUser.getSnowflakeId(),
+                        userRequestDTO.getFirstName(),
+                        userRequestDTO.getLastName(),
+                        userRequestDTO.getIsMale(),
+                        userRequestDTO.getBio(),
+                        userRequestDTO.getCity(),
+                        userRequestDTO.getCountry()
                 ))
                 .retrieve()
                 .onStatus(HttpStatus.BAD_REQUEST::equals,
