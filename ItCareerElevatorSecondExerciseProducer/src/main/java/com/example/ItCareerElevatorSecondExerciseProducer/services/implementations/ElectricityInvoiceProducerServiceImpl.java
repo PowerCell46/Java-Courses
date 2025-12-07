@@ -31,10 +31,10 @@ public class ElectricityInvoiceProducerServiceImpl implements ElectricityInvoice
                     .send(TOPIC_NAME, key, value)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
-                            log.error("Failed to send invoice {} to topic {}", key, TOPIC_NAME, ex);
+                            log.error("Failed to send invoice {} to topic {}.", key, TOPIC_NAME, ex);
 
                         } else {
-                            log.info("Sent invoice {} to topic {} partition {} offset {}",
+                            log.info("Sent invoice {} to topic {} partition {} offset {}.",
                                     key,
                                     result.getRecordMetadata().topic(),
                                     result.getRecordMetadata().partition(),

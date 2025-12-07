@@ -10,6 +10,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exc
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.tweetRelated.TweetAlreadyLikedException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.exceptions.tweetRelated.TweetNotLikedException;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.repositories.TweetRepository;
+import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.TweetProducerService;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.TweetService;
 import com.itCareerElevator.ItCareerElevatorThirdExercisePersistMicroservice.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,16 @@ import java.time.LocalDateTime;
 public class TweetServiceImpl implements TweetService {
 
     private final TweetRepository tweetRepository;
+
     private final UserService userService;
+    private final TweetProducerService tweetProducerService;
 
     @Override
     public TweetResponseDTO create(CreateTweetRequestDTO requestDTO) {
         Tweet tweet = constructNonPersistedTweet(requestDTO);
         tweet = save(tweet);
+
+        publishTweetToKafka(tweet);
 
         return constructResponseDTO(tweet);
     }
@@ -54,6 +59,11 @@ public class TweetServiceImpl implements TweetService {
         log.info("Persisting tweet with content '{}' to the Database.", tweet.getContent());
 
         return tweetRepository.save(tweet);
+    }
+
+    private void publishTweetToKafka(Tweet tweet) {
+        log.info("Publishing tweet to Kafka with snowflakeId: {}.", tweet.getSnowflakeId());
+        tweetProducerService.send(tweet.getSnowflakeId());
     }
 
     @Override
