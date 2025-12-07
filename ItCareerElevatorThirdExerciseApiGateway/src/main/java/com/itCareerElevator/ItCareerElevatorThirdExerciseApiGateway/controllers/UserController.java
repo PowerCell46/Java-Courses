@@ -1,7 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserFollowRequestDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.UserResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserFollowRequestDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

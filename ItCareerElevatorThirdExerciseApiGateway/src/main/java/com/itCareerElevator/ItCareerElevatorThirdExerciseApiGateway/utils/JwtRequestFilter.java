@@ -1,7 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.ErrorResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.common.ErrorResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

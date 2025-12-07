@@ -9,4 +9,6 @@ public interface TweetService {
     TweetResponseDTO create(CreateTweetRequestDTO requestDTO);
 
     TweetResponseDTO like(LikeTweetRequestDTO requestDTO);
+
+    TweetResponseDTO unlike(LikeTweetRequestDTO requestDTO);
 }

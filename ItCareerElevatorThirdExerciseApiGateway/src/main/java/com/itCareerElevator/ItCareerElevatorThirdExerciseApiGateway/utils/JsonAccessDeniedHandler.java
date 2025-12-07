@@ -1,7 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.ErrorResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.common.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;

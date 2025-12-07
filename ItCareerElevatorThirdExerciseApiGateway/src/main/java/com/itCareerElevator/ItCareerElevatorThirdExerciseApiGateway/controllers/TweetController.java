@@ -7,6 +7,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.int
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +35,18 @@ public class TweetController {
 
     @PostMapping("/like")
     public ResponseEntity<TweetResponseDTO> likeTweet(@RequestBody LikeTweetRequestDTO requestDTO) {
-        log.info("--- POST request on /api/tweets/like with ");
+        log.info("--- POST request on /api/tweets/like with tweet id {}.", requestDTO.getTweetSnowflakeId());
 
         TweetResponseDTO responseDTO = tweetService.like(requestDTO);
+
+        return ResponseEntity.created(null).body(responseDTO); // TODO: empty URL
+    }
+
+    @DeleteMapping("/like")
+    public ResponseEntity<TweetResponseDTO> unlikeTweet(@RequestBody LikeTweetRequestDTO requestDTO) {
+        log.info("--- DELETE request on /api/tweets/like with tweet id {}.", requestDTO.getTweetSnowflakeId());
+
+        TweetResponseDTO responseDTO = tweetService.unlike(requestDTO);
 
         return ResponseEntity.created(null).body(responseDTO); // TODO: empty URL
     }

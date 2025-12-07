@@ -8,7 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LikeTweetRequestDTO {
+public class MsvcLikeTweetRequestDTO {
+
+    @JsonProperty("userId")
+    private String userSnowflakeId;
 
     @JsonProperty("tweetId")
     private String tweetSnowflakeId;

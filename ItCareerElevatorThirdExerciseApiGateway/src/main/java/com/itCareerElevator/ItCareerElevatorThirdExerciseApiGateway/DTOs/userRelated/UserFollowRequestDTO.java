@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs;
+package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,9 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class AuthResponseDTO {
+public class UserFollowRequestDTO {
 
     private String username;
-
-    private String token;
 }

@@ -1,4 +1,4 @@
-package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs;
+package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated;
 
 import lombok.Getter;
 import lombok.Setter;
