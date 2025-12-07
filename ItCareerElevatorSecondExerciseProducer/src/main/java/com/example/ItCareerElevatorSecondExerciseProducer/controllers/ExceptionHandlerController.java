@@ -53,7 +53,7 @@ public class ExceptionHandlerController {
                 .stream()
                 .findFirst()
                 .map(FieldError::getDefaultMessage)
-                .orElse("Request data validation failed");
+                .orElse("Request data validation failed.");
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.UNPROCESSABLE_CONTENT.value(),
@@ -72,7 +72,7 @@ public class ExceptionHandlerController {
                 .stream()
                 .findFirst()
                 .map(ConstraintViolation::getMessage)
-                .orElse("Request data validation failed");
+                .orElse("Request data validation failed.");
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.UNPROCESSABLE_CONTENT.value(),

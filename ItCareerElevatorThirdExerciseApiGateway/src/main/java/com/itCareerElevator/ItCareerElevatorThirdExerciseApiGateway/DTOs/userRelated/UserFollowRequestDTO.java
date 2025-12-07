@@ -1,5 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +9,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserFollowRequestDTO { // TODO: Validations
+public class UserFollowRequestDTO {
 
+    @NotNull(message = "Username is required.")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{5,20}$",
+            message = "Username must be 5-20 characters, contain letters and digits, with at least one uppercase letter and one digit."
+    )
     private String username;
 }
