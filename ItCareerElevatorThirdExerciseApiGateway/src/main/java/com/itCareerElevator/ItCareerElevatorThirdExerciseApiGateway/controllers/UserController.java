@@ -4,9 +4,11 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRel
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserFollowRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -32,7 +35,7 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<UserResponseDTO> updateUser(@RequestBody UpdateUserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UpdateUserRequestDTO userRequestDTO) {
         log.info("--- PATCH request on api/users.");
 
         UserResponseDTO responseDTO = userService.update(userRequestDTO);

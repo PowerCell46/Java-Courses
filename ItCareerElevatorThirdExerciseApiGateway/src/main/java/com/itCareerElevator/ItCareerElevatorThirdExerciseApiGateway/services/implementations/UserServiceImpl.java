@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
         log.info("Making a request to the microservice.");
         return userServiceWebClient
                 .patch()
-                .uri("/api/users/follow")
+                .uri("/api/users")
                 .bodyValue(new MsvcUpdateUserRequestDTO(
                         loggedUser.getSnowflakeId(),
                         userRequestDTO.getFirstName(),

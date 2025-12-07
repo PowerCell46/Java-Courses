@@ -4,9 +4,11 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRe
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRelated.LikeTweetRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRelated.TweetResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.TweetService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,12 +21,13 @@ import java.net.URI;
 @RequestMapping("/api/tweets")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class TweetController {
 
     private final TweetService tweetService;
 
     @PostMapping
-    public ResponseEntity<TweetResponseDTO> createTweet(@RequestBody CreateTweetRequestDTO requestDTO) {
+    public ResponseEntity<TweetResponseDTO> createTweet(@Valid @RequestBody CreateTweetRequestDTO requestDTO) {
         log.info("--- POST request on /api/tweets with content {}.", requestDTO.getContent());
 
         TweetResponseDTO responseDTO = tweetService.create(requestDTO);
@@ -34,7 +37,7 @@ public class TweetController {
     }
 
     @PostMapping("/like")
-    public ResponseEntity<TweetResponseDTO> likeTweet(@RequestBody LikeTweetRequestDTO requestDTO) {
+    public ResponseEntity<TweetResponseDTO> likeTweet(@Valid @RequestBody LikeTweetRequestDTO requestDTO) {
         log.info("--- POST request on /api/tweets/like with tweet id {}.", requestDTO.getTweetSnowflakeId());
 
         TweetResponseDTO responseDTO = tweetService.like(requestDTO);
@@ -44,7 +47,7 @@ public class TweetController {
     }
 
     @DeleteMapping("/like")
-    public ResponseEntity<TweetResponseDTO> unlikeTweet(@RequestBody LikeTweetRequestDTO requestDTO) {
+    public ResponseEntity<TweetResponseDTO> unlikeTweet(@Valid @RequestBody LikeTweetRequestDTO requestDTO) {
         log.info("--- DELETE request on /api/tweets/like with tweet id {}.", requestDTO.getTweetSnowflakeId());
 
         TweetResponseDTO responseDTO = tweetService.unlike(requestDTO);

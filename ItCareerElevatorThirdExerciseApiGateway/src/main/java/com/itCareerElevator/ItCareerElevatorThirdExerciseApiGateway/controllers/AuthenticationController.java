@@ -3,9 +3,11 @@ package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class AuthenticationController {
 
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody AuthRequestDTO userRequest) {
+    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody AuthRequestDTO userRequest) {
         log.info("--- POST request on api/auth/register with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService.register(userRequest);
@@ -29,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> loginUser(@RequestBody AuthRequestDTO userRequest) {
+    public ResponseEntity<AuthResponseDTO> loginUser(@Valid @RequestBody AuthRequestDTO userRequest) {
         log.info("--- POST request on api/auth/login with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService

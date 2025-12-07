@@ -17,7 +17,6 @@ public class UpdateUserRequestDTO {
     @Pattern(regexp = "^[A-Za-z]{2,50}$", message = "Last name must be 2-50 letters.")
     private String lastName;
 
-    @NotNull(message = "IsMale is required.")
     private Boolean isMale;
 
     @Pattern(regexp = "^.{3,50}$", message = "Bio must be 3-50 characters.")
