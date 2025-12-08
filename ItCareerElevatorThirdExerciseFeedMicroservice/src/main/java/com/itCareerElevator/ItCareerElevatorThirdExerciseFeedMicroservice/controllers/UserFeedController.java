@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/user-feeds")
 @RequiredArgsConstructor
@@ -22,10 +19,10 @@ public class UserFeedController {
     private final UserFeedService userFeedService;
 
     @GetMapping("/{userSnowflakeId}")
-    public ResponseEntity<Collection<UserFeedResponseDTO>> getUserFeed(@PathVariable String userSnowflakeId) {
+    public ResponseEntity<UserFeedResponseDTO> getUserFeed(@PathVariable String userSnowflakeId) {
         log.info("--- GET mapping on /api/user-feeds for user with id: {}.", userSnowflakeId);
 
-        List<UserFeedResponseDTO> userFeed = userFeedService.getFeed(userSnowflakeId);
+        UserFeedResponseDTO userFeed = userFeedService.getFeed(userSnowflakeId);
 
         return ResponseEntity.ok(userFeed);
     }

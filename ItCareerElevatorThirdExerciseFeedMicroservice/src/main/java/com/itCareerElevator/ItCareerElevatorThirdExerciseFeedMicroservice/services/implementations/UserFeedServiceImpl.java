@@ -1,5 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.services.implementations;
 
+import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.DTOs.TweetResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.DTOs.UserFeedResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.entities.CommonEntity;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.entities.Tweet;
@@ -57,10 +58,10 @@ public class UserFeedServiceImpl implements UserFeedService {
     }
 
     @Override
-    public List<UserFeedResponseDTO> getFeed(String userSnowflakeId) {
+    public UserFeedResponseDTO getFeed(String userSnowflakeId) {
         log.info("Fetching feed for user with snowflakeId: {}", userSnowflakeId);
-        Set<UserFeed> userFeedSet = userFeedRepository
-                .findAllByUserId(CommonEntity.convertSnowflakeIdToId(userSnowflakeId));
+        List<UserFeed> userFeedSet = userFeedRepository
+                .findAllByUserIdOrderByLastModifiedAtDesc(CommonEntity.convertSnowflakeIdToId(userSnowflakeId));
 
         for (UserFeed feed: userFeedSet) {
             feed.setHasBeenSeen(true);
@@ -68,16 +69,23 @@ public class UserFeedServiceImpl implements UserFeedService {
 
         userFeedRepository.saveAll(userFeedSet);
 
-        return userFeedSet
+        return new UserFeedResponseDTO(userFeedSet
                 .stream()
-                .map(this::constructUserFeedResponseDTO)
-                .toList();
+                .map(this::constructTweetResponseDTO)
+                .toList()
+        );
     }
 
-    private UserFeedResponseDTO constructUserFeedResponseDTO(UserFeed userFeed) {
-        return new UserFeedResponseDTO(
+    private TweetResponseDTO constructTweetResponseDTO(UserFeed userFeed) {
+        return new TweetResponseDTO(
                 userFeed.getTweet().getSnowflakeId(),
-                userFeed.getTweet().getContent()
+                userFeed.getTweet().getContent(),
+                userFeed.getTweet().getCreatedBy().getUsername(),
+                userFeed.getTweet()
+                        .getLikedBy()
+                        .stream()
+                        .map(User::getUsername)
+                        .toList()
         );
     }
 }
