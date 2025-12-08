@@ -1,7 +1,6 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.services.implementations;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.DTOs.TweetResponseDTO;
-import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.DTOs.UserFeedResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.entities.CommonEntity;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.entities.Tweet;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.entities.User;
@@ -13,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -58,8 +58,9 @@ public class UserFeedServiceImpl implements UserFeedService {
     }
 
     @Override
-    public UserFeedResponseDTO getFeed(String userSnowflakeId) {
+    public Collection<TweetResponseDTO> getFeed(String userSnowflakeId) {
         log.info("Fetching feed for user with snowflakeId: {}", userSnowflakeId);
+
         List<UserFeed> userFeedSet = userFeedRepository
                 .findAllByUserIdOrderByLastModifiedAtDesc(CommonEntity.convertSnowflakeIdToId(userSnowflakeId));
 
@@ -69,11 +70,10 @@ public class UserFeedServiceImpl implements UserFeedService {
 
         userFeedRepository.saveAll(userFeedSet);
 
-        return new UserFeedResponseDTO(userFeedSet
+        return userFeedSet
                 .stream()
                 .map(this::constructTweetResponseDTO)
-                .toList()
-        );
+                .toList();
     }
 
     private TweetResponseDTO constructTweetResponseDTO(UserFeed userFeed) {

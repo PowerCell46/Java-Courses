@@ -1,7 +1,9 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.services.interfaces;
 
-import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.DTOs.UserFeedResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.DTOs.TweetResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.entities.UserFeed;
+
+import java.util.Collection;
 
 public interface UserFeedService {
 
@@ -9,5 +11,5 @@ public interface UserFeedService {
 
     UserFeed save(UserFeed userFeed);
 
-    UserFeedResponseDTO getFeed(String userSnowflakeId);
+    Collection<TweetResponseDTO> getFeed(String userSnowflakeId);
 }
