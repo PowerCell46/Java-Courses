@@ -41,11 +41,4 @@ public class Tweet extends CommonEntity {
         this.createdBy = createdBy;
         this.likedBy = new HashSet<>();
     }
-
-    public Tweet(String content, User createdBy, Set<User> likedBy) {
-        super();
-        this.content = content;
-        this.createdBy = createdBy;
-        this.likedBy = likedBy;
-    }
 }

@@ -25,7 +25,7 @@ public class CommonEntity {
     private Long id;
 
     @Column
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; // activeFrom
 
     @Column
     private LocalDateTime lastModifiedAt;
@@ -69,11 +69,6 @@ public class CommonEntity {
     public CommonEntity() {
         this.createdAt = LocalDateTime.now();
         this.lastModifiedAt = LocalDateTime.now();
-    }
-
-    public CommonEntity(LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
-        this.createdAt = createdAt;
-        this.lastModifiedAt = lastModifiedAt;
     }
 
     @Override

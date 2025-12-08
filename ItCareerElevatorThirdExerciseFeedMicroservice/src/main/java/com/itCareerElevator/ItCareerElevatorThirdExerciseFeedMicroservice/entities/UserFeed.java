@@ -4,7 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import lombok.Setter;
 @Table(name = "user_feeds")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class UserFeed extends CommonEntity {
 
@@ -22,4 +20,12 @@ public class UserFeed extends CommonEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Tweet tweet;
+
+    private Boolean hasBeenSeen;
+
+    public UserFeed(User user, Tweet tweet) {
+        this.user = user;
+        this.tweet = tweet;
+        this.hasBeenSeen = false;
+    }
 }

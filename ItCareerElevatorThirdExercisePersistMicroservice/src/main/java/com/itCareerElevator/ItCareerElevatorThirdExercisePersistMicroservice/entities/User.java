@@ -59,7 +59,7 @@ public class User extends CommonEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "tweet_id")
     )
-    private Set<Tweet> likedTweets;
+    private Set<Tweet> likedTweets; // Will probably have most traffic, add user index to the junction table
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

@@ -114,10 +114,9 @@ public class UserServiceImpl implements UserService {
                 requestDTO.getCity() != null || requestDTO.getCountry() != null
             // @formatter:on
         ) {
-            user.setLastModifiedAt(LocalDateTime.now());
+            user = save(user);
         }
 
-        user = save(user);
 
         return constructUserResponseDTO(user);
     }
