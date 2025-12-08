@@ -38,7 +38,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final JwtUtil jwtUtil;
-    private final WebClient userServiceWebClient;
+    private final WebClient persistenceServiceWebClient;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
 
@@ -47,10 +47,10 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(
             JwtUtil jwtUtil, @Lazy AuthenticationManager authenticationManager,
             PasswordEncoder encoder, UserRepository userRepository,
-            WebClient userServiceWebClient
+            WebClient persistenceServiceWebClient
     ) {
         this.jwtUtil = jwtUtil;
-        this.userServiceWebClient = userServiceWebClient;
+        this.persistenceServiceWebClient = persistenceServiceWebClient;
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
         this.userRepository = userRepository;
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
         // ! Fire and forget
         log.info("Making a request to the microservice.");
-        userServiceWebClient
+        persistenceServiceWebClient
                 .post()
                 .uri("/api/users")
                 .bodyValue(new MsvcCreateUserRequestDTO(
@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
         User loggedUser = getCurrentlyLoggedUser();
 
         log.info("Making a request to the microservice.");
-        return userServiceWebClient
+        return persistenceServiceWebClient
                 .post()
                 .uri("/api/users/follow")
                 .bodyValue(new MsvcFollowUserRequestDTO(
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
         User loggedUser = getCurrentlyLoggedUser();
 
         log.info("Making a request to the microservice.");
-        return userServiceWebClient
+        return persistenceServiceWebClient
                 .method(HttpMethod.DELETE)
                 .uri("/api/users/follow")
                 .bodyValue(new MsvcFollowUserRequestDTO(
@@ -181,7 +181,7 @@ public class UserServiceImpl implements UserService {
         User loggedUser = getCurrentlyLoggedUser();
 
         log.info("Making a request to the microservice.");
-        return userServiceWebClient
+        return persistenceServiceWebClient
                 .patch()
                 .uri("/api/users")
                 .bodyValue(new MsvcUpdateUserRequestDTO(

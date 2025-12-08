@@ -12,6 +12,6 @@ import lombok.Setter;
 public class CreateTweetRequestDTO {
 
     @NotNull
-    @Pattern(regexp = "^.{3,1000}$", message = "Content must be between 3 and 1000 characters long.")
+    @Pattern(regexp = "^.{3,1000}$", message = "Content must be between 3 and 1'000 characters long.")
     private String content;
 }

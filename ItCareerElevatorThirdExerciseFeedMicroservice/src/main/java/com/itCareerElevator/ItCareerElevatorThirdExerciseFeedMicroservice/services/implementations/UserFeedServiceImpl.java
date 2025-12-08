@@ -39,6 +39,7 @@ public class UserFeedServiceImpl implements UserFeedService {
 
     private void cleanupSeenTweets() {
         log.info("Cleaning up already seen tweets from users.");
+
         Set<UserFeed> seenUserTweets = userFeedRepository.findAllByHasBeenSeen(true);
         userFeedRepository.deleteAll(seenUserTweets);
     }
@@ -49,7 +50,7 @@ public class UserFeedServiceImpl implements UserFeedService {
 
     @Override
     public UserFeed save(UserFeed userFeed) {
-        log.info("Saving userFeed with username {} and tweet id {} to the Database.",
+        log.info("Persisting userFeed with username {} and tweet snowflakeId {} to the Database.",
                 userFeed.getUser().getUsername(),
                 userFeed.getTweet().getSnowflakeId()
         );

@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @GetMapping("/feed")
-    public ResponseEntity<Collection<TweetResponseDTO>> getUserFeed() {
+    public ResponseEntity<Collection<TweetResponseDTO>> getUserFeed() { // TODO: the microservice is other the request won't happen
         log.info("--- GET request on /api/users/feed.");
 
         Collection<TweetResponseDTO> userTweets = userFeedService.getUserTweets();

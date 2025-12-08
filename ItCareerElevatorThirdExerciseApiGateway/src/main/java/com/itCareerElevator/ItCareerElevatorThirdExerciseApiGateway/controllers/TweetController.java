@@ -35,20 +35,20 @@ public class TweetController {
     public ResponseEntity<TweetResponseDTO> createTweet(@Valid @RequestBody CreateTweetRequestDTO requestDTO) {
         log.info("--- POST request on /api/tweets with content {}.", requestDTO.getContent());
 
-        TweetResponseDTO responseDTO = tweetService.create(requestDTO);
-        URI location = URI.create(String.format("/api/tweets/%s", responseDTO.getSnowflakeId()));
+        TweetResponseDTO tweetResponseDTO = tweetService.create(requestDTO);
 
-        return ResponseEntity.created(location).body(responseDTO);
+        URI location = URI.create(String.format("/api/tweets/%s", tweetResponseDTO.getSnowflakeId()));
+        return ResponseEntity.created(location).body(tweetResponseDTO);
     }
 
     @PostMapping("/like")
     public ResponseEntity<TweetResponseDTO> likeTweet(@Valid @RequestBody LikeTweetRequestDTO requestDTO) {
         log.info("--- POST request on /api/tweets/like with tweet id {}.", requestDTO.getTweetSnowflakeId());
 
-        TweetResponseDTO responseDTO = tweetService.like(requestDTO);
-        URI location = URI.create(String.format("/api/tweets/%s", responseDTO.getSnowflakeId()));
+        TweetResponseDTO tweetResponseDTO = tweetService.like(requestDTO);
 
-        return ResponseEntity.created(location).body(responseDTO);
+        URI location = URI.create(String.format("/api/tweets/%s", tweetResponseDTO.getSnowflakeId()));
+        return ResponseEntity.created(location).body(tweetResponseDTO);
     }
 
     @DeleteMapping("/like")
@@ -61,7 +61,7 @@ public class TweetController {
     }
 
     @GetMapping("/{tweetSnowflakeId}")
-    public ResponseEntity<TweetResponseDTO> getTweetById(
+    public ResponseEntity<TweetResponseDTO> getTweetById( // TODO: the microservice is other the request won't happen
             @PathVariable("tweetSnowflakeId")
             @NotNull(message = "Tweet id is required.")
             @Pattern(regexp = "^[A-Za-z0-9]{11}$",
@@ -76,7 +76,7 @@ public class TweetController {
     }
 
     @GetMapping("/profile/{username}")
-    public ResponseEntity<Collection<TweetResponseDTO>> getAllUserTweets(
+    public ResponseEntity<Collection<TweetResponseDTO>> getAllUserTweets( // TODO: the microservice is other the request won't happen
             @PathVariable("username")
             @NotNull(message = "Username is required.")
             @Pattern(

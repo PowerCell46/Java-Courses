@@ -50,9 +50,9 @@ public class SecurityConfig {
 //                        .requestMatchers(
 //                            "/api/admin/**"
 //                        ).hasRole("ADMIN") // expects "ROLE_ADMIN"
-                        .requestMatchers(
-                                "/api/auth/role-restricted"
-                        ).hasAnyRole("MANAGER", "ADMIN")
+//                        .requestMatchers(
+//                                "/api/auth/role-restricted"
+//                        ).hasAnyRole("MANAGER", "ADMIN") // expects ROLE_MANAGER or ROLE_ADMIN
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

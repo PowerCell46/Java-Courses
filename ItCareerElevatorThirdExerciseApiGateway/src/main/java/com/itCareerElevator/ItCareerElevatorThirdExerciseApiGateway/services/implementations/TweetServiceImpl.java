@@ -25,14 +25,14 @@ import java.util.List;
 @Slf4j
 public class TweetServiceImpl implements TweetService {
 
-    private final WebClient tweetServiceWebClient;
+    private final WebClient persistenceServiceWebClient;
     private final UserService userService;
 
     @Override
     public TweetResponseDTO getBySnowflakeId(String snowflakeId) {
         log.info("Making a request to the microservice.");
 
-        return tweetServiceWebClient
+        return persistenceServiceWebClient
                 .get()
                 .uri(String.format("/api/tweets/%s", snowflakeId))
                 .retrieve()
@@ -46,7 +46,7 @@ public class TweetServiceImpl implements TweetService {
     public Collection<TweetResponseDTO> getAllUserTweets(String username) {
         log.info("Making a request to the microservice.");
 
-        return tweetServiceWebClient
+        return persistenceServiceWebClient
                 .get()
                 .uri(String.format("/api/tweets/profile/%s", username))
                 .retrieve()
@@ -61,7 +61,7 @@ public class TweetServiceImpl implements TweetService {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
         log.info("Making a request to the microservice.");
-        return tweetServiceWebClient
+        return persistenceServiceWebClient
                 .post()
                 .uri("/api/tweets")
                 .bodyValue(new MsvcCreateTweetRequestDTO(
@@ -80,7 +80,7 @@ public class TweetServiceImpl implements TweetService {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
         log.info("Making a request to the microservice.");
-        return tweetServiceWebClient
+        return persistenceServiceWebClient
                 .post()
                 .uri("/api/tweets/like")
                 .bodyValue(new MsvcLikeTweetRequestDTO(
@@ -99,7 +99,7 @@ public class TweetServiceImpl implements TweetService {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
         log.info("Making a request to the microservice.");
-        return tweetServiceWebClient
+        return persistenceServiceWebClient
                 .method(HttpMethod.DELETE)
                 .uri("/api/tweets/like")
                 .bodyValue(new MsvcLikeTweetRequestDTO(

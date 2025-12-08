@@ -27,7 +27,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public City save(City city) {
-        log.info("Saving city with name {} to the Database.", city.getName());
+        log.info("Persisting city with name {} to the Database.", city.getName());
 
         return cityRepository.save(city);
     }

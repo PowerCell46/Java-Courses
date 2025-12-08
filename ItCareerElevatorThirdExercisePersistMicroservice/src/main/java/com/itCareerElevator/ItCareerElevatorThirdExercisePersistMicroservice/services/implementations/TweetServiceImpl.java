@@ -63,6 +63,7 @@ public class TweetServiceImpl implements TweetService {
 
     private void publishTweetToKafka(Tweet tweet) {
         log.info("Publishing tweet to Kafka with snowflakeId: {}.", tweet.getSnowflakeId());
+
         tweetProducerService.send(tweet.getSnowflakeId());
     }
 
@@ -89,7 +90,6 @@ public class TweetServiceImpl implements TweetService {
 
         user.getLikedTweets().add(tweet);
         tweet.getLikedBy().add(user);
-        tweet.setLastModifiedAt(LocalDateTime.now());
 
         userService.save(user);
 
@@ -111,7 +111,6 @@ public class TweetServiceImpl implements TweetService {
         }
 
         tweet.getLikedBy().remove(user);
-        tweet.setLastModifiedAt(LocalDateTime.now());
         userService.save(user);
 
         return constructResponseDTO(tweet);

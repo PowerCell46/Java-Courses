@@ -27,7 +27,6 @@ public class TweetMessageListener {
         }
 
         log.info("Received tweet snowflakeId from Kafka: {}.", snowflakeId);
-
         userFeedService.fanOutTweetToFollowers(snowflakeId);
     }
 }

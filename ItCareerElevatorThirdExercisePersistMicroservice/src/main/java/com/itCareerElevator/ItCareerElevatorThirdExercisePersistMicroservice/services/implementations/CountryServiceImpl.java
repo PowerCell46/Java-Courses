@@ -27,7 +27,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public Country save(Country country) {
-        log.info("Saving country with name {} to the Database.", country.getName());
+        log.info("Persisting country with name {} to the Database.", country.getName());
 
         return countryRepository.save(country);
     }

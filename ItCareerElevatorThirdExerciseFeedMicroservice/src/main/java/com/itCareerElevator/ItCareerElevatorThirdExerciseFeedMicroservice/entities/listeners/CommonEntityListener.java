@@ -5,6 +5,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseFeedMicroservice.servic
 import jakarta.persistence.PrePersist;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -17,5 +18,6 @@ public class CommonEntityListener {
         if (entity.getId() == null) {
             entity.setId(idGenerator.nextId());
         }
+        entity.setLastModifiedAt(LocalDateTime.now());
     }
 }

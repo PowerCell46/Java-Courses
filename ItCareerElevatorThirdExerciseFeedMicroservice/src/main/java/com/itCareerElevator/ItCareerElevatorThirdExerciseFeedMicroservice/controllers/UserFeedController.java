@@ -22,7 +22,7 @@ public class UserFeedController {
 
     @GetMapping("/{userSnowflakeId}")
     public ResponseEntity<Collection<TweetResponseDTO>> getUserFeed(@PathVariable String userSnowflakeId) {
-        log.info("--- GET mapping on /api/user-feeds for user with id: {}.", userSnowflakeId);
+        log.info("--- GET mapping on /api/userFeeds for user with id: {}.", userSnowflakeId);
 
         Collection<TweetResponseDTO> userFeed = userFeedService.getFeed(userSnowflakeId);
 

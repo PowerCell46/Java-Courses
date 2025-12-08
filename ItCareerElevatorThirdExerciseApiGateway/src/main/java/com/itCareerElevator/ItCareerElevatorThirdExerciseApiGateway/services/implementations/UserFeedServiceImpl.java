@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserFeedServiceImpl implements UserFeedService {
 
-    private final WebClient userServiceWebClient;
+    private final WebClient feedServiceWebClient;
     private final UserService userService;
 
     @Override
@@ -29,7 +29,7 @@ public class UserFeedServiceImpl implements UserFeedService {
 
         log.info("Making a request to the microservice.");
 
-        return userServiceWebClient
+        return feedServiceWebClient
                 .get()
                 .uri(String.format("/api/userFeeds/%s", loggedUser.getSnowflakeId()))
                 .retrieve()

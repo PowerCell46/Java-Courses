@@ -18,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -117,7 +115,6 @@ public class UserServiceImpl implements UserService {
             user = save(user);
         }
 
-
         return constructUserResponseDTO(user);
     }
 
@@ -133,7 +130,6 @@ public class UserServiceImpl implements UserService {
 
         follower.getFollowing().add(followed);
         followed.getFollowers().add(follower);
-        followed.setLastModifiedAt(LocalDateTime.now());
 
         follower = save(follower);
 
@@ -158,7 +154,6 @@ public class UserServiceImpl implements UserService {
         }
 
         unfollowed.getFollowers().remove(unfollower);
-        unfollowed.setLastModifiedAt(LocalDateTime.now());
 
         unfollower = save(unfollower);
         save(unfollowed);

@@ -39,7 +39,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
             User adminUser = userService.findByUsername(ADMIN_USERNAME).get();
             adminUser.setRoles(Set.of(adminRole, managerRole));
-            adminUser = userService.save(adminUser);
+            userService.save(adminUser);
         }
     }
 }
