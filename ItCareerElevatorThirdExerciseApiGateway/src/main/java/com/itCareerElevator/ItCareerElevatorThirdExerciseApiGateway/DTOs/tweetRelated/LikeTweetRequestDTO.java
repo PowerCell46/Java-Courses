@@ -14,6 +14,6 @@ public class LikeTweetRequestDTO {
 
     @JsonProperty("tweetId")
     @NotNull(message = "Tweet id is required.")
-    @Pattern(regexp = "^[A-Za-z0-9]{11}$", message = "Username must be exactly 11 alphanumeric characters.")
+    @Pattern(regexp = "^[A-Za-z0-9]{11}$", message = "Tweet id must be exactly 11 alphanumeric characters.")
     private String tweetSnowflakeId;
 }

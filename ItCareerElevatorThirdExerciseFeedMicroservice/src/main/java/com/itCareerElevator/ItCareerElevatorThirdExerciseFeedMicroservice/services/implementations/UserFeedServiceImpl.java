@@ -81,8 +81,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                 userFeed.getTweet().getSnowflakeId(),
                 userFeed.getTweet().getContent(),
                 userFeed.getTweet().getCreatedBy().getUsername(),
-                userFeed.getTweet()
-                        .getLikedBy()
+                userFeed.getTweet().getLikedBy()
                         .stream()
                         .map(User::getUsername)
                         .toList()

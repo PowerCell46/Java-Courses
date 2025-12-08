@@ -10,11 +10,15 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.int
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +27,34 @@ public class TweetServiceImpl implements TweetService {
 
     private final WebClient tweetServiceWebClient;
     private final UserService userService;
+
+    @Override
+    public TweetResponseDTO getBySnowflakeId(String snowflakeId) {
+        log.info("Making a request to the microservice.");
+
+        return tweetServiceWebClient
+                .get()
+                .uri(String.format("/api/tweets/%s", snowflakeId))
+                .retrieve()
+                .onStatus(HttpStatus.BAD_REQUEST::equals,
+                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
+                .bodyToMono(TweetResponseDTO.class)
+                .block();
+    }
+
+    @Override
+    public Collection<TweetResponseDTO> getAllUserTweets(String username) {
+        log.info("Making a request to the microservice.");
+
+        return tweetServiceWebClient
+                .get()
+                .uri(String.format("/api/tweets/profile/%s", username))
+                .retrieve()
+                .onStatus(HttpStatus.BAD_REQUEST::equals,
+                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
+                .bodyToMono(new ParameterizedTypeReference<List<TweetResponseDTO>>() {})
+                .block();
+    }
 
     @Override
     public TweetResponseDTO create(CreateTweetRequestDTO requestDTO) {

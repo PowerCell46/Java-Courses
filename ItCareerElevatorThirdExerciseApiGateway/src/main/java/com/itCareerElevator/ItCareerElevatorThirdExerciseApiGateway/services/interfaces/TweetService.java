@@ -4,7 +4,13 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRe
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRelated.LikeTweetRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRelated.TweetResponseDTO;
 
+import java.util.Collection;
+
 public interface TweetService {
+
+    TweetResponseDTO getBySnowflakeId(String snowflakeId);
+
+    Collection<TweetResponseDTO> getAllUserTweets(String userSnowflakeId);
 
     TweetResponseDTO create(CreateTweetRequestDTO requestDTO);
 
