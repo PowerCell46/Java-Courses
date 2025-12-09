@@ -1,13 +1,15 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.common.ErrorResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.tweetRelated.TweetResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.FeedMicroserviceException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserFeedService;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -33,8 +35,12 @@ public class UserFeedServiceImpl implements UserFeedService {
                 .get()
                 .uri(String.format("/api/userFeeds/%s", loggedUser.getSnowflakeId()))
                 .retrieve()
-                .onStatus(HttpStatus.BAD_REQUEST::equals,
-                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
+                .onStatus(HttpStatusCode::isError,
+                        resp -> resp
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(FeedMicroserviceException::new)
+                                .flatMap(Mono::error)
+                )
                 .bodyToMono(new ParameterizedTypeReference<List<TweetResponseDTO>>() {})
                 .block();
     }

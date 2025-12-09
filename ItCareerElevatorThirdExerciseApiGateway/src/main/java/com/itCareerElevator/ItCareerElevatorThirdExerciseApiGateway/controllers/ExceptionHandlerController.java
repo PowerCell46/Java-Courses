@@ -1,7 +1,9 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.controllers;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.common.ErrorResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.FeedMicroserviceException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.PersistenceMicroserviceException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolation;
@@ -22,6 +24,38 @@ import io.jsonwebtoken.security.SignatureException;
 @Slf4j
 @RequiredArgsConstructor
 public class ExceptionHandlerController {
+
+    @ExceptionHandler(PersistenceMicroserviceException.class)
+    public ResponseEntity<ErrorResponseDTO> handlePersistenceMicroserviceException(PersistenceMicroserviceException ex) {
+        log.warn("Handling PersistenceMicroserviceException.");
+        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                ex.getStatus(),
+                ex.getMessage(),
+                ex.getTimestamp()
+        );
+
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(error);
+    }
+
+    @ExceptionHandler(PersistenceMicroserviceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleFeedMicroserviceException(FeedMicroserviceException ex) {
+        log.warn("Handling FeedMicroserviceException.");
+        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                ex.getStatus(),
+                ex.getMessage(),
+                ex.getTimestamp()
+        );
+
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(error);
+    }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {

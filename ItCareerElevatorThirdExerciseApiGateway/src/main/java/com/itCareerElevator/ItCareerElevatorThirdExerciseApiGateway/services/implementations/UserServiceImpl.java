@@ -1,6 +1,7 @@
 package com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.implementations;
 
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.authRelated.AuthResponseDTO;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.common.ErrorResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.MsvcUpdateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UpdateUserRequestDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserFollowRequestDTO;
@@ -10,6 +11,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRel
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.DTOs.userRelated.UserResponseDTO;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.entities.User;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.InvalidCredentialsException;
+import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.PersistenceMicroserviceException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.exceptions.UserAlreadyExistsException;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.repositories.UserRepository;
 import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.services.interfaces.UserService;
@@ -18,7 +20,7 @@ import com.itCareerElevator.ItCareerElevatorThirdExerciseApiGateway.utils.JwtUti
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -72,12 +74,20 @@ public class UserServiceImpl implements UserService {
         persistenceServiceWebClient
                 .post()
                 .uri("/api/users")
-                .bodyValue(new MsvcCreateUserRequestDTO(
-                        user.getSnowflakeId(),
-                        userRequest.getUsername()
-                ))
+                .bodyValue(
+                        new MsvcCreateUserRequestDTO(
+                                user.getSnowflakeId(),
+                                userRequest.getUsername()
+                        )
+                )
                 .retrieve()
-                .bodyToMono(Void.class) // TODO: Do we need the returned data?
+                .onStatus(HttpStatusCode::isError,
+                        resp -> resp
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PersistenceMicroserviceException::new)
+                                .flatMap(Mono::error)
+                )
+                .bodyToMono(Void.class)
                 .subscribe();
 
         return authenticate(user.getUsername(), userRequest.getPassword());
@@ -146,13 +156,19 @@ public class UserServiceImpl implements UserService {
         return persistenceServiceWebClient
                 .post()
                 .uri("/api/users/follow")
-                .bodyValue(new MsvcFollowUserRequestDTO(
-                        loggedUser.getSnowflakeId(),
-                        requestDTO.getUsername()
-                ))
+                .bodyValue(
+                        new MsvcFollowUserRequestDTO(
+                                loggedUser.getSnowflakeId(),
+                                requestDTO.getUsername()
+                        )
+                )
                 .retrieve()
-                .onStatus(HttpStatus.BAD_REQUEST::equals,
-                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
+                .onStatus(HttpStatusCode::isError,
+                        resp -> resp
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PersistenceMicroserviceException::new)
+                                .flatMap(Mono::error)
+                )
                 .bodyToMono(UserResponseDTO.class)
                 .block();
     }
@@ -165,13 +181,19 @@ public class UserServiceImpl implements UserService {
         return persistenceServiceWebClient
                 .method(HttpMethod.DELETE)
                 .uri("/api/users/follow")
-                .bodyValue(new MsvcFollowUserRequestDTO(
-                        loggedUser.getSnowflakeId(),
-                        requestDTO.getUsername()
-                ))
+                .bodyValue(
+                        new MsvcFollowUserRequestDTO(
+                                loggedUser.getSnowflakeId(),
+                                requestDTO.getUsername()
+                        )
+                )
                 .retrieve()
-                .onStatus(HttpStatus.BAD_REQUEST::equals,
-                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
+                .onStatus(HttpStatusCode::isError,
+                        resp -> resp
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PersistenceMicroserviceException::new)
+                                .flatMap(Mono::error)
+                )
                 .bodyToMono(UserResponseDTO.class)
                 .block();
     }
@@ -184,18 +206,24 @@ public class UserServiceImpl implements UserService {
         return persistenceServiceWebClient
                 .patch()
                 .uri("/api/users")
-                .bodyValue(new MsvcUpdateUserRequestDTO(
-                        loggedUser.getSnowflakeId(),
-                        userRequestDTO.getFirstName(),
-                        userRequestDTO.getLastName(),
-                        userRequestDTO.getIsMale(),
-                        userRequestDTO.getBio(),
-                        userRequestDTO.getCity(),
-                        userRequestDTO.getCountry()
-                ))
+                .bodyValue(
+                        new MsvcUpdateUserRequestDTO(
+                                loggedUser.getSnowflakeId(),
+                                userRequestDTO.getFirstName(),
+                                userRequestDTO.getLastName(),
+                                userRequestDTO.getIsMale(),
+                                userRequestDTO.getBio(),
+                                userRequestDTO.getCity(),
+                                userRequestDTO.getCountry()
+                        )
+                )
                 .retrieve()
-                .onStatus(HttpStatus.BAD_REQUEST::equals,
-                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
+                .onStatus(HttpStatusCode::isError,
+                        resp -> resp
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PersistenceMicroserviceException::new)
+                                .flatMap(Mono::error)
+                )
                 .bodyToMono(UserResponseDTO.class)
                 .block();
     }
