@@ -41,7 +41,7 @@ public class ExceptionHandlerController {
                 .body(error);
     }
 
-    @ExceptionHandler(PersistenceMicroserviceException.class)
+    @ExceptionHandler(FeedMicroserviceException.class)
     public ResponseEntity<ErrorResponseDTO> handleFeedMicroserviceException(FeedMicroserviceException ex) {
         log.warn("Handling FeedMicroserviceException.");
         log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
