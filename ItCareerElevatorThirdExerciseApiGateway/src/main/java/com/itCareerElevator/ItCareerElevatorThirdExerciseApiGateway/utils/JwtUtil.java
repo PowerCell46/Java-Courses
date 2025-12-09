@@ -50,7 +50,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date(now))
-                .expiration(new Date(now + 1_000 * 60 * 60))
+                .expiration(new Date(now + 1_000 * 60 * 60 * 24)) // 24 hours
                 .signWith(getSigningKey(), Jwts.SIG.HS512)
                 .compact();
     }

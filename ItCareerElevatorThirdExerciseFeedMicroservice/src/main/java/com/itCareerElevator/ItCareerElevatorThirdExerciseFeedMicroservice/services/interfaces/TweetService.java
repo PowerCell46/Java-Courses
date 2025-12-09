@@ -7,11 +7,9 @@ import java.util.Collection;
 
 public interface TweetService {
 
-    Tweet save(Tweet tweet);
-
     Tweet getBySnowflakeId(String snowflakeId);
 
-    TweetResponseDTO getTweetBySnowflakeId(String snowflakeId);
+    TweetResponseDTO getTweetResponseDTOBySnowflakeId(String snowflakeId);
 
     Collection<TweetResponseDTO> getAllUserTweets(String username);
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MsvcFollowUserRequestDTO {
 
-    private String followerId; // Current logged in user
+    private String followerId; // Current logged-in user
 
     private String followedUsername;
 }

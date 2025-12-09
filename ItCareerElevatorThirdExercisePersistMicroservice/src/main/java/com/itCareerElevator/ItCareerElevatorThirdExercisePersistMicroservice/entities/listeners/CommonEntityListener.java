@@ -19,6 +19,7 @@ public class CommonEntityListener {
         if (entity.getId() == null) {
             entity.setId(idGenerator.nextId());
         }
+
         entity.setLastModifiedAt(LocalDateTime.now());
     }
 }

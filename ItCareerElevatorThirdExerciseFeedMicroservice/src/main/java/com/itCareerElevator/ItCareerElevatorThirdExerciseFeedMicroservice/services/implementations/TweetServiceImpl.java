@@ -22,13 +22,6 @@ public class TweetServiceImpl implements TweetService {
     private final TweetRepository tweetRepository;
 
     @Override
-    public Tweet save(Tweet tweet) {
-        log.info("Persisting tweet with content '{}' to the Database.", tweet.getContent());
-
-        return tweetRepository.save(tweet);
-    }
-
-    @Override
     public Tweet getBySnowflakeId(String snowflakeId) {
         return tweetRepository
                 .findById(CommonEntity.convertSnowflakeIdToId(snowflakeId))
@@ -36,7 +29,7 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public TweetResponseDTO getTweetBySnowflakeId(String snowflakeId) {
+    public TweetResponseDTO getTweetResponseDTOBySnowflakeId(String snowflakeId) {
         Tweet tweet = getBySnowflakeId(snowflakeId);
 
         return constructTweetResponseDTO(tweet);
@@ -57,7 +50,7 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public Collection<TweetResponseDTO> getAllUserTweets(String username) {
         List<Tweet> userTweets = tweetRepository
-                .findAllByCreatedByUsernameOrderByLastModifiedAt(username);
+                .findAllByCreatedByUsernameOrderByLastModifiedAtDesc(username);
 
         return userTweets
                 .stream()

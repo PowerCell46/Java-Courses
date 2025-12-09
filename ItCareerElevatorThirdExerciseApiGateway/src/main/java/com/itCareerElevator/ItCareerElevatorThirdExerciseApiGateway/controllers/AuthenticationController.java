@@ -28,7 +28,7 @@ public class AuthenticationController {
 
         var responseDTO = userService.register(userRequest);
 
-        return ResponseEntity.ok(responseDTO); // created is better, but URL...
+        return ResponseEntity.created(null).body(responseDTO); // TODO: URL
     }
 
     @PostMapping("/login")

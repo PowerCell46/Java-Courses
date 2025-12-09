@@ -32,6 +32,7 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public TweetResponseDTO create(CreateTweetRequestDTO requestDTO) {
         Tweet tweet = constructNonPersistedTweet(requestDTO);
+
         tweet = save(tweet);
 
         publishTweetToKafka(tweet);
@@ -50,7 +51,10 @@ public class TweetServiceImpl implements TweetService {
                 tweet.getSnowflakeId(),
                 tweet.getContent(),
                 tweet.getCreatedBy().getUsername(),
-                tweet.getLikedBy().stream().map(User::getUsername).toList()
+                tweet.getLikedBy()
+                        .stream()
+                        .map(User::getUsername)
+                        .toList()
         );
     }
 
@@ -104,7 +108,7 @@ public class TweetServiceImpl implements TweetService {
         boolean removed = user.getLikedTweets().remove(tweet);
         if (!removed) {
             throw new TweetNotLikedException(String.format(
-               "User %s hasn't liked tweet with id %s.",
+               "User %s hasn't liked the tweet with id %s.",
                user.getUsername(),
                tweet.getSnowflakeId()
             ));

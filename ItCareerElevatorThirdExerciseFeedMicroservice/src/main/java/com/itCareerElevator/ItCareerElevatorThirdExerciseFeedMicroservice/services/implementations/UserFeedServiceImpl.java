@@ -29,9 +29,9 @@ public class UserFeedServiceImpl implements UserFeedService {
         cleanupSeenTweets();
 
         Tweet tweet = tweetService.getBySnowflakeId(snowflakeId);
-        Set<User> followers = tweet.getCreatedBy().getFollowers();
+        Set<User> tweetCreatorFollowers = tweet.getCreatedBy().getFollowers();
 
-        followers
+        tweetCreatorFollowers
                 .stream()
                 .map(follower -> constructNonPersistedUserFeed(follower, tweet))
                 .forEach(this::save);
@@ -62,19 +62,25 @@ public class UserFeedServiceImpl implements UserFeedService {
     public Collection<TweetResponseDTO> getFeed(String userSnowflakeId) {
         log.info("Fetching feed for user with snowflakeId: {}", userSnowflakeId);
 
-        List<UserFeed> userFeedSet = userFeedRepository
-                .findAllByUserIdOrderByLastModifiedAtDesc(CommonEntity.convertSnowflakeIdToId(userSnowflakeId));
+        List<UserFeed> userFeed = userFeedRepository
+                .findAllByUserIdAndHasBeenSeenOrderByLastModifiedAtDesc(
+                        CommonEntity.convertSnowflakeIdToId(userSnowflakeId),
+                        false
+                );
 
-        for (UserFeed feed: userFeedSet) {
-            feed.setHasBeenSeen(true);
-        }
+        setFetchedTweetsToSeen(userFeed);
 
-        userFeedRepository.saveAll(userFeedSet);
-
-        return userFeedSet
+        return userFeed
                 .stream()
                 .map(this::constructTweetResponseDTO)
                 .toList();
+    }
+
+    private void setFetchedTweetsToSeen(List<UserFeed> userFeed) {
+        userFeed
+                .forEach(feed -> feed.setHasBeenSeen(true));
+
+        userFeedRepository.saveAll(userFeed);
     }
 
     private TweetResponseDTO constructTweetResponseDTO(UserFeed userFeed) {

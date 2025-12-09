@@ -25,10 +25,10 @@ public class TweetProducerServiceImpl implements TweetProducerService {
                 .send(TOPIC_NAME, key, tweetSnowflakeId)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
-                        log.error("Failed to send tweet with id {} to topic {}.", key, TOPIC_NAME, ex);
+                        log.error("Failed to send tweet with key '{}' to topic {}.", key, TOPIC_NAME, ex);
 
                     } else {
-                        log.info("Sent tweet with id {} to topic {} partition {} offset {}.",
+                        log.info("Sent tweet with key '{}' to topic {} partition {} offset {}.",
                                 key,
                                 result.getRecordMetadata().topic(),
                                 result.getRecordMetadata().partition(),

@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login"
-                        ).permitAll()
+                        ).permitAll() // ! also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
 //                        .requestMatchers(
 //                            "/api/admin/**"
 //                        ).hasRole("ADMIN") // expects "ROLE_ADMIN"

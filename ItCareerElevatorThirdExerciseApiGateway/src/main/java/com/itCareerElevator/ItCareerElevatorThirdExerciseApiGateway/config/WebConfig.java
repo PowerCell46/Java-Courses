@@ -11,7 +11,7 @@ public class WebConfig {
     @Value("${persistence-microservice.endpoint}")
     private String PERSISTENCE_MICROSERVICE_BASE_URL;
 
-    @Value("${http://127.0.0.1:8082}")
+    @Value("${feed-microservice.endpoint}")
     private String FEED_MICROSERVICE_BASE_URL;
 
     @Bean

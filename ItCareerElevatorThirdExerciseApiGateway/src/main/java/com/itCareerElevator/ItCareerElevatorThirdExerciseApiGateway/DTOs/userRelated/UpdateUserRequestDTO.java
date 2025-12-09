@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UpdateUserRequestDTO {
+public class UpdateUserRequestDTO { // * Each field is optional
 
     @Pattern(regexp = "^[A-Za-z]{2,50}$", message = "First name must be 2-50 letters.")
     private String firstName;

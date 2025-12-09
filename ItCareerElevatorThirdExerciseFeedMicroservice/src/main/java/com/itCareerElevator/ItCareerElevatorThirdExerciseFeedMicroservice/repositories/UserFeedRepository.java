@@ -12,5 +12,5 @@ public interface UserFeedRepository extends JpaRepository<UserFeed, Long> {
 
     Set<UserFeed> findAllByHasBeenSeen(Boolean hasBeenSeen);
 
-    List<UserFeed> findAllByUserIdOrderByLastModifiedAtDesc(Long userId);
+    List<UserFeed> findAllByUserIdAndHasBeenSeenOrderByLastModifiedAtDesc(Long userId, Boolean hasBeenSeen);
 }

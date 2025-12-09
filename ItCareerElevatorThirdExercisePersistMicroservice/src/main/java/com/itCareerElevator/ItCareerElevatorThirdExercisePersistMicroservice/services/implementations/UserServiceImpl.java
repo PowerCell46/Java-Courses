@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO create(CreateUserRequestDTO requestDTO) {
         User user = constructNonPersistedUser(requestDTO);
+
         user = save(user);
 
         return constructUserResponseDTO(user);

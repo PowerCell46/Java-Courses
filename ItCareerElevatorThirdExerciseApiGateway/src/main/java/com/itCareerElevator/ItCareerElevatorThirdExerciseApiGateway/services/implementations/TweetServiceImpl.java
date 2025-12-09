@@ -26,13 +26,14 @@ import java.util.List;
 public class TweetServiceImpl implements TweetService {
 
     private final WebClient persistenceServiceWebClient;
+    private final WebClient feedServiceWebClient;
     private final UserService userService;
 
     @Override
     public TweetResponseDTO getBySnowflakeId(String snowflakeId) {
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the feed microservice.");
 
-        return persistenceServiceWebClient
+        return feedServiceWebClient
                 .get()
                 .uri(String.format("/api/tweets/%s", snowflakeId))
                 .retrieve()
@@ -44,9 +45,9 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public Collection<TweetResponseDTO> getAllUserTweets(String username) {
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the feed microservice.");
 
-        return persistenceServiceWebClient
+        return feedServiceWebClient
                 .get()
                 .uri(String.format("/api/tweets/profile/%s", username))
                 .retrieve()
@@ -60,7 +61,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDTO create(CreateTweetRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the persist microservice.");
         return persistenceServiceWebClient
                 .post()
                 .uri("/api/tweets")
@@ -79,7 +80,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDTO like(LikeTweetRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the persist microservice.");
         return persistenceServiceWebClient
                 .post()
                 .uri("/api/tweets/like")
@@ -98,7 +99,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDTO unlike(LikeTweetRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the persist microservice.");
         return persistenceServiceWebClient
                 .method(HttpMethod.DELETE)
                 .uri("/api/tweets/like")

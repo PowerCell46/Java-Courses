@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ItCareerElevatorThirdExerciseFeedMicroserviceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ItCareerElevatorThirdExerciseFeedMicroserviceApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(ItCareerElevatorThirdExerciseFeedMicroserviceApplication.class, args);
+    }
 }

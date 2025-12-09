@@ -19,7 +19,7 @@ public class TweetMessageListener {
             containerFactory = "tweetKafkaContainerFactory"
     )
     public void handleTweetMessage(String snowflakeId) {
-        log.info("--- Handling message in 'tweet' topic.");
+        log.info("--- Handling message in topic tweet.");
 
         if (snowflakeId == null) {
             log.error("Null tweet snowflakeId.");

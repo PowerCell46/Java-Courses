@@ -30,6 +30,4 @@ public class UserResponseDTO {
     private String country;
 
     private Collection<String> following;
-
-    // TODO: The other fields?
 }

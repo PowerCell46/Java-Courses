@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthResponseDTO register(AuthRequestDTO userRequest) { // ? Cache the users in Redis? (API gateway has to be FAST)
+    public AuthResponseDTO register(AuthRequestDTO userRequest) { // ? Cache the users in Redis? (API gateway has to be as FAST as possible!)
         if (findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(
                     String.format("User with username: %s already exists.", userRequest.getUsername())
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
         user = save(user);
 
         // ! Fire and forget
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the persist microservice.");
         persistenceServiceWebClient
                 .post()
                 .uri("/api/users")
@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
             return cud.getUser();
         }
 
-        throw new IllegalStateException("No authenticated user.");
+        throw new IllegalStateException("No authenticated user."); // Practically this would never happen
     }
 
     @Override
@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO follow(UserFollowRequestDTO requestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the persist microservice.");
         return persistenceServiceWebClient
                 .post()
                 .uri("/api/users/follow")
@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
                 ))
                 .retrieve()
                 .onStatus(HttpStatus.BAD_REQUEST::equals,
-                        resp -> Mono.error(new IllegalArgumentException("Error ocrrurred."))) // TODO: Handle errors
+                        resp -> Mono.error(new IllegalArgumentException("Error occurred."))) // TODO: Handle errors
                 .bodyToMono(UserResponseDTO.class)
                 .block();
     }
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO unfollow(UserFollowRequestDTO requestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the persist microservice.");
         return persistenceServiceWebClient
                 .method(HttpMethod.DELETE)
                 .uri("/api/users/follow")
@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO update(UpdateUserRequestDTO userRequestDTO) {
         User loggedUser = getCurrentlyLoggedUser();
 
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the persist microservice.");
         return persistenceServiceWebClient
                 .patch()
                 .uri("/api/users")

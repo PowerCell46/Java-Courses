@@ -24,7 +24,7 @@ public class TweetController {
     public ResponseEntity<TweetResponseDTO> getTweetById(@PathVariable String tweetSnowflakeId) {
         log.info("--- GET request on /api/tweets/{}.", tweetSnowflakeId);
 
-        TweetResponseDTO tweetResponseDTO = tweetService.getTweetBySnowflakeId(tweetSnowflakeId);
+        TweetResponseDTO tweetResponseDTO = tweetService.getTweetResponseDTOBySnowflakeId(tweetSnowflakeId);
 
         return ResponseEntity.ok(tweetResponseDTO);
     }

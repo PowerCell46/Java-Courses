@@ -9,5 +9,4 @@ public class ItCareerElevatorThirdExercisePersistMicroserviceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ItCareerElevatorThirdExercisePersistMicroserviceApplication.class, args);
 	}
-
 }

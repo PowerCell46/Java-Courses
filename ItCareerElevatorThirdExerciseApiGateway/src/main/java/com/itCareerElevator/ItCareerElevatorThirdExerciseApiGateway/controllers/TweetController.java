@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.net.URI;
 import java.util.Collection;
 
@@ -55,13 +54,13 @@ public class TweetController {
     public ResponseEntity<TweetResponseDTO> unlikeTweet(@Valid @RequestBody LikeTweetRequestDTO requestDTO) {
         log.info("--- DELETE request on /api/tweets/like with tweet id {}.", requestDTO.getTweetSnowflakeId());
 
-        TweetResponseDTO responseDTO = tweetService.unlike(requestDTO);
+        TweetResponseDTO tweetResponseDTO = tweetService.unlike(requestDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(tweetResponseDTO);
     }
 
     @GetMapping("/{tweetSnowflakeId}")
-    public ResponseEntity<TweetResponseDTO> getTweetById( // TODO: the microservice is other the request won't happen
+    public ResponseEntity<TweetResponseDTO> getTweetById(
             @PathVariable("tweetSnowflakeId")
             @NotNull(message = "Tweet id is required.")
             @Pattern(regexp = "^[A-Za-z0-9]{11}$",
@@ -76,7 +75,7 @@ public class TweetController {
     }
 
     @GetMapping("/profile/{username}")
-    public ResponseEntity<Collection<TweetResponseDTO>> getAllUserTweets( // TODO: the microservice is other the request won't happen
+    public ResponseEntity<Collection<TweetResponseDTO>> getAllUserTweets(
             @PathVariable("username")
             @NotNull(message = "Username is required.")
             @Pattern(

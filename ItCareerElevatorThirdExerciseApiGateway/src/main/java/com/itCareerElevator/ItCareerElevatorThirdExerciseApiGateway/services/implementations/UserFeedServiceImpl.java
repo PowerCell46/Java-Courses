@@ -27,7 +27,7 @@ public class UserFeedServiceImpl implements UserFeedService {
     public Collection<TweetResponseDTO> getUserTweets() {
         User loggedUser = userService.getCurrentlyLoggedUser();
 
-        log.info("Making a request to the microservice.");
+        log.info("Making a request to the feed microservice.");
 
         return feedServiceWebClient
                 .get()
