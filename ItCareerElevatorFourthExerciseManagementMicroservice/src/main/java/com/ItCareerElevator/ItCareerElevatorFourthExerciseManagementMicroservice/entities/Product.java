@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE products SET is_deleted = true WHERE id = ?")
-//@Where(clause = "is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product extends CommonEntity {

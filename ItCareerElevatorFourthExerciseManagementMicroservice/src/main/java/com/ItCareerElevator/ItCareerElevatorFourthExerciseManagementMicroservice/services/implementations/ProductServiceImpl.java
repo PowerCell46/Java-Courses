@@ -1,8 +1,10 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.implementations;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.CreateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.DeleteProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProductAlreadyExistsException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.repositories.ProductRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProducerService;
@@ -11,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -52,10 +56,27 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
+    @Override
+    public DeleteProductResponseDTO deleteById(String id) {
+        Optional<Product> optionalProduct = productRepository.findByIdAndIsDeletedIsFalse(id);
+        if (optionalProduct.isEmpty()) {
+            throw new NoSuchProductException(String.format("No product found with id %s.", id));
+        }
+
+        log.info("(Soft) deleting product {} from the database.", optionalProduct.get().getEnName());
+        productRepository.deleteById(id);
+
+        return constructDeleteProductResponseDTO(optionalProduct.get());
+    }
+
     private ProductResponseDTO constructProductResponseDTO(Product product) {
         ProductResponseDTO responseDTO = objectMapper.convertValue(product, ProductResponseDTO.class);
         responseDTO.setProducerName(product.getProducer().getName());
 
         return responseDTO;
+    }
+
+    private DeleteProductResponseDTO constructDeleteProductResponseDTO(Product product) {
+        return objectMapper.convertValue(product, DeleteProductResponseDTO.class);
     }
 }
