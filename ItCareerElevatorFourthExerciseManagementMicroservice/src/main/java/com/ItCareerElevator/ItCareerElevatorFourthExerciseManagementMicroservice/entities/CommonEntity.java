@@ -8,6 +8,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -25,9 +26,14 @@ public class CommonEntity {
     @Column(nullable = false)
     private LocalDateTime lastModifiedAt;
 
+    @Setter
+    @Column(nullable = false)
+    private Boolean isDeleted;
+
     public CommonEntity() {
         this.createdAt = LocalDateTime.now();
         this.lastModifiedAt = LocalDateTime.now();
+        this.isDeleted = false;
     }
 
     @PrePersist // * Called once before the entity is first saved (INSERT)

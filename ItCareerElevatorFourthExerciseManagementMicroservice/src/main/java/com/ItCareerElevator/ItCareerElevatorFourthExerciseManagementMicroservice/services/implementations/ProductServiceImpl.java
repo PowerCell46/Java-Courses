@@ -25,8 +25,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO) {
         if (
             // @formatter:off
-                productRepository.findByEnName(requestDTO.getEnName()).isPresent() ||
-                productRepository.findByBgName(requestDTO.getBgName()).isPresent()
+                productRepository.findByEnNameAndIsDeletedIsFalse(requestDTO.getEnName()).isPresent() ||
+                productRepository.findByBgNameAndIsDeletedIsFalse(requestDTO.getBgName()).isPresent()
             // @formatter:on
         ) {
             throw new ProductAlreadyExistsException(String.format(
