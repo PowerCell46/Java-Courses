@@ -3,6 +3,8 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservic
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.CreateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.DeleteProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.ProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.UpdateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Producer;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProductAlreadyExistsException;
@@ -57,16 +59,65 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public DeleteProductResponseDTO deleteById(String id) {
+    public Product getById(String id) {
         Optional<Product> optionalProduct = productRepository.findByIdAndIsDeletedIsFalse(id);
+
         if (optionalProduct.isEmpty()) {
             throw new NoSuchProductException(String.format("No product found with id %s.", id));
         }
 
-        log.info("(Soft) deleting product {} from the database.", optionalProduct.get().getEnName());
+        return optionalProduct.get();
+    }
+
+    @Override
+    public ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO) {
+        Product product = getById(productId);
+
+        if (requestDTO.getBgName() != null) {
+            product.setBgName(requestDTO.getBgName().strip());
+        }
+        if (requestDTO.getEnName() != null) {
+            product.setEnName(requestDTO.getEnName().strip());
+        }
+        if (requestDTO.getBgDescription() != null) {
+            product.setBgDescription(requestDTO.getBgDescription().strip());
+        }
+        if (requestDTO.getEnDescription() != null) {
+            product.setEnDescription(requestDTO.getEnDescription().strip());
+        }
+        if (requestDTO.getProducerName() != null) {
+            Producer producer = producerService.getOrCreateByName(requestDTO.getProducerName());
+            product.setProducer(producer);
+        }
+        if (requestDTO.getPrice() != null) {
+            product.setPrice(requestDTO.getPrice());
+        }
+        if (requestDTO.getInStockQuantity() != null) {
+            product.setInStockQuantity(requestDTO.getInStockQuantity());
+        }
+
+        if (
+            // @formatter:off
+                requestDTO.getBgName() != null || requestDTO.getEnName() != null ||
+                requestDTO.getBgDescription() != null || requestDTO.getEnDescription() != null |
+                requestDTO.getProducerName() != null || requestDTO.getPrice() != null ||
+                requestDTO.getInStockQuantity() != null
+            // @formatter:on
+        ) {
+            product = save(product);
+        }
+
+        return constructProductResponseDTO(product);
+    }
+
+    @Override
+    public DeleteProductResponseDTO deleteById(String id) {
+        Product product = getById(id);
+
+        log.info("(Soft) deleting product {} from the database.", product.getEnName());
         productRepository.deleteById(id);
 
-        return constructDeleteProductResponseDTO(optionalProduct.get());
+        return constructDeleteProductResponseDTO(product);
     }
 
     private ProductResponseDTO constructProductResponseDTO(Product product) {

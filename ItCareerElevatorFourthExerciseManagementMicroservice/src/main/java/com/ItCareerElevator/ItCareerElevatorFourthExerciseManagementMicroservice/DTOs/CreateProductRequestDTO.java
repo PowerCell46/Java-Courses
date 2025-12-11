@@ -11,17 +11,17 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class CreateProductRequestDTO {
 
-    private String bgName;
+    private String bgName; // required
 
-    private String enName;
+    private String enName; // required
 
-    private String bgDescription;
+    private String bgDescription; // required
 
-    private String enDescription;
+    private String enDescription; // required
 
-    private String producerName;
+    private String producerName; // required
 
-    private BigDecimal price;
+    private BigDecimal price; // required
 
     private Integer inStockQuantity; // optional
 }

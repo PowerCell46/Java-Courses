@@ -3,11 +3,13 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservic
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.CreateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.DeleteProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.ProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +33,14 @@ public class ProductController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-//    @PatchMapping
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ProductResponseDTO> updateProduct(
+            @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
+    ) {
+        ProductResponseDTO responseDTO = productService.update(productId, requestDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
