@@ -49,4 +49,3 @@ public class User extends CommonEntity {
         this.roles = new HashSet<>();
     }
 }
-
