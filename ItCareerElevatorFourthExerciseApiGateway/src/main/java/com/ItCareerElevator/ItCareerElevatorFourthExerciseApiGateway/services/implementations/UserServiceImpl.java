@@ -100,13 +100,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsernameAndIsDeletedIsFalse(username);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository
-                .findByUsername(username)
+                .findByUsernameAndIsDeletedIsFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User is not found."));
 
         return new CustomUserDetails(user);

@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;

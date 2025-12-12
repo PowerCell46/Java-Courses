@@ -1,8 +1,7 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,19 +10,14 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 
 @Entity
-@Table(
-        name = "roles",
-        indexes = {
-                @Index(name = "idx_name_unique", columnList = "name", unique = true)
-        }
-)
+@Table(name = "producers")
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE producers SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role extends CommonEntity {
+public class Producer extends CommonEntity {
 
-    @Column(nullable = false)
+    @Column
     private String name;
 }

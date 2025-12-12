@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
+
 import java.math.BigDecimal;
 
 @Entity

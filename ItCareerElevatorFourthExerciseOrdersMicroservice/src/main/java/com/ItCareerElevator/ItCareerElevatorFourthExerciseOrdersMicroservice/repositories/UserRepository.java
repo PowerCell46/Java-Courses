@@ -1,6 +1,6 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.repositories;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories;
 
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.User;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
