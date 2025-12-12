@@ -1,6 +1,8 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -22,8 +24,9 @@ import java.util.Set;
 public class Order extends CommonEntity {
 
     @ManyToOne
+    @JoinColumn(name = "customer_id")
     private User customer;
 
-    @OneToMany
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private Set<OrderItem> orderItems;
 }

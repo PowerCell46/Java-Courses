@@ -3,6 +3,7 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.en
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ import org.hibernate.annotations.SQLDelete;
 public class ProductTranslation extends CommonEntity {
 
     @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne

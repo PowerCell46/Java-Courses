@@ -47,6 +47,7 @@ public class User extends CommonEntity {
 
     public User(String username, String password) {
         super();
+
         this.username = username;
         this.password = password;
         this.roles = new HashSet<>();
