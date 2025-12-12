@@ -15,9 +15,9 @@ public class CreateProductRequestDTO {
 
     private String enName; // required
 
-    private String bgDescription; // required
+    private String bgDescription; // required TODO: Change
 
-    private String enDescription; // required
+    private String enDescription; // required TODO: Change
 
     private String producerName; // required
 

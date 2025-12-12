@@ -33,8 +33,6 @@ public class Product extends CommonEntity {
     @JoinColumn(name = "producer_id", nullable = false)
     private Producer producer;
 
-    // At most 15 significant digits in total (before + after the decimal point)
-    // Exactly up to 2 digits to the right of the decimal point
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
 
@@ -46,6 +44,8 @@ public class Product extends CommonEntity {
     private Set<ProductTranslation> translations;
 
     public Product(BigDecimal price, Integer inStockQuantity, Producer producer) {
+        super();
+
         this.price = price;
         this.inStockQuantity = inStockQuantity;
         this.producer = producer;

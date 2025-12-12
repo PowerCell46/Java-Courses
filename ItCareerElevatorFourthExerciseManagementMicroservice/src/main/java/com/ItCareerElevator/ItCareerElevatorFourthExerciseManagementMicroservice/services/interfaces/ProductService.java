@@ -5,10 +5,11 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-    ProductResponseDTO create(CreateProductRequestDTO requestDTO);
+    ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage);
 
     Product save(Product product);
 

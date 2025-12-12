@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
