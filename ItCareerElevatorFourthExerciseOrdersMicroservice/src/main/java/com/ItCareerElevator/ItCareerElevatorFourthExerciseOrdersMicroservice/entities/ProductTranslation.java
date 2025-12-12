@@ -15,7 +15,11 @@ import org.hibernate.annotations.SQLDelete;
 @Table(
         name = "product_translations",
         indexes = {
-                @Index(name = "idx_product_id_unique", columnList = "product_id", unique = true)
+                @Index(
+                        name = "idx_product_locale_unique",
+                        columnList = "product_id, locale_id",
+                        unique = true
+                )
         }
 )
 @Getter

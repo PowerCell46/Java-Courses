@@ -44,4 +44,10 @@ public class Product extends CommonEntity {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private Set<ProductTranslation> translations;
+
+    public Product(BigDecimal price, Integer inStockQuantity, Producer producer) {
+        this.price = price;
+        this.inStockQuantity = inStockQuantity;
+        this.producer = producer;
+    }
 }
