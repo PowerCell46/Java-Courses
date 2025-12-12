@@ -6,6 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,14 +15,10 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
-@Table(
-        name = "products",
-        indexes = {
-                @Index(name = "idx_en_name_unique", columnList = "en_name", unique = true)
-        }
-)
+@Table(name = "products")
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE products SET is_deleted = true WHERE id = ?")
@@ -29,20 +26,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class Product extends CommonEntity {
 
-    @Column(nullable = false, length = 255)
-    private String bgName;
-
-    @Column(nullable = false, length = 255)
-    private String enName;
-
     @Column(nullable = false)
     private Integer inStockQuantity;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String bgDescription;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String enDescription;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "producer_id", nullable = false)
@@ -55,5 +40,8 @@ public class Product extends CommonEntity {
 
     // currentDiscountPercentage (when creating add number of days till expiration
 
-    // image (DB file)
+    // image (DB file): energo pro OCR (look at the controller)
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    private Set<ProductTranslation> translations;
 }
