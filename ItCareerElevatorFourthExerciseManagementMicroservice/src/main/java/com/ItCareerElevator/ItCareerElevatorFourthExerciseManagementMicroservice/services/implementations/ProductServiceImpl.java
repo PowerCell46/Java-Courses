@@ -1,11 +1,9 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.implementations;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.CreateProductRequestDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.LocaleRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.DeleteProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Producer;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidFileImageException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
@@ -13,6 +11,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.repositories.ProductRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProducerService;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProductService;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProductTranslationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,8 +34,10 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ObjectMapper objectMapper;
-    private final ProducerService producerService;
     private final ProductRepository productRepository;
+
+    private final ProducerService producerService;
+    private final ProductTranslationService productTranslationService;
 
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
@@ -51,9 +52,11 @@ public class ProductServiceImpl implements ProductService {
 
         product.setImageUrl(saveImageFileToFileSystem(fileImage));
         product.setProducer(producerService.getOrCreateByName(requestDTO.getProducerName()));
-        if (product.getInStockQuantity() == null) product.setInStockQuantity(0);
+        if (product.getInStockQuantity() == null)
+            product.setInStockQuantity(0);
 
         product = save(product);
+        productTranslationService.createTranslations(requestDTO, product);
 
         return constructProductResponseDTO(product);
     }
@@ -63,7 +66,9 @@ public class ProductServiceImpl implements ProductService {
                 .getNameLocales()
                 .stream()
                 .anyMatch(locale ->
-                        !productRepository.findAllByTranslationsNameAndIsDeletedIsFalse(locale.getTranslation()).isEmpty()
+                        !productRepository
+                                .findAllByTranslationsNameAndIsDeletedIsFalse(locale.getTranslation())
+                                .isEmpty()
                 );
     }
 
@@ -104,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product save(Product product) {
-//        log.info("Persisting product {} to the database.", product.getEnName());
+        log.info("Persisting product to the database.");
 
         return productRepository.save(product);
     }
@@ -136,27 +141,27 @@ public class ProductServiceImpl implements ProductService {
 //        if (requestDTO.getEnDescription() != null) {
 //            product.setEnDescription(requestDTO.getEnDescription().strip());
 //        }
-        if (requestDTO.getProducerName() != null) {
-            Producer producer = producerService.getOrCreateByName(requestDTO.getProducerName());
-            product.setProducer(producer);
-        }
-        if (requestDTO.getPrice() != null) {
-            product.setPrice(requestDTO.getPrice());
-        }
-        if (requestDTO.getInStockQuantity() != null) {
-            product.setInStockQuantity(requestDTO.getInStockQuantity());
-        }
-
-        if (
-            // @formatter:off
-                requestDTO.getBgName() != null || requestDTO.getEnName() != null ||
-                requestDTO.getBgDescription() != null || requestDTO.getEnDescription() != null |
-                requestDTO.getProducerName() != null || requestDTO.getPrice() != null ||
-                requestDTO.getInStockQuantity() != null
-            // @formatter:on
-        ) {
-            product = save(product);
-        }
+//        if (requestDTO.getProducerName() != null) {
+//            Producer producer = producerService.getOrCreateByName(requestDTO.getProducerName());
+//            product.setProducer(producer);
+//        }
+//        if (requestDTO.getPrice() != null) {
+//            product.setPrice(requestDTO.getPrice());
+//        }
+//        if (requestDTO.getInStockQuantity() != null) {
+//            product.setInStockQuantity(requestDTO.getInStockQuantity());
+//        }
+//
+//        if (
+//            // @formatter:off
+//                requestDTO.getBgName() != null || requestDTO.getEnName() != null ||
+//                requestDTO.getBgDescription() != null || requestDTO.getEnDescription() != null |
+//                requestDTO.getProducerName() != null || requestDTO.getPrice() != null ||
+//                requestDTO.getInStockQuantity() != null
+//            // @formatter:on
+//        ) {
+//            product = save(product);
+//        }
 
         return constructProductResponseDTO(product);
     }
