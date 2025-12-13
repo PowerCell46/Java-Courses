@@ -2,6 +2,7 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservic
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.LocaleRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.ProductTranslation;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidLocalesException;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -48,6 +50,48 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
         productTranslationRepository.saveAll(productTranslations);
 
         return productTranslations;
+    }
+
+    @Override
+    public void updateTranslations(UpdateProductRequestDTO requestDto, Product product) {
+        if (requestDto.getNameLocales() != null) {
+            for (LocaleRequestDTO locale: requestDto.getNameLocales()) {
+                Optional<ProductTranslation> previousTranslation = productTranslationRepository
+                        .findByProductAndLocaleCodeAndIsDeletedIsFalse(product, locale.getCode());
+
+                if (previousTranslation.isEmpty()) {
+                    throw new InvalidLocalesException(
+                            String.format("No such locale %s found for the updated product translation.", locale.getCode())
+                    );
+                }
+
+                previousTranslation.get().setName(locale.getTranslation());
+                save(previousTranslation.get());
+            }
+        }
+
+        if (requestDto.getDescriptionLocales() != null) {
+            for (LocaleRequestDTO locale: requestDto.getDescriptionLocales()) {
+                Optional<ProductTranslation> previousTranslation = productTranslationRepository
+                        .findByProductAndLocaleCodeAndIsDeletedIsFalse(product, locale.getCode());
+
+                if (previousTranslation.isEmpty()) {
+                    throw new InvalidLocalesException(
+                            String.format("No such locale %s found for the updated product translation.", locale.getCode())
+                    );
+                }
+
+                previousTranslation.get().setDescription(locale.getTranslation());
+                save(previousTranslation.get());
+            }
+        }
+    }
+
+    @Override
+    public ProductTranslation save(ProductTranslation productTranslation) {
+        log.info("Persisting productTranslation to the database.");
+
+        return productTranslationRepository.save(productTranslation);
     }
 
     private ProductTranslation constructNonPersistedProductTranslation(

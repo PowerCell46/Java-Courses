@@ -43,7 +43,7 @@ public class ProductController {
     */
 
     @PatchMapping("/{productId}")
-    public ResponseEntity<ProductResponseDTO> updateProduct(
+    public ResponseEntity<ProductResponseDTO> updateProduct( // TODO: allow user to change an image?
             @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
     ) {
         ProductResponseDTO responseDTO = productService.update(productId, requestDTO);

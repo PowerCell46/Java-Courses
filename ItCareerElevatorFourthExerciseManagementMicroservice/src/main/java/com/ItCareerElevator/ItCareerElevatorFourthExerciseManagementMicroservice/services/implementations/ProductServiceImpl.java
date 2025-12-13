@@ -4,8 +4,8 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.DeleteProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Producer;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidFileImageException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidLocalesException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProductAlreadyExistsException;
@@ -13,26 +13,23 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProducerService;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProductService;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProductTranslationService;
+
+import static com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils.ImageStorageUtils.saveImageFileToFileSystem;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
+    private static final String IMAGE_SUBDIRECTORY = "products";
 
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
@@ -46,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 
-        product.setImageUrl(saveImageFileToFileSystem(fileImage));
+        product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY));
         product.setProducer(producerService.getOrCreateByName(requestDTO.getProducerName()));
         if (product.getInStockQuantity() == null)
             product.setInStockQuantity(0);
@@ -87,41 +84,6 @@ public class ProductServiceImpl implements ProductService {
                 );
     }
 
-    private String saveImageFileToFileSystem(MultipartFile fileImage) {
-        if (fileImage == null || fileImage.isEmpty()) {
-            throw new InvalidFileImageException("Invalid image file.");
-        }
-
-        final Path uploadPath = Paths.get("uploads", "products");
-        try {
-            Files.createDirectories(uploadPath);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Error occurred while creating the products upload directory.", e);
-        }
-
-        String originalFileName = fileImage.getOriginalFilename();
-        String extension = "";
-
-        final String EXTENSION_SEPARATOR = ".";
-        if (originalFileName != null && originalFileName.contains(EXTENSION_SEPARATOR)) {
-            extension = originalFileName.substring(originalFileName.lastIndexOf(EXTENSION_SEPARATOR));
-        }
-
-        String fileName = UUID.randomUUID() + extension;
-
-        Path targetPath = uploadPath.resolve(fileName);
-
-        try (InputStream is = new BufferedInputStream(fileImage.getInputStream())) {
-            Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
-
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to store image file.", ex);
-        }
-
-        return uploadPath.resolve(fileName).toString();
-    }
-
     @Override
     public Product save(Product product) {
         log.info("Persisting product to the database.");
@@ -144,39 +106,34 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO) {
         Product product = getById(productId);
 
-//        if (requestDTO.getBgName() != null) {
-//            product.setBgName(requestDTO.getBgName().strip());
-//        }
-//        if (requestDTO.getEnName() != null) {
-//            product.setEnName(requestDTO.getEnName().strip());
-//        }
-//        if (requestDTO.getBgDescription() != null) {
-//            product.setBgDescription(requestDTO.getBgDescription().strip());
-//        }
-//        if (requestDTO.getEnDescription() != null) {
-//            product.setEnDescription(requestDTO.getEnDescription().strip());
-//        }
-//        if (requestDTO.getProducerName() != null) {
-//            Producer producer = producerService.getOrCreateByName(requestDTO.getProducerName());
-//            product.setProducer(producer);
-//        }
-//        if (requestDTO.getPrice() != null) {
-//            product.setPrice(requestDTO.getPrice());
-//        }
-//        if (requestDTO.getInStockQuantity() != null) {
-//            product.setInStockQuantity(requestDTO.getInStockQuantity());
-//        }
-//
-//        if (
-//            // @formatter:off
-//                requestDTO.getBgName() != null || requestDTO.getEnName() != null ||
-//                requestDTO.getBgDescription() != null || requestDTO.getEnDescription() != null |
-//                requestDTO.getProducerName() != null || requestDTO.getPrice() != null ||
-//                requestDTO.getInStockQuantity() != null
-//            // @formatter:on
-//        ) {
-//            product = save(product);
-//        }
+        if (
+            // @formatter:off
+                (requestDTO.getNameLocales() != null && !requestDTO.getNameLocales().isEmpty()) ||
+                (requestDTO.getDescriptionLocales() != null && !requestDTO.getDescriptionLocales().isEmpty())
+            // @formatter:on
+        ) {
+            productTranslationService.updateTranslations(requestDTO, product);
+        }
+        if (requestDTO.getProducerName() != null) {
+            Producer producer = producerService.getOrCreateByName(requestDTO.getProducerName());
+            product.setProducer(producer);
+        }
+        if (requestDTO.getPrice() != null) {
+            product.setPrice(requestDTO.getPrice());
+        }
+        if (requestDTO.getInStockQuantity() != null) {
+            product.setInStockQuantity(requestDTO.getInStockQuantity());
+        }
+
+        if (
+            // @formatter:off
+                requestDTO.getNameLocales() != null ||
+                requestDTO.getDescriptionLocales() != null || requestDTO.getProducerName() != null ||
+                requestDTO.getPrice() != null || requestDTO.getInStockQuantity() != null
+            // @formatter:on
+        ) {
+            product = save(product);
+        }
 
         return constructProductResponseDTO(product);
     }
@@ -194,11 +151,14 @@ public class ProductServiceImpl implements ProductService {
     private ProductResponseDTO constructProductResponseDTO(Product product) {
         ProductResponseDTO responseDTO = objectMapper.convertValue(product, ProductResponseDTO.class);
         responseDTO.setProducerName(product.getProducer().getName());
+        // TODO: name
+        // TODO: description
 
         return responseDTO;
     }
 
     private DeleteProductResponseDTO constructDeleteProductResponseDTO(Product product) {
         return objectMapper.convertValue(product, DeleteProductResponseDTO.class);
+        // TODO: name
     }
 }
