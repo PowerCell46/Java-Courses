@@ -5,6 +5,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTO
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.OrderResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.Order;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OrderItem;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.ProductTranslation;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.User;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories.OrderRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OrderItemService;
@@ -40,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order save(Order order) {
-        log.info("Persisting {}'s order of {} products.", order.getCustomer().getUsername(), order.getOrderItems().size());
+        log.info("Persisting {}'s order to the database.", order.getCustomer().getUsername());
 
         return orderRepository.save(order);
     }
@@ -52,12 +53,25 @@ public class OrderServiceImpl implements OrderService {
     private OrderResponseDTO constructOrderResponseDTO(Order order) {
         return new OrderResponseDTO(
                 order.getId(),
-                order.getCustomer().getUsername()
-//                ,
-//                order.getOrderItems()
-//                        .stream()
-//                        .map(orderItem -> new OrderItemResponseDTO(orderItem.getProduct().getTranslations()))
-//                        .toList()
+                order.getCustomer().getUsername(),
+                order.getOrderItems()
+                        .stream()
+                        .map(orderItem -> {
+                            ProductTranslation productTranslation = orderItem
+                                    .getProduct()
+                                    .getTranslations()
+                                    .stream()
+                                    .filter(tr -> !tr.getIsDeleted())
+                                    .findFirst()
+                                    .orElse(null);
+
+                            return new OrderItemResponseDTO(
+                                    productTranslation != null ? productTranslation.getName() : null,
+                                    orderItem.getQuantity(),
+                                    orderItem.getSinglePrice()
+                            );
+                        })
+                        .toList()
         );
     }
 }
