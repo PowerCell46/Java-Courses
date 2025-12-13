@@ -41,10 +41,9 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    public OrderItem(Product product, Integer quantity, BigDecimal singlePrice) {
-        super();
-
+    public OrderItem(Product product, Order order, Integer quantity, BigDecimal singlePrice) {
         this.product = product;
+        this.order = order;
         this.quantity = quantity;
         this.singlePrice = singlePrice;
     }

@@ -13,6 +13,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.ser
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.util.Set;
 
 @Slf4j
@@ -28,10 +29,11 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
         User customer = userService.getById(requestDTO.getCustomerId());
 
-        Set<OrderItem> orderItems = orderItemService.createItems(requestDTO.getProducts());
-
-        Order order = constructNonPersistedOrder(customer, orderItems);
+        Order order = constructNonPersistedOrder(customer);
         order = save(order);
+
+        Set<OrderItem> orderItems = orderItemService.createItems(requestDTO.getProducts(), order);
+        order.setOrderItems(orderItems);
 
         return constructOrderResponseDTO(order);
     }
@@ -43,8 +45,8 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
-    private Order constructNonPersistedOrder(User customer, Set<OrderItem> orderItems) {
-        return new Order(customer, orderItems);
+    private Order constructNonPersistedOrder(User customer) {
+        return new Order(customer);
     }
 
     private OrderResponseDTO constructOrderResponseDTO(Order order) {
