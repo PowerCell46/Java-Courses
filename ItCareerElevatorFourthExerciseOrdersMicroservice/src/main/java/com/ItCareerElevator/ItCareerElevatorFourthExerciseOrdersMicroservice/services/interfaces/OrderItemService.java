@@ -4,8 +4,9 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTO
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OrderItem;
 
 import java.util.List;
+import java.util.Set;
 
 public interface OrderItemService {
 
-    List<OrderItem> createItems(List<OrderItemRequestDTO> productIds);
+    Set<OrderItem> createItems(List<OrderItemRequestDTO> productIds);
 }

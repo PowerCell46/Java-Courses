@@ -5,18 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class OrderResponseDTO {
+public class OrderItemResponseDTO {
 
-    @JsonProperty("id")
-    private String orderId;
+    private String productName;
 
-    @JsonProperty("customer")
-    private String customerUsername;
+    private Integer quantity;
 
-//    private List<OrderItemResponseDTO> items;
+    @JsonProperty("price")
+    private BigDecimal singlePrice;
 }

@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,8 +23,8 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public List<OrderItem> createItems(List<OrderItemRequestDTO> orderItemRequestDTOs) {
-        List<OrderItem> orderItems = orderItemRequestDTOs
+    public Set<OrderItem> createItems(List<OrderItemRequestDTO> orderItemRequestDTOs) {
+        Set<OrderItem> orderItems = orderItemRequestDTOs
                 .stream()
                 .map(orderItemRequestDTO -> {
                     Product product = productService.getById(orderItemRequestDTO.getProductId());
@@ -32,7 +34,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                             orderItemRequestDTO.getQuantity()
                     );
                 })
-                .toList();
+                .collect(Collectors.toSet());
 
         log.info("Persisting {} orderItems to the database.", orderItems.size());
         orderItemRepository.saveAll(orderItems);

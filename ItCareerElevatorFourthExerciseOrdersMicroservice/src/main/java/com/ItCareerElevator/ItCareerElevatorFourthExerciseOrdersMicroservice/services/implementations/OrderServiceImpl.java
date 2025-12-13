@@ -1,7 +1,9 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.implementations;
 
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.OrderItemResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.OrderRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.OrderResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.Order;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OrderItem;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.User;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories.OrderRepository;
@@ -11,7 +13,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.ser
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -26,8 +28,34 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
         User customer = userService.getById(requestDTO.getCustomerId());
 
-        List<OrderItem> orderItems = orderItemService.createItems(requestDTO.getProducts());
+        Set<OrderItem> orderItems = orderItemService.createItems(requestDTO.getProducts());
 
-        return null;
+        Order order = constructNonPersistedOrder(customer, orderItems);
+        order = save(order);
+
+        return constructOrderResponseDTO(order);
+    }
+
+    @Override
+    public Order save(Order order) {
+        log.info("Persisting {}'s order of {} products.", order.getCustomer().getUsername(), order.getOrderItems().size());
+
+        return orderRepository.save(order);
+    }
+
+    private Order constructNonPersistedOrder(User customer, Set<OrderItem> orderItems) {
+        return new Order(customer, orderItems);
+    }
+
+    private OrderResponseDTO constructOrderResponseDTO(Order order) {
+        return new OrderResponseDTO(
+                order.getId(),
+                order.getCustomer().getUsername()
+//                ,
+//                order.getOrderItems()
+//                        .stream()
+//                        .map(orderItem -> new OrderItemResponseDTO(orderItem.getProduct().getTranslations()))
+//                        .toList()
+        );
     }
 }
