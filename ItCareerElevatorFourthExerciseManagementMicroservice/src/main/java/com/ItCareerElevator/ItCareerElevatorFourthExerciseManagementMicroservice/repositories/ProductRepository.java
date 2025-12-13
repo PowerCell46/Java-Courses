@@ -13,4 +13,6 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     Optional<Product> findByIdAndIsDeletedIsFalse(String id);
 
     Set<Product> findAllByIsDeletedIsFalse();
+
+    Set<Product> findAllByTranslationsNameAndIsDeletedIsFalse(String translatedName);
 }

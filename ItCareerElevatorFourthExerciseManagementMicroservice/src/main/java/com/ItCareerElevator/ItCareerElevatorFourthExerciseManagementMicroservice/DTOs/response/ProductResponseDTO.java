@@ -1,6 +1,7 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,16 +9,15 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
-public class UpdateProductRequestDTO {
+public class ProductResponseDTO {
 
-    private String bgName;
+    private String id;
 
-    private String enName;
+    private String name;
 
-    private String bgDescription;
-
-    private String enDescription;
+    private String description;
 
     private String producerName;
 

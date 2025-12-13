@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,5 +11,5 @@ public class DeleteProductResponseDTO {
 
     private String id;
 
-    private String enName;
+    private String name;
 }

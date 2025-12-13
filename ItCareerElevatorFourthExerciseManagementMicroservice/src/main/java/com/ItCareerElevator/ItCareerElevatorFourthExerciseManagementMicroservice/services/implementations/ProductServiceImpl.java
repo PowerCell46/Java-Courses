@@ -1,9 +1,10 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.implementations;
 
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.CreateProductRequestDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.DeleteProductResponseDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.ProductResponseDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.UpdateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.CreateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.LocaleRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.DeleteProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.ProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Producer;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidFileImageException;
@@ -39,18 +40,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
-//        if (
-//            // @formatter:off
-//                productRepository.findByEnNameAndIsDeletedIsFalse(requestDTO.getEnName()).isPresent() ||
-//                productRepository.findByBgNameAndIsDeletedIsFalse(requestDTO.getBgName()).isPresent()
-//            // @formatter:on
-//        ) {
-//            throw new ProductAlreadyExistsException(String.format(
-//                    "Product with name %s | %s already exists.",
-//                    requestDTO.getEnName(),
-//                    requestDTO.getBgName()
-//            ));
-//        }
+        if (translatedNameAlreadyExists(requestDTO)) {
+            throw new ProductAlreadyExistsException(String.format(
+                    "Product with name %s already exists.",
+                    requestDTO.getNameLocales().getFirst().getTranslation()
+            ));
+        }
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 
@@ -61,6 +56,15 @@ public class ProductServiceImpl implements ProductService {
         product = save(product);
 
         return constructProductResponseDTO(product);
+    }
+
+    private boolean translatedNameAlreadyExists(CreateProductRequestDTO requestDTO) {
+        return requestDTO
+                .getNameLocales()
+                .stream()
+                .anyMatch(locale ->
+                        !productRepository.findAllByTranslationsNameAndIsDeletedIsFalse(locale.getTranslation()).isEmpty()
+                );
     }
 
     private String saveImageFileToFileSystem(MultipartFile fileImage) {
