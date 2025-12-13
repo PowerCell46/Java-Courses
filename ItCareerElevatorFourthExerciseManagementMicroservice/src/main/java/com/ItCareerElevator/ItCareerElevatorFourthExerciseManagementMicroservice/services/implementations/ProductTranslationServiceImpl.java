@@ -34,7 +34,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
         Set<ProductTranslation> productTranslations = new HashSet<>();
         for (int i = 0; i < requestDTO.getNameLocales().size(); ++i) {
             if (!requestDTO.getNameLocales().get(i).getCode().equals(requestDTO.getDescriptionLocales().get(i).getCode())) {
-                throw new InvalidLocalesException("Non-matching order of locales between the translation locales.");
+                throw new InvalidLocalesException("Non-matching order of locales between the translations.");
             }
 
             productTranslations.add(

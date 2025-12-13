@@ -1,9 +1,9 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -38,16 +38,18 @@ public class Product extends CommonEntity {
 
     // currentDiscountPercentage (when creating add number of days till expiration
 
-    // image (DB file): energo pro OCR (look at the controller)
+    @Column(nullable = false, length = 500)
+    private String imageUrl;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ProductTranslation> translations;
 
-    public Product(BigDecimal price, Integer inStockQuantity, Producer producer) {
+    public Product(BigDecimal price, Integer inStockQuantity, String imageUrl, Producer producer) {
         super();
 
         this.price = price;
         this.inStockQuantity = inStockQuantity;
+        this.imageUrl = imageUrl;
         this.producer = producer;
     }
 }
