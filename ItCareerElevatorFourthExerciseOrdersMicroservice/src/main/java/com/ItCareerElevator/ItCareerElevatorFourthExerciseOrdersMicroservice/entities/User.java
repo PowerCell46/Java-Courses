@@ -26,7 +26,7 @@ import java.util.Set;
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE producers SET is_deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends CommonEntity {

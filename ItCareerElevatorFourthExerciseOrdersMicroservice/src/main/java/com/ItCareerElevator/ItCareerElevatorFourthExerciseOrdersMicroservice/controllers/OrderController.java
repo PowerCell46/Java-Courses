@@ -1,7 +1,7 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.controllers;
 
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.OrderRequestDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.OrderResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.request.OrderRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.response.OrderResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @Slf4j
 @RestController
@@ -23,7 +25,8 @@ public class OrderController {
     public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO requestDTO) {
         OrderResponseDTO responseDTO = orderService.create(requestDTO);
 
-        return ResponseEntity.created(null).body(responseDTO);
+        URI location = URI.create(String.format("/api/orders/%s", responseDTO.getOrderId()));
+        return ResponseEntity.created(location).body(responseDTO);
     }
 
     // Get single order

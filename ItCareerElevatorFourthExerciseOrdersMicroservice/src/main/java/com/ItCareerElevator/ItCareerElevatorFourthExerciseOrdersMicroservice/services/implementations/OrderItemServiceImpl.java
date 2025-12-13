@@ -1,6 +1,6 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.implementations;
 
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.OrderItemRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.request.OrderItemRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.Order;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OrderItem;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.Product;
@@ -46,10 +46,10 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     private OrderItem constructNonPersistedOrderItem(Product product, Order order, Integer quantity) {
         return new OrderItem(
-                product,
-                order,
+                product.getPrice(),
                 quantity,
-                product.getPrice()
+                product,
+                order
         );
     }
 }

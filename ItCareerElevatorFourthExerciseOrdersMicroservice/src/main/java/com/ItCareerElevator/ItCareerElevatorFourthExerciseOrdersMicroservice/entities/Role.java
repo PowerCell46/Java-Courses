@@ -19,7 +19,7 @@ import org.hibernate.annotations.SQLDelete;
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE producers SET is_deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role extends CommonEntity {

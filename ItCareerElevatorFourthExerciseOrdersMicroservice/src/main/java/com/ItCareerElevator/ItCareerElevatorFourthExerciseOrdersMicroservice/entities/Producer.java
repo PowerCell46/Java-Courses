@@ -18,6 +18,6 @@ import org.hibernate.annotations.SQLDelete;
 @NoArgsConstructor
 public class Producer extends CommonEntity {
 
-    @Column
+    @Column(nullable = false)
     private String name;
 }
