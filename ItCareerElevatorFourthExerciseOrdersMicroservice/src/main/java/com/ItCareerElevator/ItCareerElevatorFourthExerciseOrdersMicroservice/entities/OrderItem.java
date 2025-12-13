@@ -41,6 +41,14 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    public OrderItem(Product product, Integer quantity, BigDecimal singlePrice) {
+        super();
+
+        this.product = product;
+        this.quantity = quantity;
+        this.singlePrice = singlePrice;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

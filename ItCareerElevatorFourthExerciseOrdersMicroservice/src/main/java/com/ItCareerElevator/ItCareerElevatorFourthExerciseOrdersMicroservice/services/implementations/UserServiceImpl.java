@@ -19,6 +19,6 @@ public class UserServiceImpl implements UserService {
     public User getById(String id) {
         return userRepository
                 .findByIdAndIsDeletedIsFalse(id)
-                .orElseThrow(() -> new NoSuchUserException(String.format("No user found with id %d", id)));
+                .orElseThrow(() -> new NoSuchUserException(String.format("No user found with id %s.", id)));
     }
 }
