@@ -6,6 +6,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Producer;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.ProductTranslation;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidLocalesException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProductAlreadyExistsException;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -49,7 +51,9 @@ public class ProductServiceImpl implements ProductService {
             product.setInStockQuantity(0);
 
         product = save(product);
-        productTranslationService.createTranslations(requestDTO, product);
+
+        Set<ProductTranslation> translations = productTranslationService.createTranslations(requestDTO, product);
+        product.setTranslations(translations);
 
         return constructProductResponseDTO(product);
     }
@@ -142,23 +146,41 @@ public class ProductServiceImpl implements ProductService {
     public DeleteProductResponseDTO deleteById(String id) {
         Product product = getById(id);
 
+        DeleteProductResponseDTO responseDTO = constructDeleteProductResponseDTO(product);
+
         log.info("(Soft) deleting product from the database.");
         productRepository.deleteById(id);
 
-        return constructDeleteProductResponseDTO(product);
+        return responseDTO;
     }
 
     private ProductResponseDTO constructProductResponseDTO(Product product) {
         ProductResponseDTO responseDTO = objectMapper.convertValue(product, ProductResponseDTO.class);
         responseDTO.setProducerName(product.getProducer().getName());
-        // TODO: name
-        // TODO: description
+
+        ProductTranslation translation = product.getTranslations()
+                .stream()
+                .filter(tr -> !tr.getIsDeleted())
+                .findFirst()
+                .orElse(null);
+
+        responseDTO.setName(translation != null ? translation.getName() : "N/A");
+        responseDTO.setDescription(translation != null ? translation.getDescription() : "N/A");
 
         return responseDTO;
     }
 
     private DeleteProductResponseDTO constructDeleteProductResponseDTO(Product product) {
-        return objectMapper.convertValue(product, DeleteProductResponseDTO.class);
-        // TODO: name
+        DeleteProductResponseDTO responseDTO = objectMapper.convertValue(product, DeleteProductResponseDTO.class);
+
+        ProductTranslation translation = product.getTranslations()
+                .stream()
+                .filter(tr -> !tr.getIsDeleted())
+                .findFirst()
+                .orElse(null);
+
+        responseDTO.setName(translation != null ? translation.getName() : "N/A");
+
+        return responseDTO;
     }
 }

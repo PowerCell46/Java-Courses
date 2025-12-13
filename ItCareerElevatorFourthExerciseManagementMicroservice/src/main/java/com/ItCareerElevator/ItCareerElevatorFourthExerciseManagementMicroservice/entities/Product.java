@@ -1,5 +1,6 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,7 +41,7 @@ public class Product extends CommonEntity {
     @Column(nullable = false, length = 500)
     private String imageUrl;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ProductTranslation> translations;
 
     public Product(BigDecimal price, Integer inStockQuantity, String imageUrl, Producer producer) {
