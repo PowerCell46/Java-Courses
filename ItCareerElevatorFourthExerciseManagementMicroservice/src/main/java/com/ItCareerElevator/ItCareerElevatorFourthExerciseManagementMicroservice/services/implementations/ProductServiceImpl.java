@@ -6,6 +6,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidFileImageException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidLocalesException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProductAlreadyExistsException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.repositories.ProductRepository;
@@ -41,12 +42,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
-        if (translatedNameAlreadyExists(requestDTO)) {
-            throw new ProductAlreadyExistsException(String.format(
-                    "Product with name %s already exists.",
-                    requestDTO.getNameLocales().getFirst().getTranslation()
-            ));
-        }
+        runCreateValidations(requestDTO);
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 
@@ -59,6 +55,25 @@ public class ProductServiceImpl implements ProductService {
         productTranslationService.createTranslations(requestDTO, product);
 
         return constructProductResponseDTO(product);
+    }
+
+    private void runCreateValidations(CreateProductRequestDTO requestDTO) {
+        if (requestDTO.getNameLocales().isEmpty() || requestDTO.getDescriptionLocales().isEmpty()) {
+            throw new InvalidLocalesException("Name locales and description locales cannot be empty.");
+        }
+
+        if (requestDTO.getNameLocales().size() != requestDTO.getDescriptionLocales().size()) {
+            throw new InvalidLocalesException("Name locales and description locales don't match in size.");
+        }
+
+        if (translatedNameAlreadyExists(requestDTO)) {
+            throw new ProductAlreadyExistsException(
+                    String.format(
+                            "Product with name %s already exists.",
+                            requestDTO.getNameLocales().getFirst().getTranslation()
+                    )
+            );
+        }
     }
 
     private boolean translatedNameAlreadyExists(CreateProductRequestDTO requestDTO) {
@@ -170,7 +185,7 @@ public class ProductServiceImpl implements ProductService {
     public DeleteProductResponseDTO deleteById(String id) {
         Product product = getById(id);
 
-//        log.info("(Soft) deleting product {} from the database.", product.getEnName());
+        log.info("(Soft) deleting product from the database.");
         productRepository.deleteById(id);
 
         return constructDeleteProductResponseDTO(product);

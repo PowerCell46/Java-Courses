@@ -19,6 +19,6 @@ public class LocaleServiceImpl implements LocaleService {
     public Locale getByCode(String code) {
         return localeRepository
                 .findByCodeAndIsDeletedIsFalse(code)
-                .orElseThrow(() -> new NoSuchLocaleException(String.format("Invalid locale %s.", code)));
+                .orElseThrow(() -> new NoSuchLocaleException(String.format("Invalid or non-existing locale %s.", code)));
     }
 }

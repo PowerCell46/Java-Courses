@@ -26,7 +26,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     @Override
     public Set<ProductTranslation> createTranslations(CreateProductRequestDTO requestDTO, Product product) {
         if (requestDTO.getNameLocales().size() != requestDTO.getDescriptionLocales().size()) {
-            throw new InvalidLocalesException("Name locales and description locales don't match on size.");
+            throw new InvalidLocalesException("Name locales and description locales don't match in size.");
         }
 
         Set<ProductTranslation> productTranslations = new HashSet<>();

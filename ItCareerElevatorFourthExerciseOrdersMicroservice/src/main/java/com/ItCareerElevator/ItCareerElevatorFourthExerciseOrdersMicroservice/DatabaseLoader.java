@@ -39,9 +39,10 @@ public class DatabaseLoader implements CommandLineRunner {
         Locale bulgarian = new Locale("bg");
         Locale english = new Locale("en");
         Locale spanish = new Locale("es");
+        Locale german = new Locale("de");
 
         log.info("Persisting locales to the databases.");
-        localeRepository.saveAll(Set.of(bulgarian, english, spanish));
+        localeRepository.saveAll(Set.of(bulgarian, english, spanish, german));
     }
 
     private void seedProducts() {
