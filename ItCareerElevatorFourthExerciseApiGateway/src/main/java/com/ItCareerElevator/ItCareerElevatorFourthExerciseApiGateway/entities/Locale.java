@@ -12,18 +12,18 @@ import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(
-        name = "roles",
-        indexes = {
-                @Index(name = "idx_name_unique", columnList = "name", unique = true)
-        }
+    name = "locales",
+    indexes = {
+        @Index(name = "idx_locale_code", columnList = "code", unique = true)
+    }
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id = ?")
-@AllArgsConstructor
+@SQLDelete(sql = "UPDATE locales SET is_deleted = true WHERE id = ?")
 @NoArgsConstructor
-public class Role extends CommonEntity {
+@AllArgsConstructor
+public class Locale extends CommonEntity {
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, unique = true, length = 10)
+    private String code;
 }

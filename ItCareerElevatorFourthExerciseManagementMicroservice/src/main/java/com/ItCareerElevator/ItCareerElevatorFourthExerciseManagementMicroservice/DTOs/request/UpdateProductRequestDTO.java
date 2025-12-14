@@ -12,13 +12,13 @@ import java.util.Collection;
 @AllArgsConstructor
 public class UpdateProductRequestDTO {
 
-    private Collection<LocaleRequestDTO> nameLocales; // optional
+    private Collection<LocaleRequestDTO> nameLocales;
 
-    private Collection<LocaleRequestDTO> descriptionLocales; // optional
+    private Collection<LocaleRequestDTO> descriptionLocales;
 
-    private String producerName; // optional
+    private String producerName;
 
-    private BigDecimal price; // optional
+    private BigDecimal price;
 
-    private Integer inStockQuantity; // optional
+    private Integer inStockQuantity;
 }

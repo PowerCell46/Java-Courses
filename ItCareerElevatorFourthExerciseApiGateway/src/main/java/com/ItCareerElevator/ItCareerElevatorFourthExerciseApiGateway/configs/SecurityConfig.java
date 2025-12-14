@@ -51,9 +51,9 @@ public class SecurityConfig {
 //                        .requestMatchers(
 //                            "/api/admin/**" // CUD on product
 //                        ).hasRole("ADMIN") // expects "ROLE_ADMIN"
-//                        .requestMatchers(
-//                                "/api/auth/role-restricted"
-//                        ).hasAnyRole("MANAGER", "ADMIN") // expects ROLE_MANAGER or ROLE_ADMIN
+                        .requestMatchers(
+                                "/api/products/manage/**"
+                        ).hasAnyRole("MANAGER", "ADMIN") // expects ROLE_MANAGER or ROLE_ADMIN
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

@@ -26,11 +26,11 @@ import java.util.Optional;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final UserRepository userRepository;
+
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
-
-    private final UserRepository userRepository;
 
     public UserServiceImpl(
             JwtUtils jwtUtils,
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     public AuthResponseDTO register(AuthRequestDTO userRequest) { // ? Cache the users in Redis? (API gateway has to be as FAST as possible!)
         if (findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(
-                    String.format("User with username: %s already exists.", userRequest.getUsername())
+                    String.format("User with username %s already exists.", userRequest.getUsername())
             );
         }
 
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
-        log.info("Persisting user with username {} to the Database.", user.getUsername());
+        log.info("Persisting user with username {} to the database.", user.getUsername());
 
         return userRepository.save(user);
     }

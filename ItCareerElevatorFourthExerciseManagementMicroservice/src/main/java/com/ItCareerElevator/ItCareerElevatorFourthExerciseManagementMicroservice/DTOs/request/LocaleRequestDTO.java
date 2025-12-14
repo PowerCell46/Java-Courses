@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LocaleRequestDTO {
 
-    private String code; // required
+    private String code;
 
-    private String translation; // required
+    private String translation;
 }

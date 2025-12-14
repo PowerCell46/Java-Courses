@@ -22,11 +22,11 @@ import java.util.Set;
         name = "users",
         indexes = {
                 @Index(name = "idx_username_unique", columnList = "username", unique = true)
-        }
+        } // TODO: If user is deleted, you can reuse the username, rn you cannot
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE producers SET is_deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends CommonEntity {

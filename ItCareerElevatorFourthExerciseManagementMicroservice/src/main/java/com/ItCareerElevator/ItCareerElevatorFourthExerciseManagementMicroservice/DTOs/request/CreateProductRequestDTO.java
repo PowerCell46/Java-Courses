@@ -12,13 +12,13 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateProductRequestDTO {
 
-    private List<LocaleRequestDTO> nameLocales; // required
+    private List<LocaleRequestDTO> nameLocales;
 
-    private List<LocaleRequestDTO> descriptionLocales; // required
+    private List<LocaleRequestDTO> descriptionLocales;
 
-    private String producerName; // required
+    private String producerName;
 
-    private BigDecimal price; // required
+    private BigDecimal price;
 
-    private Integer inStockQuantity; // * optional
+    private Integer inStockQuantity;
 }
