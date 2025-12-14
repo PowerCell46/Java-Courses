@@ -1,9 +1,10 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.controllers;
 
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.CreateProductRequestDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.DeleteProductResponseDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.ProductResponseDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.UpdateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request.CreateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.DeleteProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.ProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request.UpdateProductRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -28,7 +29,7 @@ public class ProductsController {
 
     private final ProductService productService;
 
-    @PostMapping("/manage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/manage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProductResponseDTO> createProduct(
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
@@ -39,9 +40,9 @@ public class ProductsController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    @PatchMapping("/manage/{productId}")
-    public ResponseEntity<ProductResponseDTO> updateProduct( // TODO: allow user to change an image?
-                                                             @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
+    @PatchMapping("/manage/{productId}") // TODO: allow user to change an image?
+    public ResponseEntity<ProductResponseDTO> updateProduct(
+            @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
     ) {
         ProductResponseDTO responseDTO = productService.update(productId, requestDTO);
 

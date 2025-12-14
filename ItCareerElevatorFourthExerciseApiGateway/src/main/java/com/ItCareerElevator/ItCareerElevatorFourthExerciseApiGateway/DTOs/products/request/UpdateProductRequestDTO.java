@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -36,7 +36,7 @@ public class DatabaseLoader implements CommandLineRunner {
         if (userService.findByUsername(ADMIN_USERNAME).isEmpty()) {
             userService.register(new AuthRequestDTO(ADMIN_USERNAME, ADMIN_PASSWORD));
             User adminUser = userService.findByUsername(ADMIN_USERNAME).get();
-//
+
             adminUser.setRoles(Set.of(adminRole, managerRole));
             userService.save(adminUser);
         }
