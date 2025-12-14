@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @SQLDelete(sql = "UPDATE order_items SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItem extends CommonEntity{
+public class OrderItem extends CommonEntity {
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal singlePrice; // Snapshot of the price it was bought for at the time

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -98,8 +99,7 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(SignatureException.class)
-    // ? Probably already handled in JwtRequestFilter (if it's thrown only there)
+    @ExceptionHandler(SignatureException.class) // ? Probably already handled in JwtRequestFilter (if it's thrown only there)
     public ResponseEntity<ErrorResponseDTO> handleException(SignatureException ex) {
         log.warn("Handling SignatureException.");
 
@@ -126,8 +126,7 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    // * Thrown when an argument annotated with @Valid fails validation checks
+    @ExceptionHandler(MethodArgumentNotValidException.class) // * Thrown when an argument annotated with @Valid fails validation checks
     public ResponseEntity<ErrorResponseDTO> handleException(MethodArgumentNotValidException ex) {
         log.warn("Handling MethodArgumentNotValidException.");
 
@@ -147,8 +146,7 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_CONTENT);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    // * Thrown when validation constraints on method parameters (e.g., path variables, query parameters) or method return values fail. This requires the containing class (Controller/Service) to be annotated with @Validated.
+    @ExceptionHandler(ConstraintViolationException.class) // * Thrown when validation constraints on method parameters (e.g., path variables, query parameters) or method return values fail. This requires the containing class (Controller/Service) to be annotated with @Validated.
     public ResponseEntity<ErrorResponseDTO> handleConstraintViolation(ConstraintViolationException ex) {
         log.warn("Handling ConstraintViolationException.");
 
@@ -167,8 +165,7 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_CONTENT);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    // * Thrown when the incoming HTTP request body cannot be converted to the required object type (malformed JSON, incorrect data type for a field)
+    @ExceptionHandler(HttpMessageNotReadableException.class) // * Thrown when the incoming HTTP request body cannot be converted to the required object type (malformed JSON, incorrect data type for a field)
     public ResponseEntity<ErrorResponseDTO> handleConstraintViolation(HttpMessageNotReadableException ex) {
         log.warn("Handling HttpMessageNotReadableException.");
 
@@ -179,5 +176,18 @@ public class ExceptionHandlerController {
         );
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class) // * Thrown when user makes a type of request on an endpoint, that is not supported/defined.
+    public ResponseEntity<ErrorResponseDTO> handleConstraintViolation(HttpRequestMethodNotSupportedException ex) {
+        log.warn("Handling HttpRequestMethodNotSupportedException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.METHOD_NOT_ALLOWED.value(),
+                String.format("Method %s is not supported for this endpoint.", ex.getMethod()),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.METHOD_NOT_ALLOWED);
     }
 }

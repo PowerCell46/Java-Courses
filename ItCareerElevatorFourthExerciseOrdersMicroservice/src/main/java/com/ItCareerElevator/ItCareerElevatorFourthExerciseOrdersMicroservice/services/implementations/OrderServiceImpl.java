@@ -22,9 +22,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
+    private final OrderRepository orderRepository;
+
     private final UserService userService;
     private final OrderItemService orderItemService;
-    private final OrderRepository orderRepository;
 
     @Override
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
