@@ -5,11 +5,13 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Slf4j
+@Order(1)
 @Component
 @RequiredArgsConstructor
 public class DatabaseLoader implements CommandLineRunner {
@@ -28,7 +30,9 @@ public class DatabaseLoader implements CommandLineRunner {
         Locale spanish = new Locale("es");
         Locale german = new Locale("de");
 
-        log.info("Persisting locales to the databases.");
-        localeRepository.saveAll(Set.of(bulgarian, english, spanish, german));
+        Set<Locale> locales = Set.of(bulgarian, english, spanish, german);
+
+        log.info("Persisting {} locales to the database.", locales.size());
+        localeRepository.saveAll(locales);
     }
 }

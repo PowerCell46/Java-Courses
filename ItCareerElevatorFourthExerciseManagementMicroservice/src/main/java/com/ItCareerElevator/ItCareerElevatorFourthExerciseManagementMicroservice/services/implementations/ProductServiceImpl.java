@@ -67,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
             throw new InvalidLocalesException("Name locales and description locales don't match in size.");
         }
 
-        if (translatedNameAlreadyExists(requestDTO)) {
+        if (translatedNameAlreadyExists(requestDTO)) { // Don't allow a product name to be a duplicate
             throw new ProductAlreadyExistsException(
                     String.format(
                             "Product with name %s already exists.",
@@ -179,7 +179,7 @@ public class ProductServiceImpl implements ProductService {
                 .findFirst()
                 .orElse(null);
 
-        responseDTO.setName(translation != null ? translation.getName() : "N/A");
+        responseDTO.setProductName(translation != null ? translation.getName() : "N/A");
 
         return responseDTO;
     }

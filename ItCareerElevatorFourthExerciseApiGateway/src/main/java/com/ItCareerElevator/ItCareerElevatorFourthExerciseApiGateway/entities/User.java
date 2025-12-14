@@ -22,7 +22,7 @@ import java.util.Set;
         name = "users",
         indexes = {
                 @Index(name = "idx_username_unique", columnList = "username", unique = true)
-        } // TODO: If user is deleted, you can reuse the username, rn you cannot
+        } // TODO: If user is deleted, you can reuse the username, right now you cannot
 )
 @Getter
 @Setter

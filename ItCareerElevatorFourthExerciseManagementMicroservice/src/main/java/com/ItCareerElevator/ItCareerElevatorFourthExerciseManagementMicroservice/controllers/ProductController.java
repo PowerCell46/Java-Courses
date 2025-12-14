@@ -38,10 +38,6 @@ public class ProductController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    /*
-        curl.exe -v -i -X POST -F 'fileImage=@C:\Users\HP ZBook 17 G5\Desktop\91CZ5e4UeHL._SL1500_.jpg' -F 'requestDTO=@C:\Users\HP ZBook 17 G5\Desktop\requestDTO.json;type=application/json' http://localhost:8080/api/products
-    */
-
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductResponseDTO> updateProduct( // TODO: allow user to change an image?
             @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO

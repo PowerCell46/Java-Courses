@@ -24,7 +24,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody AuthRequestDTO userRequest) {
-        log.info("--- POST request on api/auth/register with username: {}.", userRequest.getUsername());
+        log.info("---> POST request on api/auth/register with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService.register(userRequest);
 
@@ -33,7 +33,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> loginUser(@Valid @RequestBody AuthRequestDTO userRequest) {
-        log.info("--- POST request on api/auth/login with username: {}.", userRequest.getUsername());
+        log.info("---> POST request on api/auth/login with username: {}.", userRequest.getUsername());
 
         var responseDTO = userService
                 .authenticate(userRequest.getUsername(), userRequest.getPassword());

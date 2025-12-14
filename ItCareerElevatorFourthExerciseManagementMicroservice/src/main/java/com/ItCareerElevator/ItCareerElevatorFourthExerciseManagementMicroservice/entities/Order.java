@@ -29,4 +29,9 @@ public class Order extends CommonEntity {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private Set<OrderItem> orderItems;
+
+    public Order(User customer) {
+        super();
+        this.customer = customer;
+    }
 }

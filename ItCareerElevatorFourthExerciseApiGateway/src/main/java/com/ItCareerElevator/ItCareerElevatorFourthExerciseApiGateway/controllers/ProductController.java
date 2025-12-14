@@ -35,7 +35,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable String productId) {
-        log.info("--- GET request on api/products/{}.", productId);
+        log.info("---> GET request on api/products/{}.", productId);
 
         ProductResponseDTO responseDTO = productService.getProduct(productId);
         return ResponseEntity.ok(responseDTO);
@@ -46,7 +46,7 @@ public class ProductController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        log.info("--- GET request on api/products.");
+        log.info("---> GET request on api/products.");
 
         Page<ProductResponseDTO> pageResult = productService.getProducts(page, size);
         return ResponseEntity.ok(pageResult.getContent());
@@ -57,7 +57,7 @@ public class ProductController {
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
     ) {
-        log.info("POST request on /api/products/manage.");
+        log.info("---> POST request on /api/products/manage.");
 
         ProductResponseDTO responseDTO = productService.create(requestDTO, fileImage);
 
@@ -69,7 +69,7 @@ public class ProductController {
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
     ) {
-        log.info("PATCH request on /api/products/manage/{}.", productId);
+        log.info("---> PATCH request on /api/products/manage/{}.", productId);
 
         ProductResponseDTO responseDTO = productService.update(productId, requestDTO);
         return ResponseEntity.ok(responseDTO);
@@ -77,7 +77,7 @@ public class ProductController {
 
     @DeleteMapping("/manage/{productId}")
     public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
-        log.info("DELETE request on /api/products/manage/{}.", productId);
+        log.info("---> DELETE request on /api/products/manage/{}.", productId);
 
         DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
         return ResponseEntity.ok(responseDTO);

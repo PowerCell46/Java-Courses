@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
 
 import java.math.BigDecimal;
 
@@ -20,44 +21,22 @@ import java.math.BigDecimal;
 @Table(name = "order_items")
 @Getter
 @Setter
-@NoArgsConstructor
+@SQLDelete(sql = "UPDATE order_items SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
-public class OrderItem {
+@NoArgsConstructor
+public class OrderItem extends CommonEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal singlePrice; // Snapshot of the price it was bought for at the time
+
+    @Column(nullable = false)
+    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column
-    private Integer quantity;
-
-    @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal singlePrice; // Snapshot of the price it was bought for at the time
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        OrderItem that = (OrderItem) o;
-        return id != null && id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
