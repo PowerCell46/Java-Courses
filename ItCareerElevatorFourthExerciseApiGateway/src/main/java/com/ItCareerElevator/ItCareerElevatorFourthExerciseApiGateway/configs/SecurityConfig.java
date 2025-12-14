@@ -45,11 +45,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/register",
-                                "/api/auth/login"
-                                // fetch products (all and single product/s)
+                                "/api/auth/login",
+                                "/api/products",
+                                "/api/products/*"
                         ).permitAll() // ! Also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
 //                        .requestMatchers(
-//                            "/api/admin/**" // CUD on product
+//                                "/api/admin/**" // CUD on product
 //                        ).hasRole("ADMIN") // expects "ROLE_ADMIN"
                         .requestMatchers(
                                 "/api/products/manage/**"

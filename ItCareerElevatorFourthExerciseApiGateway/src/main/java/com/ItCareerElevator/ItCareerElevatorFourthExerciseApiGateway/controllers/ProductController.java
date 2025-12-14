@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -31,14 +33,23 @@ public class ProductController {
 
     private final ProductService productService;
 
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable String productId) {
+        log.info("--- GET request on api/products/{}.", productId);
+
+        ProductResponseDTO responseDTO = productService.getProduct(productId);
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @GetMapping
-    public ResponseEntity<Page<ProductResponseDTO>> getProducts(
+    public ResponseEntity<List<ProductResponseDTO>> getProducts(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        Page<ProductResponseDTO> products = productService.getProducts(page, size);
+        log.info("--- GET request on api/products.");
 
-        return ResponseEntity.ok(products);
+        Page<ProductResponseDTO> pageResult = productService.getProducts(page, size);
+        return ResponseEntity.ok(pageResult.getContent());
     }
 
     @PostMapping(value = "/manage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,25 +57,29 @@ public class ProductController {
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
     ) {
+        log.info("POST request on /api/products/manage.");
+
         ProductResponseDTO responseDTO = productService.create(requestDTO, fileImage);
 
         URI location = URI.create("/api/products/" + responseDTO.getId());
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    @PatchMapping("/manage/{productId}") // TODO: allow user to change an image?
+    @PatchMapping("/manage/{productId}") // TODO: allow user to change product's image?
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
     ) {
-        ProductResponseDTO responseDTO = productService.update(productId, requestDTO);
+        log.info("PATCH request on /api/products/manage/{}.", productId);
 
+        ProductResponseDTO responseDTO = productService.update(productId, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping("/manage/{productId}")
     public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
-        DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
+        log.info("DELETE request on /api/products/manage/{}.", productId);
 
+        DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
         return ResponseEntity.ok(responseDTO);
     }
 }

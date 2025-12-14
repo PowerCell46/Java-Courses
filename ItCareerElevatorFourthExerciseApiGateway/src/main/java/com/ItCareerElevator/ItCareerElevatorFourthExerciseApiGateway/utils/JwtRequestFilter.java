@@ -85,9 +85,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean isPathPublic(String path) {
-        Set<String> PUBLIC_ENDPOINTS = Set.of("/api/auth/register", "/api/auth/login");
+        if (
+            // @formatter:off
+                path.equals("/api/auth/register") ||
+                path.equals("/api/auth/login") ||
+                path.equals("/api/products")
+            // @formatter:on
+        ) {
+            return true;
+        }
 
-        return PUBLIC_ENDPOINTS.contains(path);
+        if (path.startsWith("/api/products/") && !path.startsWith("/api/products/manage")) { // * /api/products/*
+            return true;
+        }
+
+        return false;
     }
 
     private void writeJsonErrorResponse(HttpServletResponse response, String message) throws IOException {

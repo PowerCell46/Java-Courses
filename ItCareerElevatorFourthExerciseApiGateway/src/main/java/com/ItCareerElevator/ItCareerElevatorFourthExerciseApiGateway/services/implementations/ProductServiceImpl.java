@@ -8,6 +8,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.produc
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.ProductTranslation;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.ManagementMicroserviceException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.repositories.ProductRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import reactor.core.publisher.Mono;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -65,7 +67,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getById(String id) {
-        return null;
+        Optional<Product> optionalProduct = productRepository.findByIdAndIsDeletedIsFalse(id);
+
+        if (optionalProduct.isEmpty()) {
+            throw new NoSuchProductException(String.format("No product found with id %s.", id));
+        }
+
+        return optionalProduct.get();
     }
 
     @Override
@@ -112,6 +120,13 @@ public class ProductServiceImpl implements ProductService {
         return productRepository
                 .findAllByIsDeletedIsFalse(pageable)
                 .map(this::constructProductResponseDTO);
+    }
+
+    @Override
+    public ProductResponseDTO getProduct(String id) {
+        Product product = getById(id);
+
+        return constructProductResponseDTO(product);
     }
 
     private ProductResponseDTO constructProductResponseDTO(Product product) {

@@ -19,4 +19,6 @@ public interface ProductService {
     DeleteProductResponseDTO deleteById(String id);
 
     Page<ProductResponseDTO> getProducts(Integer page, Integer size);
+
+    ProductResponseDTO getProduct(String id);
 }

@@ -29,7 +29,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role save(Role role) {
-        log.info("Persisting role with name {} to the Database.", role.getName());
+        log.info("Persisting role with name {} to the database.", role.getName());
 
         return roleRepository.save(role);
     }
