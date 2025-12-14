@@ -1,9 +1,8 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.request;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.orders.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.List;
 
 @Getter
@@ -11,7 +10,5 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderRequestDTO {
 
-    private String customerId;
-
-    private List<OrderItemRequestDTO> products;
+    private List<OrderItemRequestDTO> products; // required
 }

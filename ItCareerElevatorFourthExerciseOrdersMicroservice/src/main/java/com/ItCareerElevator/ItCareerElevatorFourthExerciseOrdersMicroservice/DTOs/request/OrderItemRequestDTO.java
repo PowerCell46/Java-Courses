@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderItemRequestDTO {
 
-    private String productId; // required
+    private String productId;
 
-    private Integer quantity; // required
+    private Integer quantity;
 }
