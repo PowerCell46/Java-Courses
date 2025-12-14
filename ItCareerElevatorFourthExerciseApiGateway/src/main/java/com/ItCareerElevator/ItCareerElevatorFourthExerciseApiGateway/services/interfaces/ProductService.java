@@ -5,6 +5,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.produc
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.DeleteProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.Product;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
@@ -16,4 +17,6 @@ public interface ProductService {
     ProductResponseDTO update(String id, UpdateProductRequestDTO requestDTO);
 
     DeleteProductResponseDTO deleteById(String id);
+
+    Page<ProductResponseDTO> getProducts(Integer page, Integer size);
 }

@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login"
                                 // fetch products (all and single product/s)
-                        ).permitAll() // ! also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
+                        ).permitAll() // ! Also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
 //                        .requestMatchers(
 //                            "/api/admin/**" // CUD on product
 //                        ).hasRole("ADMIN") // expects "ROLE_ADMIN"

@@ -6,11 +6,15 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.produc
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.DeleteProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.Product;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.ProductTranslation;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.ManagementMicroserviceException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.repositories.ProductRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -20,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Objects;
 
@@ -29,7 +34,8 @@ import java.util.Objects;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private WebClient managementWebClient;
+    private final ObjectMapper objectMapper;
+    private final WebClient managementWebClient;
 
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
@@ -97,5 +103,30 @@ public class ProductServiceImpl implements ProductService {
                 )
                 .bodyToMono(DeleteProductResponseDTO.class)
                 .block();
+    }
+
+    @Override
+    public Page<ProductResponseDTO> getProducts(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return productRepository
+                .findAllByIsDeletedIsFalse(pageable)
+                .map(this::constructProductResponseDTO);
+    }
+
+    private ProductResponseDTO constructProductResponseDTO(Product product) {
+        ProductResponseDTO responseDTO = objectMapper.convertValue(product, ProductResponseDTO.class);
+        responseDTO.setProducerName(product.getProducer().getName());
+
+        ProductTranslation translation = product.getTranslations()
+                .stream()
+                .filter(tr -> !tr.getIsDeleted())
+                .findFirst()
+                .orElse(null);
+
+        responseDTO.setName(translation != null ? translation.getName() : "N/A");
+        responseDTO.setDescription(translation != null ? translation.getDescription() : "N/A");
+
+        return responseDTO;
     }
 }
