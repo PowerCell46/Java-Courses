@@ -9,9 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AuthResponseDTO {
 
-//    @JsonProperty("id")
-//    private String snowflakeId;
-
     private String username;
 
     private String token;

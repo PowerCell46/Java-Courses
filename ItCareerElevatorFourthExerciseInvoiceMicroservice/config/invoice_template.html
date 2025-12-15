@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фактура</title>
+    <style>
+        /* ОСНОВНИ СТИЛОВЕ */
+        body {
+            font-family: 'Noto Sans', Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+
+        .invoice-container {
+            max-width: 900px;
+            margin: auto;
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        /* УПРАВЛЕНИЕ НА СТРАНИЦИТЕ (за печат/PDF) */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* ЗАГЛАВИЯ И ОБЩИ ЕЛЕМЕНТИ */
+        .header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center; /* Центрирах го, както беше в коментара */
+        }
+
+        .gray-box {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border: 1px solid #ddd;
+            flex: 1; /* Позволява на кутиите да заемат равно място във flex контейнера */
+        }
+
+        /* СЕКЦИЯ С ИНФОРМАЦИЯ ЗА СТРАНИТЕ */
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px; /* Добавено разстояние между двете кутии */
+        }
+
+        /* ТАБЛИЦИ */
+        .item-table,
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .item-table th,
+        .item-table td,
+        .totals-table th,
+        .totals-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .item-table th,
+        .totals-table th {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .totals-table td:first-child {
+            text-align: left; /* Първата колона с текст да е ляво подравнена */
+            width: 70%; /* Задава по-голяма ширина на текстовото поле */
+        }
+
+        .totals-table td:last-child {
+            text-align: right; /* Числата да са дясно подравнени */
+        }
+
+        /* ДОЛЕН КОЛОНТИТУЛ / ПОДПИСИ */
+        .footer {
+            font-size: 14px;
+            text-align: center;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invoice-container">
+        <header>
+            <div class="header">
+                <p style="margin: 0;">Фактура</p>
+                <p style="font-size: 14px; font-weight: normal; margin: 5px 0 0 0;">Основание: чл.113, ал.11 от ЗДДС</p>
+            </div>
+        </header>
+
+        <section class="sub-header">
+            <div class="gray-box">
+                <p style="font-weight: bold; margin-bottom: 5px;">
+                    Фактура №: ※ / Дата: ※<br>
+                </p>
+                <p style="margin-top: 10px;">
+                    ※<br>
+                    Доставчик: Fitness Pro Gym<br>
+                    ЕИК: 034266453523<br>
+                    Банкова сметка: BG53JF336463E2
+                </p>
+            </div>
+
+            <div class="gray-box">
+                <p style="font-weight: bold;">Получател</p>
+                <p>
+                    ※<br>
+                    ※<br>
+                    ЕИК: ※<br>
+                    ИН по ДДС: ※
+                </p>
+            </div>
+        </section>
+
+        <section class="item-details">
+            <table class="item-table">
+                <thead>
+                    <tr>
+                        <th>Вид стоки и услуги</th>
+                        <th>Мярка</th>
+                        <th>Количество</th>
+                        <th>Цена/ EUR</th>
+                        <th>Цена/ BGN</th>
+                        <th>Сума/ EUR</th>
+                        <th>Сума/ BGN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>※ от ※ за периода от ※ до ※</td>
+                        <td>※</td>
+                        <td>※</td>
+                        <td>※</td>
+                        <td>※</td>
+                        <td>※</td>
+                        <td>※</td>
+                    </tr>
+                    </tbody>
+            </table>
+        </section>
+
+        <section class="totals">
+            <table class="totals-table">
+                <tbody>
+                    <tr>
+                        <td>Данъчна основа в лева</td>
+                        <td>※</td>
+                    </tr>
+                    <tr>
+                        <td>Данъчна основа в евро</td>
+                        <td>※</td>
+                    </tr>
+                    <tr>
+                        <td>ДДС в лева</td>
+                        <td>※</td>
+                    </tr>
+                    <tr>
+                        <td>ДДС в евро</td>
+                        <td>※</td>
+                    </tr>
+                    <tr>
+                        <tr style="font-weight: bold; background-color: #f9f9f9;">
+                            <td>ОБЩА СТОЙНОСТ В ЛЕВА</td>
+                            <td>※</td>
+                        </tr>
+                        <tr style="font-weight: bold; background-color: #f9f9f9;">
+                            <td>ОБЩА СТОЙНОСТ В ЕВРО</td>
+                            <td>※</td>
+                        </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer>
+            <div class="footer" style="color: #000; font-weight: bold; text-align: left;">
+                Сума за плащане, ※.<br>
+                Сума за плащане, ※.
+            </div>
+
+            <div class="footer" style="margin-top: 20px;">
+                Съставил: ※
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
