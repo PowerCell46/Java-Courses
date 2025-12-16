@@ -14,7 +14,7 @@ import lombok.Setter;
         name = "locales",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_locale_code_is_deleted",
+                        name = "uk_code_is_deleted",
                         columnNames = {"code", "is_deleted"}
                 )
         }

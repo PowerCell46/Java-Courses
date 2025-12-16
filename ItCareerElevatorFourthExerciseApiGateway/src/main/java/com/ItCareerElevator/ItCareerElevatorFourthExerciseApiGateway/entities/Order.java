@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -30,6 +31,8 @@ public class Order extends CommonEntity {
 
     public Order(User customer) {
         super();
+
         this.customer = customer;
+        this.orderItems = new HashSet<>();
     }
 }

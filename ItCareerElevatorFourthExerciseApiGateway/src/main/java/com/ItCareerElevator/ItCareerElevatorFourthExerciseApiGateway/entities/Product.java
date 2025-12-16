@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,20 +25,20 @@ import java.util.Set;
 @NoArgsConstructor
 public class Product extends CommonEntity {
 
-    @Column(nullable = false)
-    private Integer inStockQuantity;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "producer_id", nullable = false)
-    private Producer producer;
-
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
 
-    // currentDiscountPercentage (when creating add number of days till expiration
+    @Column(nullable = false)
+    private Integer inStockQuantity;
+
+    // ? currentDiscountPercentage (when creating add number of days till expiration)
 
     @Column(nullable = false, length = 500)
     private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "producer_id")
+    private Producer producer;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ProductTranslation> translations;
@@ -49,5 +50,6 @@ public class Product extends CommonEntity {
         this.inStockQuantity = inStockQuantity;
         this.imageUrl = imageUrl;
         this.producer = producer;
+        this.translations = new HashSet<>();
     }
 }
