@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -21,7 +20,6 @@ import java.util.Set;
 @Table(name = "products")
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE products SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product extends CommonEntity {

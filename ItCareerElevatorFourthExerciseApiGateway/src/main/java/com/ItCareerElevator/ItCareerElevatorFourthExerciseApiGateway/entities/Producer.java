@@ -3,17 +3,24 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
 @Entity
-@Table(name = "producers")
+@Table(
+        name = "producers",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_producer_name_is_deleted",
+                        columnNames = {"name", "is_deleted"}
+                )
+        }
+)
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE producers SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Producer extends CommonEntity {

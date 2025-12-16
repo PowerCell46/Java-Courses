@@ -3,16 +3,15 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,13 +19,15 @@ import java.util.Set;
 @Entity
 @Table(
         name = "users",
-        indexes = {
-                @Index(name = "idx_username_unique", columnList = "username", unique = true)
-        } // TODO: If user is deleted, you can reuse the username, right now you cannot
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_username_is_deleted",
+                        columnNames = {"username", "is_deleted"}
+                )
+        }
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends CommonEntity {

@@ -1,5 +1,6 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities;
 
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.interfaces.SoftDeletable;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
-public class CommonEntity {
+public class CommonEntity implements SoftDeletable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

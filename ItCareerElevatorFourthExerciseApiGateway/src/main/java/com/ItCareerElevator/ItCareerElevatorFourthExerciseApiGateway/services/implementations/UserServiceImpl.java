@@ -106,7 +106,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository
-                .findByUsernameAndIsDeletedIsFalse(username)
+//                .findByUsernameAndIsDeletedIsFalse(username)
+                .findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User is not found."));
 
         return new CustomUserDetails(user);

@@ -11,22 +11,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(
         name = "product_translations",
         indexes = {
                 @Index(
-                        name = "idx_product_locale_unique",
-                        columnList = "product_id, locale_id",
+                        name = "idx_product_locale_is_deleted_unique",
+                        columnList = "product_id, locale_id, is_deleted",
                         unique = true
                 )
         }
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE product_translations SET is_deleted = true WHERE id = ?")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductTranslation extends CommonEntity {
