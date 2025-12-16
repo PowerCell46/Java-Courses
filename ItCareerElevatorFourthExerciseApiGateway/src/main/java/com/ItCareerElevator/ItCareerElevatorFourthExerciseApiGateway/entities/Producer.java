@@ -21,8 +21,8 @@ import lombok.Setter;
 )
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Producer extends CommonEntity {
 
     @Column(nullable = false)

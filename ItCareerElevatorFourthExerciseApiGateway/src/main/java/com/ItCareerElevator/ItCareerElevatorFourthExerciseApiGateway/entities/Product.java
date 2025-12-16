@@ -21,8 +21,8 @@ import java.util.Set;
 @Table(name = "products")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Product extends CommonEntity {
 
     @Column(nullable = false, precision = 15, scale = 2)

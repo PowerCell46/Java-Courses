@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface UserRepository extends SoftDeleteRepository<User, String> {
 
     Optional<User> findByUsernameAndIsDeletedIsFalse(String username);
-
-    Optional<User> findByUsername(String username);
 }

@@ -13,8 +13,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@MappedSuperclass
 @Getter
+@MappedSuperclass
 public class CommonEntity implements SoftDeletable {
 
     @Id

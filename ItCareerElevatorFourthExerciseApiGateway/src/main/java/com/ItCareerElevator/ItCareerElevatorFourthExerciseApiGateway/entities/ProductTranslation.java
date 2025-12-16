@@ -17,15 +17,15 @@ import lombok.Setter;
         name = "product_translations",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "idx_product_id_locale_id_is_deleted_unique",
+                        name = "uk_product_id_locale_id_is_deleted",
                         columnNames = {"product_id", "locale_id", "is_deleted"}
                 )
         }
 )
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductTranslation extends CommonEntity {
 
     @Column(nullable = false, length = 255)

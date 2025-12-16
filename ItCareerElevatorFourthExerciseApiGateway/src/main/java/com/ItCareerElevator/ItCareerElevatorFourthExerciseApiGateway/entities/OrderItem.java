@@ -26,8 +26,8 @@ import java.math.BigDecimal;
 )
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderItem extends CommonEntity {
 
     @Column(nullable = false, precision = 15, scale = 2)
