@@ -20,7 +20,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (localeRepository.findAllByIsDeletedIsFalse().isEmpty())
+        if (localeRepository.findAll().isEmpty())
             seedLocales();
     }
 

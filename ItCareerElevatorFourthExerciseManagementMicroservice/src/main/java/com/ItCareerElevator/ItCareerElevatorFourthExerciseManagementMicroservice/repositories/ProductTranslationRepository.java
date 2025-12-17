@@ -2,16 +2,13 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservic
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.ProductTranslation;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils.SoftDeleteRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
-public interface ProductTranslationRepository extends JpaRepository<ProductTranslation, String> {
-
-    Set<ProductTranslation> findAllByIsDeletedIsFalse();
+public interface ProductTranslationRepository extends SoftDeleteRepository<ProductTranslation, String> {
 
     Optional<ProductTranslation> findByProductAndLocaleCodeAndIsDeletedIsFalse(Product product, String locale_code);
 }
