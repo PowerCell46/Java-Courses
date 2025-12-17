@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MsvcOrderRequestDTO {
 
-    private String customerId; // currently logged-in user
+    private String customerId; // Currently logged-in user
 
     private List<OrderItemRequestDTO> products;
 }

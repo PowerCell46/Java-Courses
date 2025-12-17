@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 "/api/products/*"
                         ).permitAll() // ! Also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
 //                        .requestMatchers(
-//                                "/api/admin/**" // CUD on product
+//                                "/api/admin/**"
 //                        ).hasRole("ADMIN") // expects "ROLE_ADMIN"
                         .requestMatchers(
                                 "/api/products/manage/**"

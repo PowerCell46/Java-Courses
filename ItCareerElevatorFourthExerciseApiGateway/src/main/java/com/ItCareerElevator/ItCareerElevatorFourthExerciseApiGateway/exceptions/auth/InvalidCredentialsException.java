@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.auth;
 
 public class InvalidCredentialsException extends RuntimeException {
 

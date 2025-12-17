@@ -7,7 +7,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.produc
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.ProductTranslation;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.ManagementMicroserviceException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.msvc.ManagementMicroserviceException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.repositories.ProductRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.services.interfaces.ProductService;
@@ -114,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponseDTO> getProducts(Integer page, Integer size) {
+    public Page<ProductResponseDTO> getProducts(Integer page, Integer size) { // TODO: Move to management microservice
         Pageable pageable = PageRequest.of(page, size);
 
         return productRepository
@@ -123,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDTO getProduct(String id) {
+    public ProductResponseDTO getProduct(String id) { // TODO: Move to management microservice
         Product product = getById(id);
 
         return constructProductResponseDTO(product);

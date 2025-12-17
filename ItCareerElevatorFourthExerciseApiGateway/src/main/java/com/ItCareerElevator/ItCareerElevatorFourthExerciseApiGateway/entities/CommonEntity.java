@@ -66,3 +66,19 @@ public class CommonEntity implements SoftDeletable {
         return getClass().hashCode();
     }
 }
+
+// TODO: Even when creating a composite key of the index column + isDeleted, if you delete an entry, then recreate it and you try to delete it also
+// TODO: what happens is that you will break the uniqueness, because you already have that entry deleted. This was solved the following way in Santa:
+// ! Basically when you create a new entry (with the same value as the previously deleted one),
+// ! you override the (previously deleted one) by assigning its id to the new entry.
+/*
+rule UniqueCommonRecordUndelete
+	salience -999
+when
+	$new: CommonRecord(id == null)
+	$old: CommonRecord() from droolsRuleProcedures.checkForUniqueCommonRecord($new, true)
+then
+	$new.setId($old.getId());
+	warnings.add("Undeleting "+$new.getClass().getSimpleName()+" with id: "+$old.getId(), false);
+end
+*/

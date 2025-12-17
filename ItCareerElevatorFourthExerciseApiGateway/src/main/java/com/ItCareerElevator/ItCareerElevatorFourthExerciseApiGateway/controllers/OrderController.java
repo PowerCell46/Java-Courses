@@ -23,6 +23,8 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO requestDTO) {
+        log.info("---> POST request on api/orders with {} unique products.", requestDTO.getProducts().size());
+
         OrderResponseDTO responseDTO = orderService.create(requestDTO);
 
         URI location = URI.create(String.format("/api/orders/%s", responseDTO.getOrderId()));

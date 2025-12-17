@@ -1,5 +1,10 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,13 +17,24 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateProductRequestDTO {
 
-    private List<LocaleRequestDTO> nameLocales; // required
+    @Valid
+    @NotNull(message = "NameLocales must not be null.")
+    @Size(min = 1, message = "NameLocales must contain at least one locale.")
+    private List<LocaleRequestDTO> nameLocales;
 
-    private List<LocaleRequestDTO> descriptionLocales; // required
+    @Valid
+    @NotNull(message = "DescriptionLocales must not be null.")
+    @Size(min = 1, message = "DescriptionLocales must contain at least one locale.")
+    private List<LocaleRequestDTO> descriptionLocales;
 
-    private String producerName; // required
+    @NotNull(message = "ProducerName must not be null.")
+    @Size(min = 2, max = 30, message = "ProducerName length must be between 2 and 30 characters.")
+    private String producerName;
 
-    private BigDecimal price; // required
+    @NotNull(message = "Price must not be null.")
+    @Positive(message = "Price must be greater than 0.")
+    private BigDecimal price;
 
-    private Integer inStockQuantity; // * optional
+    @PositiveOrZero(message = "InStockQuantity must be greater than or equal to 0.")
+    private Integer inStockQuantity;
 }
