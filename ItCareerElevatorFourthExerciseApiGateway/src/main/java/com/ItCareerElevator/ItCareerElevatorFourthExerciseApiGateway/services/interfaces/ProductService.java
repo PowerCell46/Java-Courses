@@ -3,22 +3,21 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.services.i
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request.CreateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.DeleteProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.GetProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.ProductResponseDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.entities.Product;
-import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface ProductService {
 
+    GetProductResponseDTO getProduct(String id);
+
+    List<GetProductResponseDTO> getProducts(Integer page, Integer size);
+
     ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage);
 
-    Product getById(String id);
-
-    ProductResponseDTO update(String id, UpdateProductRequestDTO requestDTO);
+    ProductResponseDTO update(String id, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
 
     DeleteProductResponseDTO deleteById(String id);
-
-    Page<ProductResponseDTO> getProducts(Integer page, Integer size);
-
-    ProductResponseDTO getProduct(String id);
 }

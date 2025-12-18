@@ -2,12 +2,12 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.controller
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request.CreateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.DeleteProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.GetProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -34,25 +33,29 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable String productId) {
+    public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String productId) {
         log.info("---> GET request on api/products/{}.", productId);
 
-        ProductResponseDTO responseDTO = productService.getProduct(productId);
+        GetProductResponseDTO responseDTO = productService.getProduct(productId);
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDTO>> getProducts(
+    public ResponseEntity<List<GetProductResponseDTO>> getProducts(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
         log.info("---> GET request on api/products.");
 
-        Page<ProductResponseDTO> pageResult = productService.getProducts(page, size);
-        return ResponseEntity.ok(pageResult.getContent());
+        List<GetProductResponseDTO> responseDTOs = productService.getProducts(page, size);
+        return ResponseEntity.ok(responseDTOs);
     }
 
-    @PostMapping(value = "/manage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            value = "/manage",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<ProductResponseDTO> createProduct(
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
@@ -65,13 +68,19 @@ public class ProductController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    @PatchMapping("/manage/{productId}") // TODO: allow user to change product's image?
+    @PatchMapping(
+            value = "/manage/{productId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<ProductResponseDTO> updateProduct(
-            @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
+            @PathVariable String productId,
+            @RequestPart("fileImage") MultipartFile fileImage,
+            @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on /api/products/manage/{}.", productId);
 
-        ProductResponseDTO responseDTO = productService.update(productId, requestDTO);
+        ProductResponseDTO responseDTO = productService.update(productId, requestDTO, fileImage);
         return ResponseEntity.ok(responseDTO);
     }
 
