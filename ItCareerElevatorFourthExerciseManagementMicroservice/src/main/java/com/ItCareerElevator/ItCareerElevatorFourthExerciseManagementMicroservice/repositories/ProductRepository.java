@@ -4,13 +4,10 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils.SoftDeleteRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface ProductRepository extends SoftDeleteRepository<Product, String> {
-
-    Optional<Product> findByIdAndIsDeletedIsFalse(String id);
 
     Set<Product> findAllByTranslationsNameAndIsDeletedIsFalse(String translatedName);
 }

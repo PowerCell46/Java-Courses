@@ -49,7 +49,10 @@ public class ProductController {
         return ResponseEntity.ok(pageResult.getContent());
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<ProductResponseDTO> createProduct(
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
@@ -60,18 +63,24 @@ public class ProductController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    @PatchMapping("/{productId}")
-    public ResponseEntity<ProductResponseDTO> updateProduct( // TODO: allow user to change an image?
-            @PathVariable String productId, @RequestBody UpdateProductRequestDTO requestDTO
+    @PatchMapping(
+            value = "/{productId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<ProductResponseDTO> updateProduct(
+            @PathVariable String productId,
+            @RequestPart("fileImage") MultipartFile fileImage,
+            @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
     ) {
-        ProductResponseDTO responseDTO = productService.update(productId, requestDTO);
+        ProductResponseDTO responseDTO = productService.update(productId, requestDTO, fileImage);
 
         return ResponseEntity.ok(responseDTO);
     }
 
-    // Post mapping ("/{productId}") -> (quantity): transaction to increase the current quantity
+    // Post mapping ("/{productId}") -> (newQuantity): transaction to increase the current quantity
 
-    // Post mapping ("/{productId}") -> (quantity): transaction to increase/decrease the current price
+    // Post mapping ("/{productId}") -> (newPrice): transaction to increase/decrease the current price
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {

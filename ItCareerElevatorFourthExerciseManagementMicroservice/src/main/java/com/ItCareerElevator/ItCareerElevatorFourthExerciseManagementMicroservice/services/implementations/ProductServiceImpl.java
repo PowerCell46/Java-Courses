@@ -104,7 +104,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getById(String id) {
-        Optional<Product> optionalProduct = productRepository.findByIdAndIsDeletedIsFalse(id);
+        Optional<Product> optionalProduct = productRepository.findById(id);
 
         if (optionalProduct.isEmpty()) {
             throw new NoSuchProductException(String.format("No product found with id %s.", id));
@@ -114,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO) {
+    public ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage) {
         Product product = getById(productId);
 
         if (
@@ -135,12 +135,16 @@ public class ProductServiceImpl implements ProductService {
         if (requestDTO.getInStockQuantity() != null) {
             product.setInStockQuantity(requestDTO.getInStockQuantity());
         }
+        if (fileImage != null && !fileImage.isEmpty()) {
+            product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY));
+        }
 
         if (
             // @formatter:off
                 requestDTO.getNameLocales() != null ||
                 requestDTO.getDescriptionLocales() != null || requestDTO.getProducerName() != null ||
-                requestDTO.getPrice() != null || requestDTO.getInStockQuantity() != null
+                requestDTO.getPrice() != null || requestDTO.getInStockQuantity() != null ||
+                (fileImage != null && !fileImage.isEmpty())
             // @formatter:on
         ) {
             product = save(product);

@@ -17,7 +17,7 @@ public interface ProductService {
 
     Product getById(String id);
 
-    ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO);
+    ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
 
     DeleteProductResponseDTO deleteById(String id);
 
