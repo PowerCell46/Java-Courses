@@ -9,7 +9,10 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.uti
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -21,7 +24,7 @@ public class OutboxEventServiceImpl implements OutboxEventService {
 
     @Override
     public OutboxEvent constructNonPersistedOutboxEventFromOrder(Order order) {
-//        try {
+        try {
             String payload = objectMapper.writeValueAsString(OrderCreatedEvent.from(order));
 
             return new OutboxEvent(
@@ -32,16 +35,21 @@ public class OutboxEventServiceImpl implements OutboxEventService {
                     OutboxStatus.PENDING,
                     null
             );
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException("Failed to serialize OrderCreatedEvent", e);
-//        }
-    }
 
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize OrderCreatedEvent", e);
+        }
+    }
 
     @Override
     public OutboxEvent save(OutboxEvent outboxEvent) {
         log.info("Persisting outboxEvent to the database.");
 
         return outboxEventRepository.save(outboxEvent);
+    }
+
+    @Override
+    public List<OutboxEvent> getTop100ByStatus(OutboxStatus outboxStatus) {
+        return outboxEventRepository.findTop100ByStatusOrderByCreatedAtAsc(outboxStatus);
     }
 }
