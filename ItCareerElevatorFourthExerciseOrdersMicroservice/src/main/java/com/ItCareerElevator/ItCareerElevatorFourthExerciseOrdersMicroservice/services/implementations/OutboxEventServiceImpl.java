@@ -37,19 +37,19 @@ public class OutboxEventServiceImpl implements OutboxEventService {
             );
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize OrderCreatedEvent", e);
+            throw new RuntimeException("Failed to serialize OrderCreatedEvent", e); // TODO: Throw a custom ex
         }
     }
 
     @Override
     public OutboxEvent save(OutboxEvent outboxEvent) {
-        log.info("Persisting outboxEvent to the database.");
+        log.info("Persisting outboxEvent (with aggregateId {}) to the database.", outboxEvent.getAggregateId());
 
         return outboxEventRepository.save(outboxEvent);
     }
 
     @Override
-    public List<OutboxEvent> getTop100ByStatus(OutboxStatus outboxStatus) {
+    public List<OutboxEvent> getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatus outboxStatus) {
         return outboxEventRepository.findTop100ByStatusOrderByCreatedAtAsc(outboxStatus);
     }
 }

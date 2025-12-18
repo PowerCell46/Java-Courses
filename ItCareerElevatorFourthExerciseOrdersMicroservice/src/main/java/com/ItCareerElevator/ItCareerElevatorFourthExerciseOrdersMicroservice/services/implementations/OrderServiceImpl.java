@@ -32,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final OutboxEventService outboxEventService;
 
     @Override
+    @Transactional
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
         User customer = userService.getById(requestDTO.getCustomerId());
 
@@ -49,13 +50,13 @@ public class OrderServiceImpl implements OrderService {
     public Order save(Order order) {
         log.info("Persisting {}'s order to the database.", order.getCustomer().getUsername());
 
-        Order persisted = orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
 
         OutboxEvent outboxEvent = outboxEventService
-                .constructNonPersistedOutboxEventFromOrder(persisted);
+                .constructNonPersistedOutboxEventFromOrder(savedOrder);
         outboxEventService.save(outboxEvent);
 
-        return persisted;
+        return savedOrder;
     }
 
     private Order constructNonPersistedOrder(User customer) {

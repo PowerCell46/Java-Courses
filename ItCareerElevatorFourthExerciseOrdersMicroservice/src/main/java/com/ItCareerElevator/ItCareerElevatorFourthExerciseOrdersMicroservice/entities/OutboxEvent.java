@@ -35,4 +35,4 @@ public class OutboxEvent extends CommonEntity {
 
     private LocalDateTime processedAt;
 }
-// TODO: Col annotations
+// TODO: add Col annotations

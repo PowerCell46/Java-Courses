@@ -12,5 +12,5 @@ public interface OutboxEventService {
 
     OutboxEvent save(OutboxEvent outboxEvent);
 
-    List<OutboxEvent> getTop100ByStatus(OutboxStatus outboxStatus);
+    List<OutboxEvent> getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatus outboxStatus);
 }
