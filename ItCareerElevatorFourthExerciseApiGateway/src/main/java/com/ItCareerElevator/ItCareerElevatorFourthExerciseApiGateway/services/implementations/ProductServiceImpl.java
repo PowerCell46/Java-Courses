@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
 
         return managementWebClient
                 .patch()
-                .uri("/api/products")
+                .uri(String.format("/api/products/%s", id))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
