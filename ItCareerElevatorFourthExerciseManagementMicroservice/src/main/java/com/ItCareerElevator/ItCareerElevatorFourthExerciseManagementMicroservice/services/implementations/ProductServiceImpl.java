@@ -2,6 +2,7 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservic
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.DeleteProductResponseDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Producer;
@@ -15,14 +16,20 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProductService;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.interfaces.ProductTranslationService;
 
-import static com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils.ImageStorageUtils.saveImageFileToFileSystem;
+import static com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils.ImageUtils.getImageContentType;
+import static com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils.ImageUtils.readImageToBase64;
+import static com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils.ImageUtils.saveImageFileToFileSystem;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
@@ -154,33 +161,52 @@ public class ProductServiceImpl implements ProductService {
         return responseDTO;
     }
 
+    @Override
+    public GetProductResponseDTO getProduct(String id) {
+        Product product = getById(id);
+
+        return constructGetProductResponseDTO(product);
+    }
+
+    @Override
+    public Page<GetProductResponseDTO> getProducts(Integer page, Integer size) {
+            Pageable pageable = PageRequest.of(page, size);
+
+        return productRepository
+                .findAll(pageable)
+                .map(this::constructGetProductResponseDTO);
+    }
+
     private ProductResponseDTO constructProductResponseDTO(Product product) {
-        ProductResponseDTO responseDTO = objectMapper.convertValue(product, ProductResponseDTO.class);
-        responseDTO.setProducerName(product.getProducer().getName());
-
-        ProductTranslation translation = product.getTranslations()
-                .stream()
-                .filter(tr -> !tr.getIsDeleted())
-                .findFirst()
-                .orElse(null);
-
-        responseDTO.setName(translation != null ? translation.getName() : "N/A");
-        responseDTO.setDescription(translation != null ? translation.getDescription() : "N/A");
-
-        return responseDTO;
+        return objectMapper.convertValue(product, ProductResponseDTO.class);
     }
 
     private DeleteProductResponseDTO constructDeleteProductResponseDTO(Product product) {
-        DeleteProductResponseDTO responseDTO = objectMapper.convertValue(product, DeleteProductResponseDTO.class);
+        return objectMapper.convertValue(product, DeleteProductResponseDTO.class);
+    }
 
-        ProductTranslation translation = product.getTranslations()
-                .stream()
-                .filter(tr -> !tr.getIsDeleted())
-                .findFirst()
-                .orElse(null);
+    private GetProductResponseDTO constructGetProductResponseDTO(Product product) {
+        Path imagePath = Path.of(product.getImageUrl());
 
-        responseDTO.setProductName(translation != null ? translation.getName() : "N/A");
-
-        return responseDTO;
+        return GetProductResponseDTO
+                .builder()
+                .id(product.getId())
+                .nameTranslations(product.getTranslations()
+                        .stream()
+                        .map(ProductTranslation::getName)
+                        .toList()
+                )
+                .descriptionTranslations(product.getTranslations()
+                        .stream()
+                        .map(ProductTranslation::getDescription)
+                        .toList()
+                )
+                .producerName(product.getProducer().getName())
+                .inStockQuantity(product.getInStockQuantity())
+                .price(product.getPrice())
+                .imageName(imagePath.getFileName().toString())
+                .imageBase64(readImageToBase64(imagePath))
+                .imageContentType(getImageContentType(imagePath))
+                .build();
     }
 }

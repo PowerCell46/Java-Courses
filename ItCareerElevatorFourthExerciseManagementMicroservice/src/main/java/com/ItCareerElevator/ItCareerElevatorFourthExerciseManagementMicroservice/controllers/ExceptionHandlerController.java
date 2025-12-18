@@ -5,6 +5,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidLocalesException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchLocaleException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProcessImageFileException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProductAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,21 @@ public class ExceptionHandlerController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST.value())
+                .body(error);
+    }
+
+    @ExceptionHandler(ProcessImageFileException.class)
+    public ResponseEntity<ErrorResponseDTO> handleProcessImageFileException(ProcessImageFileException ex) {
+        log.warn("Handling ProcessImageFileException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .body(error);
     }
 

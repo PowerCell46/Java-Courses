@@ -6,16 +6,29 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-public class ProductResponseDTO {
+public class GetProductResponseDTO {
 
     private String id;
 
-    private BigDecimal price;
+    private List<String> nameTranslations;
+
+    private List<String> descriptionTranslations;
+
+    private String producerName;
 
     private Integer inStockQuantity;
+
+    private BigDecimal price;
+
+    private String imageContentType;
+
+    private String imageName;
+
+    private String imageBase64;
 }

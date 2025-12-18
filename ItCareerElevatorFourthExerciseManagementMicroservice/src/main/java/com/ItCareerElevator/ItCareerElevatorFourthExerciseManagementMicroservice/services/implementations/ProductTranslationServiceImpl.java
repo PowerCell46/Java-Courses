@@ -98,10 +98,10 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
             Product product, LocaleRequestDTO nameDTO, LocaleRequestDTO descriptionDTO
     ) {
         return new ProductTranslation(
-                product,
-                localeService.getByCode(nameDTO.getCode()),
                 nameDTO.getTranslation(),
-                descriptionDTO.getTranslation()
+                descriptionDTO.getTranslation(),
+                product,
+                localeService.getByCode(nameDTO.getCode())
         );
     }
 }
