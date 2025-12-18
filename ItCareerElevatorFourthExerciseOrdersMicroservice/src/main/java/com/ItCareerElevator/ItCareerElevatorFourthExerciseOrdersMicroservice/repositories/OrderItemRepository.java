@@ -1,9 +1,9 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OrderItem;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.SoftDeleteRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OrderItemRepository extends JpaRepository<OrderItem, String> {
+public interface OrderItemRepository extends SoftDeleteRepository<OrderItem, String> {
 }

@@ -2,28 +2,29 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.en
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(
-    name = "locales",
-    indexes = {
-        @Index(name = "idx_locale_code", columnList = "code", unique = true)
-    }
+        name = "locales",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_code_is_deleted",
+                        columnNames = {"code", "is_deleted"}
+                )
+        }
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE locales SET is_deleted = true WHERE id = ?")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Locale extends CommonEntity {
 
-    @Column(nullable = false, unique = true, length = 10)
+    @Column(nullable = false, length = 10)
     private String code;
 }

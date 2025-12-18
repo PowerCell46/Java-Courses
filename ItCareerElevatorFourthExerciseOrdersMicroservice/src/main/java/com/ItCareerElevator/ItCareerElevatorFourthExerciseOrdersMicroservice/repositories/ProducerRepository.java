@@ -1,14 +1,14 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.Producer;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.SoftDeleteRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface ProducerRepository extends JpaRepository<Producer, String> {
+public interface ProducerRepository extends SoftDeleteRepository<Producer, String> {
 
     Optional<Producer> findByNameAndIsDeletedIsFalse(String name);
 

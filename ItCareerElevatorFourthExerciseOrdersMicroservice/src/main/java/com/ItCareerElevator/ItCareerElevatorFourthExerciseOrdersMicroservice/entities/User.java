@@ -3,16 +3,16 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.en
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,15 +20,17 @@ import java.util.Set;
 @Entity
 @Table(
         name = "users",
-        indexes = {
-                @Index(name = "idx_username_unique", columnList = "username", unique = true)
-        } // TODO: If user is deleted, you can reuse the username, right now you cannot
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_username_is_deleted",
+                        columnNames = {"username", "is_deleted"}
+                )
+        }
 )
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends CommonEntity {
 
     @Column(nullable = false)
@@ -36,6 +38,9 @@ public class User extends CommonEntity {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Order> orders;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -50,6 +55,7 @@ public class User extends CommonEntity {
 
         this.username = username;
         this.password = password;
+        this.orders = new HashSet<>();
         this.roles = new HashSet<>();
     }
 }
