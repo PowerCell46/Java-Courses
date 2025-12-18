@@ -5,12 +5,9 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.uti
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface ProducerRepository extends SoftDeleteRepository<Producer, String> {
 
     Optional<Producer> findByNameAndIsDeletedIsFalse(String name);
-
-    Set<Producer> findAllByIsDeletedIsFalse();
 }

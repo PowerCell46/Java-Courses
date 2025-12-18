@@ -18,7 +18,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getById(String id) {
         return productRepository
-                .findByIdAndIsDeletedIsFalse(id)
+                .findById(id)
                 .orElseThrow(() -> new NoSuchProductException(String.format("No product found with id %s.", id)));
     }
 }

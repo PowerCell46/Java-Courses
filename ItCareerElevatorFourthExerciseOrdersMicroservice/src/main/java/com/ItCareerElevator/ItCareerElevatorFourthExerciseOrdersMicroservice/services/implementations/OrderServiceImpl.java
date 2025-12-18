@@ -5,15 +5,18 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTO
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.response.OrderResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.Order;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OrderItem;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OutboxEvent;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.ProductTranslation;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.User;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories.OrderRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OrderItemService;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OrderService;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OutboxEventService;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -26,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final UserService userService;
     private final OrderItemService orderItemService;
+    private final OutboxEventService outboxEventService;
 
     @Override
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
@@ -41,10 +45,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order save(Order order) {
         log.info("Persisting {}'s order to the database.", order.getCustomer().getUsername());
 
-        return orderRepository.save(order);
+        Order persisted = orderRepository.save(order);
+
+        OutboxEvent outboxEvent = outboxEventService
+                .constructNonPersistedOutboxEventFromOrder(persisted);
+        outboxEventService.save(outboxEvent);
+
+        return persisted;
     }
 
     private Order constructNonPersistedOrder(User customer) {
