@@ -13,4 +13,8 @@ public interface OutboxEventService {
     OutboxEvent save(OutboxEvent outboxEvent);
 
     List<OutboxEvent> getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatus outboxStatus);
+
+    void markSent(String id);
+
+    void handleSendFailure(String id, String errorMessage);
 }

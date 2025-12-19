@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -25,24 +24,26 @@ public class OutboxProcessorImpl {
     private final OutboxEventService outboxEventService;
     private final KafkaTemplate<String, String> orderKafkaTemplate;
 
-    @Scheduled(fixedDelay = 5000) // ? How much is that?
+    @Scheduled(fixedDelay = 1000 * 60) // 1 minute
     @Transactional
     public void processOutbox() {
-        List<OutboxEvent> events = outboxEventService.getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatus.PENDING);
+        List<OutboxEvent> events = outboxEventService
+                .getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatus.PENDING);
 
         for (OutboxEvent event: events) {
+            String key = String.format("order-%s", event.getEntityId());
+            String value = event.getEntityId();
+
             orderKafkaTemplate
-                    .send(TOPIC_NAME, event.getAggregateId(), event.getPayload())
+                    .send(TOPIC_NAME, key, value)
                     .whenComplete((res, ex) -> {
                         if (ex != null) {
-                           log.warn("Exception occurred with OutboxEvent {}.", event.getId());
-                            event.setStatus(OutboxStatus.FAILED); // TODO: So what happens to these?
+                           log.warn("Exception occurred with оutboxEvent {}.", event.getId());
+                            outboxEventService.handleSendFailure(event.getId(), ex.getMessage());
 
                         } else {
-                           log.warn("Successful write to kafka of OutboxEvent {}.", event.getId());
-                            event.setStatus(OutboxStatus.SENT);
-                            event.setProcessedAt(LocalDateTime.now());
-                            // NO SAVE?
+                           log.warn("Successful write to kafka of оutboxEvent {}.", event.getId());
+                            outboxEventService.markSent(event.getId());
                         }
                     });
         }

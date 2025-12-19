@@ -15,7 +15,6 @@ public class OrderResponseDTO {
     @JsonProperty("id")
     private String orderId;
 
-    @JsonProperty("customer")
     private String customerUsername;
 
     private List<OrderItemResponseDTO> items;

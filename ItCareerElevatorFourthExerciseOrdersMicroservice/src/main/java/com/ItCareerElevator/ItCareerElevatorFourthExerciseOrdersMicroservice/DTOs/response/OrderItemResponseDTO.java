@@ -1,6 +1,5 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,10 +11,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class OrderItemResponseDTO {
 
-    private String productName;
+    private String productId;
+
+    private BigDecimal singlePrice;
 
     private Integer quantity;
-
-    @JsonProperty("price")
-    private BigDecimal singlePrice;
 }

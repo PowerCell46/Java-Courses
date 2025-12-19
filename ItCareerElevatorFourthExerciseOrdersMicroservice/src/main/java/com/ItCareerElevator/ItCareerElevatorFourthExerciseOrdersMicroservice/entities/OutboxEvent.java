@@ -4,7 +4,6 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.uti
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,21 +17,29 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class OutboxEvent extends CommonEntity {
 
-    private String aggregateType;
+    private String entityType;
 
-    private String aggregateId;
+    private String entityId;
 
     private String eventType;
-
-    @Lob
-    private String payload;
 
     @Enumerated(EnumType.STRING)
     private OutboxStatus status;
 
+    private Integer retryCount;
+
+    private String error;
+
     private LocalDateTime processedAt;
+
+    public OutboxEvent(String entityType, String entityId, String eventType, OutboxStatus status) {
+        this.entityType = entityType;
+        this.entityId = entityId;
+        this.eventType = eventType;
+        this.status = status;
+        this.retryCount = 0;
+    }
 }
 // TODO: add Col annotations

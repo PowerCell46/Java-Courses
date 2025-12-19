@@ -6,7 +6,6 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTO
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.Order;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OrderItem;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OutboxEvent;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.ProductTranslation;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.User;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories.OrderRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OrderItemService;
@@ -34,9 +33,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
-        User customer = userService.getById(requestDTO.getCustomerId());
+        User userCustomer = userService.getById(requestDTO.getUserId());
 
-        Order order = constructNonPersistedOrder(customer);
+        Order order = constructNonPersistedOrder(userCustomer);
         order = save(order);
 
         Set<OrderItem> orderItems = orderItemService.createItems(requestDTO.getProducts(), order);
@@ -69,21 +68,11 @@ public class OrderServiceImpl implements OrderService {
                 order.getCustomer().getUsername(),
                 order.getOrderItems()
                         .stream()
-                        .map(orderItem -> {
-                            ProductTranslation productTranslation = orderItem
-                                    .getProduct()
-                                    .getTranslations()
-                                    .stream()
-                                    .filter(tr -> !tr.getIsDeleted())
-                                    .findFirst()
-                                    .orElse(null);
-
-                            return new OrderItemResponseDTO(
-                                    productTranslation != null ? productTranslation.getName() : null,
-                                    orderItem.getQuantity(),
-                                    orderItem.getSinglePrice()
-                            );
-                        })
+                        .map(orderItem -> new OrderItemResponseDTO(
+                                orderItem.getProduct().getId(),
+                                orderItem.getSinglePrice(),
+                                orderItem.getQuantity()
+                        ))
                         .toList()
         );
     }
