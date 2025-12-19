@@ -18,16 +18,16 @@ public class OrderMessageListener {
             groupId = "order-invoice-consumer",
             containerFactory = "orderInvoiceContainerFactory"
     )
-    public void handleOrderMessage(String id) {
+    public void handleOrderMessage(String orderId) {
         log.info("---> Handling message in topic order.");
 
-        if (id == null) {
+        if (orderId == null) {
             log.error("Null orderId.");
             return;
         }
 
-        log.info("Received orderId from Kafka: {}.", id);
+        log.info("Received orderId from Kafka: {}.", orderId);
 
-        orderService.sendPdfInvoiceThroughEmail(id);
+        orderService.sendPdfInvoiceThroughEmail(orderId);
     }
 }

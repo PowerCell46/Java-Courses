@@ -6,21 +6,28 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "order_items")
+@Table(
+        name = "order_items",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_product_id_order_id_is_deleted",
+                        columnNames = {"product_id", "order_id", "is_deleted"}
+                )
+        }
+)
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE order_items SET is_deleted = true WHERE id = ?")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderItem extends CommonEntity {
 
     @Column(nullable = false, precision = 15, scale = 2)

@@ -10,15 +10,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "orders")
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id = ?")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order extends CommonEntity {
@@ -32,6 +31,8 @@ public class Order extends CommonEntity {
 
     public Order(User customer) {
         super();
+
         this.customer = customer;
+        this.orderItems = new HashSet<>();
     }
 }
