@@ -1,11 +1,10 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
 
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.OutboxStatus;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.OutboxStatusEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,7 +25,7 @@ public class OutboxEvent extends CommonEntity {
     private String eventType;
 
     @Enumerated(EnumType.STRING)
-    private OutboxStatus status;
+    private OutboxStatusEnum status;
 
     private Integer retryCount;
 
@@ -34,7 +33,7 @@ public class OutboxEvent extends CommonEntity {
 
     private LocalDateTime processedAt;
 
-    public OutboxEvent(String entityType, String entityId, String eventType, OutboxStatus status) {
+    public OutboxEvent(String entityType, String entityId, String eventType, OutboxStatusEnum status) {
         this.entityType = entityType;
         this.entityId = entityId;
         this.eventType = eventType;

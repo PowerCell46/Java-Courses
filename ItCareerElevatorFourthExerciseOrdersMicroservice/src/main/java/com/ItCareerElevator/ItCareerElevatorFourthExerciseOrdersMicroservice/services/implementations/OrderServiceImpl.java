@@ -38,8 +38,13 @@ public class OrderServiceImpl implements OrderService {
         Order order = constructNonPersistedOrder(userCustomer);
         order = save(order);
 
-        Set<OrderItem> orderItems = orderItemService.createItems(requestDTO.getProducts(), order);
+        Set<OrderItem> orderItems = orderItemService
+                .createItems(requestDTO.getProducts(), order);
         order.setOrderItems(orderItems);
+
+        OutboxEvent outboxEvent = outboxEventService
+                .constructNonPersistedOutboxEventFromOrder(order);
+        outboxEventService.save(outboxEvent);
 
         return constructOrderResponseDTO(order);
     }
@@ -49,13 +54,7 @@ public class OrderServiceImpl implements OrderService {
     public Order save(Order order) {
         log.info("Persisting {}'s order to the database.", order.getCustomer().getUsername());
 
-        Order savedOrder = orderRepository.save(order);
-
-        OutboxEvent outboxEvent = outboxEventService
-                .constructNonPersistedOutboxEventFromOrder(savedOrder);
-        outboxEventService.save(outboxEvent);
-
-        return savedOrder;
+        return orderRepository.save(order);
     }
 
     private Order constructNonPersistedOrder(User customer) {

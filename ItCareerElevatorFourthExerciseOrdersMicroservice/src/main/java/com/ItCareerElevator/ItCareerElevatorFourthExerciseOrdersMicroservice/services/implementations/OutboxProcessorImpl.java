@@ -2,7 +2,7 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.se
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OutboxEvent;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OutboxEventService;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.OutboxStatus;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.OutboxStatusEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +27,9 @@ public class OutboxProcessorImpl {
     @Scheduled(fixedDelay = 1000 * 60) // 1 minute
     @Transactional
     public void processOutbox() {
+        log.info("Inside process outbox!");
         List<OutboxEvent> events = outboxEventService
-                .getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatus.PENDING);
+                .getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatusEnum.PENDING);
 
         for (OutboxEvent event: events) {
             String key = String.format("order-%s", event.getEntityId());
@@ -38,14 +39,16 @@ public class OutboxProcessorImpl {
                     .send(TOPIC_NAME, key, value)
                     .whenComplete((res, ex) -> {
                         if (ex != null) {
-                           log.warn("Exception occurred with оutboxEvent {}.", event.getId());
+                           log.warn("Exception occurred with outboxEvent {}.", event.getId());
                             outboxEventService.handleSendFailure(event.getId(), ex.getMessage());
 
                         } else {
-                           log.warn("Successful write to kafka of оutboxEvent {}.", event.getId());
+                           log.warn("Successful write to kafka of outboxEvent {}.", event.getId());
                             outboxEventService.markSent(event.getId());
                         }
                     });
         }
     }
 }
+// ! спрямо конфигурацията може ли един месидж да се прати повече от един път
+// ! inbox pattern on the other side

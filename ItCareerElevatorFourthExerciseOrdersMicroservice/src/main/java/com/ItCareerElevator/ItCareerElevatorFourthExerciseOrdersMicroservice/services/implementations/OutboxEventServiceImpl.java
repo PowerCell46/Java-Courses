@@ -4,7 +4,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.ent
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities.OutboxEvent;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.repositories.OutboxEventRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.services.interfaces.OutboxEventService;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.OutboxStatus;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.OutboxStatusEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class OutboxEventServiceImpl implements OutboxEventService {
                 "Order",
                 order.getId(),
                 "OrderCreated",
-                OutboxStatus.PENDING
+                OutboxStatusEnum.PENDING
         );
     }
 
@@ -38,7 +38,7 @@ public class OutboxEventServiceImpl implements OutboxEventService {
     }
 
     @Override
-    public List<OutboxEvent> getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatus outboxStatus) {
+    public List<OutboxEvent> getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatusEnum outboxStatus) {
         return outboxEventRepository.findTop100ByStatusOrderByCreatedAtAsc(outboxStatus);
     }
 
@@ -46,18 +46,22 @@ public class OutboxEventServiceImpl implements OutboxEventService {
     @Transactional
     public void markSent(String id) {
         OutboxEvent event = outboxEventRepository.findById(id).orElseThrow();
-        event.setStatus(OutboxStatus.SENT);
+        event.setStatus(OutboxStatusEnum.SENT);
         event.setProcessedAt(LocalDateTime.now());
     }
 
     @Override
     @Transactional
-    public void handleSendFailure(String id, String errorMessage) { // TODO: Change name
-        OutboxEvent event = outboxEventRepository.findById(id).orElseThrow();
+    public void handleSendFailure(String id, String errorMessage) {
+        OutboxEvent event = outboxEventRepository
+                .findById(id)
+                .orElseThrow();
+
         event.setRetryCount(event.getRetryCount() + 1);
         event.setError(String.format("%s;%s", event.getError(), errorMessage));
 
-        if (event.getRetryCount().equals(5)) // TODO: Separate “dead letter” state
-            event.setStatus(OutboxStatus.FAILED);
+        final Integer MAXIMUM_RETRIES = 5;
+        if (event.getRetryCount().equals(MAXIMUM_RETRIES)) // TODO: Separate “dead letter” state
+            event.setStatus(OutboxStatusEnum.FAILED);
     }
 }

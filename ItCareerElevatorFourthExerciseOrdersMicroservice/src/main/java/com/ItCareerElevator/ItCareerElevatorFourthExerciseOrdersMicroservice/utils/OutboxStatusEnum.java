@@ -1,6 +1,6 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils;
 
-public enum OutboxStatus {
+public enum OutboxStatusEnum {
     PENDING,
     SENT,
     FAILED
