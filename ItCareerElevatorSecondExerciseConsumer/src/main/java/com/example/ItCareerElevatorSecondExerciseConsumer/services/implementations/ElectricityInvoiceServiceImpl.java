@@ -36,7 +36,7 @@ public class ElectricityInvoiceServiceImpl implements ElectricityInvoiceService 
 
         databaseService.savePdf(electricityInvoiceDTO.getSnowflakeId(), pdfByteArray);
 
-        log.info("Sending the PDF document to the User through email.");
+        log.info("Sending the PDF document to the user through email.");
 
         emailService.sendInvoiceEmail(
                 electricityInvoiceDTO.getRecipientEmail(),

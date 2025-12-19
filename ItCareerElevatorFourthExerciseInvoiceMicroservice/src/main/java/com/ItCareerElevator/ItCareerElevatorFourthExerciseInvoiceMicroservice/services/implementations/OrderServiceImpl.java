@@ -1,17 +1,29 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.services.implementations;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.entities.Order;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.exceptions.ErrorMailingPdfInvoiceException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.exceptions.NoSuchOrderException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.repositories.OrderRepository;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.services.interfaces.OrderService;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.FillHtmlInvoiceTemplateData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.HtmlUtils.fillHtmlTemplate;
+import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.PdfUtils.convertHtmlInputStreamToPdfByteArray;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
+    @Value("${config.invoice.template}")
+    private String HTML_TEMPLATE_FILE_PATH;
 
     private final OrderRepository orderRepository;
 
@@ -20,7 +32,15 @@ public class OrderServiceImpl implements OrderService {
         log.info("Starting the generation process of the PDF.");
 
         Order order = getById(orderId);
+        byte[] pdfByteArray = createPdfInvoiceByteArrayForOrder(order);
 
+        // ? Save to database
+
+        log.info("Sending the PDF document to the customer through email.");
+
+//        emailService.sendInvoiceEmail(
+//                ""
+//        )
     }
 
     @Override
@@ -28,5 +48,27 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository
                 .findById(id)
                 .orElseThrow(() -> new NoSuchOrderException(String.format("No order found with id %s.", id)));
+    }
+
+    private byte[] createPdfInvoiceByteArrayForOrder(Order order) {
+        FillHtmlInvoiceTemplateData htmlInvoiceTemplateData = new FillHtmlInvoiceTemplateData(order);
+
+        String[] fillData = htmlInvoiceTemplateData.toArray();
+
+        try {
+            InputStream htmlInputStream = fillHtmlTemplate(fillData, HTML_TEMPLATE_FILE_PATH);
+
+            return convertHtmlInputStreamToPdfByteArray(htmlInputStream);
+
+        } catch (IOException ex) {
+            log.error("Error occurred in the generation process.", ex);
+
+            throw new ErrorMailingPdfInvoiceException("Failed to generate PDF document.", ex);
+
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            log.error("Dynamic entries and template placeholders don't match.", ex);
+
+            throw new ErrorMailingPdfInvoiceException("Failed to generate PDF document.", ex);
+        }
     }
 }
