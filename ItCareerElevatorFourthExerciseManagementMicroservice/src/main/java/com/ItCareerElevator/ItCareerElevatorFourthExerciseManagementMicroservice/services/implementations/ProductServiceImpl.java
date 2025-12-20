@@ -8,7 +8,7 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Producer;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.ProductTranslation;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidLocalesException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidTranslationsException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProductAlreadyExistsException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.repositories.ProductRepository;
@@ -38,12 +38,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private static final String IMAGE_SUBDIRECTORY = "products";
+    private static final String IMAGE_SUBDIRECTORY_NAME = "products";
 
     private final ObjectMapper objectMapper;
-    private final ProductRepository productRepository;
-
     private final ProducerService producerService;
+    private final ProductRepository productRepository;
     private final ProductTranslationService productTranslationService;
 
     @Override
@@ -52,41 +51,35 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 
-        product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY));
+        product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY_NAME));
         product.setProducer(producerService.getOrCreateByName(requestDTO.getProducerName()));
         if (product.getInStockQuantity() == null)
             product.setInStockQuantity(0);
 
         product = save(product);
 
-        Set<ProductTranslation> translations = productTranslationService.createTranslations(requestDTO, product);
+        Set<ProductTranslation> translations = productTranslationService
+                .createTranslations(requestDTO, product);
         product.setTranslations(translations);
 
         return constructProductResponseDTO(product);
     }
 
     private void runCreateValidations(CreateProductRequestDTO requestDTO) {
-        if (requestDTO.getNameLocales().isEmpty() || requestDTO.getDescriptionLocales().isEmpty()) {
-            throw new InvalidLocalesException("Name locales and description locales cannot be empty.");
+        if (requestDTO.getNameTranslations().isEmpty() || requestDTO.getDescriptionTranslations().isEmpty()) {
+            throw new InvalidTranslationsException("Name translations and description translations cannot be empty.");
         }
 
-        if (requestDTO.getNameLocales().size() != requestDTO.getDescriptionLocales().size()) {
-            throw new InvalidLocalesException("Name locales and description locales don't match in size.");
-        }
-
-        if (translatedNameAlreadyExists(requestDTO)) { // Don't allow a product name to be a duplicate
+        if (translatedNameAlreadyExists(requestDTO)) { // * Don't allow a product name to be a duplicate
             throw new ProductAlreadyExistsException(
-                    String.format(
-                            "Product with name %s already exists.",
-                            requestDTO.getNameLocales().getFirst().getTranslation()
-                    )
+                    "Cannot create product, because the name is already taken (in one or more language/s)."
             );
         }
     }
 
     private boolean translatedNameAlreadyExists(CreateProductRequestDTO requestDTO) {
         return requestDTO
-                .getNameLocales()
+                .getNameTranslations()
                 .stream()
                 .anyMatch(locale ->
                         !productRepository
@@ -119,8 +112,8 @@ public class ProductServiceImpl implements ProductService {
 
         if (
             // @formatter:off
-                (requestDTO.getNameLocales() != null && !requestDTO.getNameLocales().isEmpty()) ||
-                (requestDTO.getDescriptionLocales() != null && !requestDTO.getDescriptionLocales().isEmpty())
+                (requestDTO.getNameTranslations() != null && !requestDTO.getNameTranslations().isEmpty()) ||
+                (requestDTO.getDescriptionTranslations() != null && !requestDTO.getDescriptionTranslations().isEmpty())
             // @formatter:on
         ) {
             productTranslationService.updateTranslations(requestDTO, product);
@@ -136,15 +129,15 @@ public class ProductServiceImpl implements ProductService {
             product.setInStockQuantity(requestDTO.getInStockQuantity());
         }
         if (fileImage != null && !fileImage.isEmpty()) {
-            product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY));
+            product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY_NAME));
         }
 
         if (
             // @formatter:off
-                requestDTO.getNameLocales() != null ||
-                requestDTO.getDescriptionLocales() != null || requestDTO.getProducerName() != null ||
-                requestDTO.getPrice() != null || requestDTO.getInStockQuantity() != null ||
-                (fileImage != null && !fileImage.isEmpty())
+                (requestDTO.getNameTranslations() != null && !requestDTO.getNameTranslations().isEmpty()) ||
+                (requestDTO.getDescriptionTranslations() != null && !requestDTO.getDescriptionTranslations().isEmpty()) ||
+                requestDTO.getProducerName() != null || requestDTO.getPrice() != null ||
+                requestDTO.getInStockQuantity() != null || (fileImage != null && !fileImage.isEmpty())
             // @formatter:on
         ) {
             product = save(product);
@@ -174,7 +167,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<GetProductResponseDTO> getProducts(Integer page, Integer size) {
-            Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size);
 
         return productRepository
                 .findAll(pageable)

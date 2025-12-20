@@ -2,7 +2,7 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservic
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.response.ErrorResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidFileImageException;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidLocalesException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidTranslationsException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchLocaleException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProcessImageFileException;
@@ -47,9 +47,9 @@ public class ExceptionHandlerController {
                 .body(error);
     }
 
-    @ExceptionHandler(InvalidLocalesException.class)
-    public ResponseEntity<ErrorResponseDTO> handleInvalidLocalesException(InvalidLocalesException ex) {
-        log.warn("Handling InvalidLocalesException.");
+    @ExceptionHandler(InvalidTranslationsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidTranslationsException(InvalidTranslationsException ex) {
+        log.warn("Handling InvalidTranslationsException.");
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),

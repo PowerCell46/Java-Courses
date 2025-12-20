@@ -18,14 +18,7 @@ public class ProducerServiceImpl implements ProducerService {
     public Producer getOrCreateByName(String name) {
         return producerRepository
                 .findByNameAndIsDeletedIsFalse(name)
-                .orElseGet(() -> {
-                    Producer producer = constructNonPersistedProducer(name);
-                    return save(producer);
-                });
-    }
-
-    private Producer constructNonPersistedProducer(String name) {
-        return new Producer(name);
+                .orElseGet(() -> save(new Producer(name)));
     }
 
     @Override

@@ -78,9 +78,9 @@ public class ProductController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    // Post mapping ("/{productId}") -> (newQuantity): transaction to increase the current quantity
+    // Post mapping ("/{productId}") -> (newQuantity): Increase the current quantity
 
-    // Post mapping ("/{productId}") -> (newPrice): transaction to increase/decrease the current price
+    // Post mapping ("/{productId}") -> (newPrice): Increase/Decrease the current price
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
