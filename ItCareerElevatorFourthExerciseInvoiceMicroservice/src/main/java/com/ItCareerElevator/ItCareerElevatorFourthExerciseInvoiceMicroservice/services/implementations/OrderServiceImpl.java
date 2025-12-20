@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("Sending the PDF document to the customer through email.");
 
         emailService.sendInvoiceEmail(
-                "peter.gerdzhikov.contact@gmail.com", // TODO: Recipient is hardcoded at the moment
+                "peter.gerdzhikov.contact@gmail.com", // TODO: Recipient is hardcoded at the moment (we don't have email property in the User entity)
                 "Поръчка № º " + orderId,
                 """
                         Здравейте,
@@ -60,7 +60,9 @@ public class OrderServiceImpl implements OrderService {
     public Order getById(String id) {
         return orderRepository
                 .findById(id)
-                .orElseThrow(() -> new NoSuchOrderException(String.format("No order found with id %s.", id)));
+                .orElseThrow(() ->
+                        new NoSuchOrderException(String.format("No order found with id %s.", id))
+                );
     }
 
     @Override

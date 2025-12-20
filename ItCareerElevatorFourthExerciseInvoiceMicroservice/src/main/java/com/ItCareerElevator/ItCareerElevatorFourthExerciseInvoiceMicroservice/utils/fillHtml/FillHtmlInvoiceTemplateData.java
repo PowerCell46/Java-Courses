@@ -23,19 +23,21 @@ import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroser
 @NoRepositoryBean
 public class FillHtmlInvoiceTemplateData {
 
+    private static final BigDecimal EURO_LEV_RATIO = BigDecimal.valueOf(1.95583);
+
     private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.2); // * 20% in Bulgaria
 
-    private final String invoiceNumber;
+    private final String invoiceNumber; // Random
 
     private final String generationDate;
 
     private final String customerUsername;
 
-    private final String customerAddress;
+    private final String customerAddress; // Hardcoded
 
-    private final String customerEik;
+    private final String customerEik; // Hardcoded
 
-    private final String customerIdentificationNumber;
+    private final String customerIdentificationNumber; // Hardcoded
 
     private final List<FillHtmlProductTemplateData> productsTemplateData;
 
@@ -43,9 +45,9 @@ public class FillHtmlInvoiceTemplateData {
 
     private final String totalSumWithoutVatInLevs;
 
-    private final String VatInEuros;
+    private final String vatInEuros;
 
-    private final String VatInLevs;
+    private final String vatInLevs;
 
     private final String totalSumWithVatInEuros;
 
@@ -59,7 +61,7 @@ public class FillHtmlInvoiceTemplateData {
 
     public FillHtmlInvoiceTemplateData(Order order) {
         this.invoiceNumber = generateRandomInvoiceNumber();
-        this.generationDate = formatDateToDateMonthYear(LocalDate.now());
+        this.generationDate = formatDateToDateMonthYearFormat(LocalDate.now());
 
         this.customerUsername = order.getCustomer().getUsername();
         this.customerAddress = "Sofia, ul. Moskovska 31";
@@ -79,18 +81,18 @@ public class FillHtmlInvoiceTemplateData {
                 )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        this.totalSumWithoutVatInEuros = formatBigDecimalWithScale(TOTAL_SUM_WITHOUT_VAT, 2);
-        this.totalSumWithoutVatInLevs = formatBigDecimalWithScale(convertEuroToLev(TOTAL_SUM_WITHOUT_VAT), 2);
+        this.totalSumWithoutVatInEuros = formatBigDecimalNumberToStringWithScale(TOTAL_SUM_WITHOUT_VAT, 2);
+        this.totalSumWithoutVatInLevs = formatBigDecimalNumberToStringWithScale(convertEuroToLev(TOTAL_SUM_WITHOUT_VAT), 2);
 
         BigDecimal VAT = TOTAL_SUM_WITHOUT_VAT.multiply(VAT_RATE);
 
-        this.VatInEuros = formatBigDecimalWithScale(VAT, 2);
-        this.VatInLevs = formatBigDecimalWithScale(VAT, 2);
+        this.vatInEuros = formatBigDecimalNumberToStringWithScale(VAT, 2);
+        this.vatInLevs = formatBigDecimalNumberToStringWithScale(VAT, 2);
 
         BigDecimal TOTAL_SUM_WITH_VAT = TOTAL_SUM_WITHOUT_VAT.add(VAT);
 
-        this.totalSumWithVatInEuros = formatBigDecimalWithScale(TOTAL_SUM_WITH_VAT, 2);
-        this.totalSumWithVatInLevs = formatBigDecimalWithScale(convertEuroToLev(TOTAL_SUM_WITH_VAT), 2);
+        this.totalSumWithVatInEuros = formatBigDecimalNumberToStringWithScale(TOTAL_SUM_WITH_VAT, 2);
+        this.totalSumWithVatInLevs = formatBigDecimalNumberToStringWithScale(convertEuroToLev(TOTAL_SUM_WITH_VAT), 2);
 
         this.totalAmountInEurosName =
                 String.format(
@@ -142,8 +144,8 @@ public class FillHtmlInvoiceTemplateData {
 
             resultList.add(totalSumWithoutVatInEuros);
             resultList.add(totalSumWithoutVatInLevs);
-            resultList.add(VatInEuros);
-            resultList.add(VatInLevs);
+            resultList.add(vatInEuros);
+            resultList.add(vatInLevs);
             resultList.add(totalSumWithVatInEuros);
             resultList.add(totalSumWithVatInLevs);
             resultList.add(totalAmountInEurosName);
@@ -154,11 +156,11 @@ public class FillHtmlInvoiceTemplateData {
         return resultList.toArray(new String[0]);
     }
 
-    private String formatDateToDateMonthYear(LocalDate date) {
+    private String formatDateToDateMonthYearFormat(LocalDate date) {
         return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
-    private static String formatBigDecimalWithScale(BigDecimal value, int scale) {
+    private static String formatBigDecimalNumberToStringWithScale(BigDecimal value, int scale) {
         return value
                 .setScale(scale, RoundingMode.HALF_UP)
                 .toString()
@@ -166,8 +168,6 @@ public class FillHtmlInvoiceTemplateData {
     }
 
     private BigDecimal convertEuroToLev(BigDecimal amount) {
-        final BigDecimal EURO_LEV_RATIO = BigDecimal.valueOf(1.95583);
-
         return amount.multiply(EURO_LEV_RATIO);
     }
 
