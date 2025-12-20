@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.image;
 
 public class InvalidFileImageException extends RuntimeException {
 

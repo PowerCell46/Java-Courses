@@ -1,7 +1,7 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.utils;
 
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.InvalidFileImageException;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.ProcessImageFileException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.image.InvalidFileImageException;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.image.ProcessImageFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +28,9 @@ public class ImageUtils {
             Files.createDirectories(uploadPath);
 
         } catch (IOException e) {
-            throw new RuntimeException("Error occurred while creating the products upload directory.", e);
+            log.error("Error occurred while creating the upload subdirectory.");
+
+            throw new ProcessImageFileException("A problem occurred on the server side.");
         }
 
         String originalFileName = fileImage.getOriginalFilename();
@@ -47,7 +49,9 @@ public class ImageUtils {
             Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to store image file.", ex);
+            log.error("Failed to store image file.");
+
+            throw new ProcessImageFileException("A problem occurred on the server side.");
         }
 
         return uploadPath.resolve(fileName).toString();
@@ -59,8 +63,9 @@ public class ImageUtils {
             return Base64.getEncoder().encodeToString(bytes);
 
         } catch (IOException e) {
-            log.warn("Error reading the image.");
-            throw new ProcessImageFileException("Error reading the image.");
+            log.error("Error reading the image.");
+
+            throw new ProcessImageFileException("A problem occurred on the server side.");
         }
     }
 
@@ -70,7 +75,8 @@ public class ImageUtils {
 
         } catch (IOException e) {
             log.warn("Error reading the content-type of the image.");
-            throw new ProcessImageFileException("Error reading the image.");
+
+            throw new ProcessImageFileException("A problem occurred on the server side.");
         }
     }
 }

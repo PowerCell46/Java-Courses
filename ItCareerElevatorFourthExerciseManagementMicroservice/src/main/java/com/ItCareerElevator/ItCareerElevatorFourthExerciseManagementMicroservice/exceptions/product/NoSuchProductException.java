@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.exceptions.product;
 
 public class NoSuchProductException extends RuntimeException {
 
