@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LocaleRequestDTO {
+public class TranslationFieldRequestDTO {
 
     private String code;
 

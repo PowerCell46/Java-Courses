@@ -30,6 +30,7 @@ public class DatabaseLoader implements CommandLineRunner {
                 .findByName("ROLE_MANAGER")
                 .orElseGet(() -> roleService.save(new Role("ROLE_MANAGER")));
 
+        // TODO: Hardcoded in the source code, which is not good
         final String ADMIN_USERNAME = "PowerCell46";
         final String ADMIN_PASSWORD = "JsonobJeCT51";
 

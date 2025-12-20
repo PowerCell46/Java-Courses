@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public GetProductResponseDTO getProduct(String id) {
-        log.info("Making a request to the management microservice.");
+        log.info("Making a request to the product (management) microservice.");
 
         return managementWebClient
                 .get()
@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<GetProductResponseDTO> getProducts(Integer page, Integer size) {
-        log.info("Making a request to the management microservice.");
+        log.info("Making a request to the product (management) microservice.");
 
         return managementWebClient
                 .get()
@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
-        log.info("Making a request to the management microservice.");
+        log.info("Making a request to the product (management) microservice.");
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("requestDTO", requestDTO).contentType(MediaType.APPLICATION_JSON);
@@ -96,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO update(String id, UpdateProductRequestDTO requestDTO, MultipartFile fileImage) {
-        log.info("Making a request to the management microservice.");
+        log.info("Making a request to the product (management) microservice.");
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("requestDTO", requestDTO).contentType(MediaType.APPLICATION_JSON);
@@ -122,7 +122,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public DeleteProductResponseDTO deleteById(String id) {
-        log.info("Making a request to the management microservice.");
+        log.info("Making a request to the product (management) microservice.");
 
         return managementWebClient
                 .method(HttpMethod.DELETE)

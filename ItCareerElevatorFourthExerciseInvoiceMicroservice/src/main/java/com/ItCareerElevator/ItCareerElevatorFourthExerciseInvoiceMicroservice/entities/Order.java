@@ -30,7 +30,7 @@ public class Order extends CommonEntity {
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private Set<OrderItem> orderItems;
 
-    @Column(nullable = true, length = 500)
+    @Column(length = 500)
     private String invoiceUrl;
 
     public Order(User customer) {

@@ -12,9 +12,9 @@ import java.util.Collection;
 @AllArgsConstructor
 public class UpdateProductRequestDTO {
 
-    private Collection<LocaleRequestDTO> nameLocales;
+    private Collection<TranslationFieldRequestDTO> nameTranslations;
 
-    private Collection<LocaleRequestDTO> descriptionLocales;
+    private Collection<TranslationFieldRequestDTO> descriptionTranslations;
 
     private String producerName;
 

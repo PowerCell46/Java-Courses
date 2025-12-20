@@ -6,10 +6,16 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.produc
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.response.ProductResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.products.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.services.interfaces.ProductService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,6 +31,7 @@ import java.net.URI;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
@@ -33,7 +40,12 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{productId}")
-    public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String productId) {
+    public ResponseEntity<GetProductResponseDTO> getProduct(
+            @PathVariable("productId")
+            @NotNull(message = "Product id must not be null.")
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid productId.")
+            String productId
+    ) {
         log.info("---> GET request on api/products/{}.", productId);
 
         GetProductResponseDTO responseDTO = productService.getProduct(productId);
@@ -42,8 +54,13 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<GetProductResponseDTO>> getProducts(
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "20") Integer size
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "Page index cannot be negative.")
+            Integer page,
+            @RequestParam(defaultValue = "20")
+            @Min(value = 1, message = "Size must be at least 1.")
+            @Max(value = 100, message = "Size cannot exceed 100.")
+            Integer size
     ) {
         log.info("---> GET request on api/products.");
 
@@ -58,7 +75,7 @@ public class ProductController {
     )
     public ResponseEntity<ProductResponseDTO> createProduct(
             @RequestPart("fileImage") MultipartFile fileImage,
-            @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
+            @Valid @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
     ) {
         log.info("---> POST request on /api/products/manage.");
 
@@ -76,7 +93,7 @@ public class ProductController {
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable String productId,
             @RequestPart("fileImage") MultipartFile fileImage,
-            @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
+            @Valid @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on /api/products/manage/{}.", productId);
 
@@ -85,7 +102,12 @@ public class ProductController {
     }
 
     @DeleteMapping("/manage/{productId}")
-    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
+    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(
+            @PathVariable("productId")
+            @NotNull(message = "ProductId must not be null.")
+            @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid productId.")
+            String productId
+    ) {
         log.info("---> DELETE request on /api/products/manage/{}.", productId);
 
         DeleteProductResponseDTO responseDTO = productService.deleteById(productId);

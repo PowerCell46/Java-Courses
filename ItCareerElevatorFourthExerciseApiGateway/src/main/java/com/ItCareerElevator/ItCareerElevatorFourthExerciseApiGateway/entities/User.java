@@ -6,7 +6,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -39,9 +38,6 @@ public class User extends CommonEntity {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "customer")
-    private Set<Order> orders;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
@@ -55,7 +51,6 @@ public class User extends CommonEntity {
 
         this.username = username;
         this.password = password;
-        this.orders = new HashSet<>();
         this.roles = new HashSet<>();
     }
 }

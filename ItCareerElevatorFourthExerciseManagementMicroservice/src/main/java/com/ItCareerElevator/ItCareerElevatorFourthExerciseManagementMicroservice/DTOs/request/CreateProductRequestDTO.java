@@ -12,9 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateProductRequestDTO {
 
-    private List<LocaleRequestDTO> nameLocales;
+    private List<TranslationFieldRequestDTO> nameTranslations;
 
-    private List<LocaleRequestDTO> descriptionLocales;
+    private List<TranslationFieldRequestDTO> descriptionTranslations;
 
     private String producerName;
 

@@ -18,14 +18,14 @@ import java.util.List;
 public class CreateProductRequestDTO {
 
     @Valid
-    @NotNull(message = "NameLocales must not be null.")
-    @Size(min = 1, message = "NameLocales must contain at least one locale.")
-    private List<LocaleRequestDTO> nameLocales;
+    @NotNull(message = "NameTranslations must not be null.")
+    @Size(min = 1, message = "NameTranslations must contain at least one locale.")
+    private List<TranslationFieldRequestDTO> nameTranslations;
 
     @Valid
-    @NotNull(message = "DescriptionLocales must not be null.")
-    @Size(min = 1, message = "DescriptionLocales must contain at least one locale.")
-    private List<LocaleRequestDTO> descriptionLocales;
+    @NotNull(message = "DescriptionTranslations must not be null.")
+    @Size(min = 1, message = "DescriptionTranslations must contain at least one locale.")
+    private List<TranslationFieldRequestDTO> descriptionTranslations;
 
     @NotNull(message = "ProducerName must not be null.")
     @Size(min = 2, max = 30, message = "ProducerName length must be between 2 and 30 characters.")

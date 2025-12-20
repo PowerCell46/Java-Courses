@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LocaleRequestDTO {
+public class TranslationFieldRequestDTO {
 
     @NotNull(message = "Code must not be null.")
     @Size(max = 10, message = "Code must not be longer than 10 characters.")

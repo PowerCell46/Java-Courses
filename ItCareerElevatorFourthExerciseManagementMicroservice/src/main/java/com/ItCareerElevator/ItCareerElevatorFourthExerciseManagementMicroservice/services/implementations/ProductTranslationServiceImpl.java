@@ -1,7 +1,7 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.services.implementations;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.CreateProductRequestDTO;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.LocaleRequestDTO;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.TranslationFieldRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.Product;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseManagementMicroservice.entities.ProductTranslation;
@@ -55,7 +55,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     @Override
     public void updateTranslations(UpdateProductRequestDTO requestDto, Product product) {
         if (requestDto.getNameLocales() != null) {
-            for (LocaleRequestDTO locale: requestDto.getNameLocales()) {
+            for (TranslationFieldRequestDTO locale: requestDto.getNameLocales()) {
                 Optional<ProductTranslation> previousTranslation = productTranslationRepository
                         .findByProductAndLocaleCodeAndIsDeletedIsFalse(product, locale.getCode());
 
@@ -71,7 +71,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
         }
 
         if (requestDto.getDescriptionLocales() != null) {
-            for (LocaleRequestDTO locale: requestDto.getDescriptionLocales()) {
+            for (TranslationFieldRequestDTO locale: requestDto.getDescriptionLocales()) {
                 Optional<ProductTranslation> previousTranslation = productTranslationRepository
                         .findByProductAndLocaleCodeAndIsDeletedIsFalse(product, locale.getCode());
 
@@ -95,7 +95,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     }
 
     private ProductTranslation constructNonPersistedProductTranslation(
-            Product product, LocaleRequestDTO nameDTO, LocaleRequestDTO descriptionDTO
+            Product product, TranslationFieldRequestDTO nameDTO, TranslationFieldRequestDTO descriptionDTO
     ) {
         return new ProductTranslation(
                 nameDTO.getTranslation(),

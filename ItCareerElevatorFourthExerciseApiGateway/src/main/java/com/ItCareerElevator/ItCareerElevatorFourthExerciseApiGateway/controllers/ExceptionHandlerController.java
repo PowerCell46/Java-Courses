@@ -3,7 +3,6 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.controller
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.auth.InvalidCredentialsException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.msvc.ManagementMicroserviceException;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.NoSuchProductException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.msvc.OrdersMicroserviceException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseApiGateway.exceptions.auth.UserAlreadyExistsException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -36,21 +35,6 @@ public class ExceptionHandlerController {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST.value())
-                .body(error);
-    }
-
-    @ExceptionHandler(NoSuchProductException.class)
-    public ResponseEntity<ErrorResponseDTO> handleNoSuchProductException(NoSuchProductException ex) {
-        log.warn("Handling NoSuchProductException.");
-
-        ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                System.currentTimeMillis()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND.value())
                 .body(error);
     }
 

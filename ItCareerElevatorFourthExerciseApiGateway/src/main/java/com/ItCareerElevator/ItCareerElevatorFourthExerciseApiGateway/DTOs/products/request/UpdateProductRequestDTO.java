@@ -17,12 +17,12 @@ import java.util.List;
 public class UpdateProductRequestDTO {
 
     @Valid
-    @Size(min = 1, message = "NameLocales must contain at least one locale.")
-    private List<LocaleRequestDTO> nameLocales;
+    @Size(min = 1, message = "NameTranslations must contain at least one locale.")
+    private List<TranslationFieldRequestDTO> nameTranslations;
 
     @Valid
-    @Size(min = 1, message = "DescriptionLocales must contain at least one locale.")
-    private List<LocaleRequestDTO> descriptionLocales;
+    @Size(min = 1, message = "DescriptionTranslations must contain at least one locale.")
+    private List<TranslationFieldRequestDTO> descriptionTranslations;
 
     @Size(min = 2, max = 30, message = "ProducerName length must be between 2 and 30 characters.")
     private String producerName;
