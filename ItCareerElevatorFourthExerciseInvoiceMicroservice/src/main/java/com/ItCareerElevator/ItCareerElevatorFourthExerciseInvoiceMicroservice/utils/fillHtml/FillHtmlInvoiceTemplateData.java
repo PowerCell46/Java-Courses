@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.fillHtml;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.entities.Order;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -22,6 +22,8 @@ import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroser
 @AllArgsConstructor
 @NoRepositoryBean
 public class FillHtmlInvoiceTemplateData {
+
+    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.2);
 
     private final String invoiceNumber;
 
@@ -37,11 +39,17 @@ public class FillHtmlInvoiceTemplateData {
 
     private final List<FillHtmlProductTemplateData> productTemplatesData;
 
-    private final String totalSumWithoutVAT;
+    private final String totalSumWithoutVATInEuros;
 
-    private final String VAT;
+    private final String totalSumWithoutVATInLevs;
 
-    private final String totalSumWithVAT;
+    private final String VatInEuros;
+
+    private final String VatInLevs;
+
+    private final String totalSumWithVatInEuros;
+
+    private final String totalSumWithVatInLevs;
 
     private final String totalAmountInEurosName;
 
@@ -50,37 +58,50 @@ public class FillHtmlInvoiceTemplateData {
     public FillHtmlInvoiceTemplateData(Order order) {
         this.invoiceNumber = generateRandomInvoiceNumber();
         this.generationDate = formatDateToDateMonthYear(LocalDate.now());
+
         this.customerUsername = order.getCustomer().getUsername();
         this.customerAddress = "Sofia, ul. Moskovska 31";
         this.customerEik = "BG523464624";
         this.customerIdentificationNumber = "523464624";
+
         this.productTemplatesData = order
                 .getOrderItems()
                 .stream()
                 .map(FillHtmlProductTemplateData::new).toList();
 
-        BigDecimal totalSumWithoutVat = order.getOrderItems().stream()
-                .map(orderItem -> orderItem.getSinglePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity())))
+        BigDecimal totalSumWithoutVat = order
+                .getOrderItems()
+                .stream()
+                .map(orderItem ->
+                        orderItem.getSinglePrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()))
+                )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        this.totalSumWithoutVAT = formatBigDecimalWithScale(totalSumWithoutVat, 2);
-        this.VAT = formatBigDecimalWithScale(totalSumWithoutVat.multiply(BigDecimal.valueOf(0.2)), 2);
+        this.totalSumWithoutVATInEuros = formatBigDecimalWithScale(totalSumWithoutVat, 2);
+        this.totalSumWithoutVATInLevs = formatBigDecimalWithScale(totalSumWithoutVat.multiply(BigDecimal.valueOf(1.95583)), 2);
 
-        final BigDecimal VAT_RATE = BigDecimal.valueOf(0.2);
+        this.VatInEuros = formatBigDecimalWithScale(totalSumWithoutVat.multiply(VAT_RATE), 2);
+
+        this.VatInLevs = formatBigDecimalWithScale(totalSumWithoutVat.multiply(VAT_RATE).multiply(BigDecimal.valueOf(1.95593)), 2);
+
         BigDecimal totalSumWithVat = totalSumWithoutVat.add(totalSumWithoutVat.multiply(VAT_RATE));
 
-        this.totalSumWithVAT = formatBigDecimalWithScale(totalSumWithVat, 2);
+        this.totalSumWithVatInEuros = formatBigDecimalWithScale(totalSumWithVat, 2);
+
+        this.totalSumWithVatInLevs = formatBigDecimalWithScale(totalSumWithVat.multiply(BigDecimal.valueOf(1.95593)), 2);
 
         this.totalAmountInEurosName =
                 String.format(
-                        "%s евро, %d цента",
-                        convertAmountToBulgarianWords(totalSumWithVat.intValue()),
-                        totalSumWithVat
-                                .setScale(2, RoundingMode.HALF_UP)
-                                .remainder(BigDecimal.ONE)
-                                .multiply(BigDecimal.valueOf(100))
-                                .intValue()
-                );
+                                "%s евро, %d цента",
+                                convertAmountToBulgarianWords(totalSumWithVat.intValue()),
+                                totalSumWithVat
+                                        .setScale(2, RoundingMode.HALF_UP)
+                                        .remainder(BigDecimal.ONE)
+                                        .multiply(BigDecimal.valueOf(100))
+                                        .intValue()
+                        )
+                        .replace("един евро", "едно евро") // Catch a case where the method doesn't behave correctly
+                        .replace("два евро", "двe евро"); // Catch a case where the method doesn't behave correctly
 
         this.totalAmountInLevsName =
                 String.format(
@@ -95,26 +116,33 @@ public class FillHtmlInvoiceTemplateData {
     }
 
     public String[] toArray() {
-        final int NUMBER_OF_COPIES = 2;
+        final int NUMBER_OF_COPIES = 1;
+        final int INITIAL_ARRAY_LIST_CAPACITY = NUMBER_OF_COPIES * 15;
 
-        List<String> resultList = new LinkedList<>(); // ? Maybe better than ArrayList
+        List<String> resultList = new ArrayList<>(INITIAL_ARRAY_LIST_CAPACITY);
 
         for (int currentCopyNumber = 0; currentCopyNumber < NUMBER_OF_COPIES; ++currentCopyNumber) {
             resultList.add(invoiceNumber);
             resultList.add(generationDate);
+
             resultList.add(customerUsername);
             resultList.add(customerAddress);
             resultList.add(customerEik);
             resultList.add(customerIdentificationNumber);
+
             resultList.add(productTemplatesData.stream().map(FillHtmlProductTemplateData::toString).collect(Collectors.joining()));
-            resultList.add(totalSumWithoutVAT);
-            resultList.add(VAT);
-            resultList.add(totalSumWithVAT);
+
+            resultList.add(totalSumWithoutVATInEuros);
+            resultList.add(totalSumWithoutVATInLevs);
+            resultList.add(VatInEuros);
+            resultList.add(VatInLevs);
+            resultList.add(totalSumWithVatInEuros);
+            resultList.add(totalSumWithVatInLevs);
             resultList.add(totalAmountInEurosName);
             resultList.add(totalAmountInLevsName);
         }
 
-        return resultList.toArray(new String[resultList.size()]);
+        return resultList.toArray(new String[0]);
     }
 
     private String formatDateToDateMonthYear(LocalDate date) {

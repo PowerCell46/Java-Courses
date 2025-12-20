@@ -4,8 +4,9 @@ import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.en
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.exceptions.ErrorMailingPdfInvoiceException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.exceptions.NoSuchOrderException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.repositories.OrderRepository;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.services.interfaces.EmailService;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.services.interfaces.OrderService;
-import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.FillHtmlInvoiceTemplateData;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.fillHtml.FillHtmlInvoiceTemplateData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ public class OrderServiceImpl implements OrderService {
     @Value("${config.invoice.template}")
     private String HTML_TEMPLATE_FILE_PATH;
 
+    private final EmailService emailService;
     private final OrderRepository orderRepository;
 
     @Override
@@ -34,13 +36,16 @@ public class OrderServiceImpl implements OrderService {
         Order order = getById(orderId);
         byte[] pdfByteArray = createPdfInvoiceByteArrayForOrder(order);
 
-        // ? Save to database
-
         log.info("Sending the PDF document to the customer through email.");
 
-//        emailService.sendInvoiceEmail(
-//                ""
-//        )
+        emailService.sendInvoiceEmail(
+                "peter.gerdzhikov.contact@gmail.com", // TODO: Recipient is hardcoded ATM
+                "Order № º " + orderId,
+                """
+                        Message body content
+                        """, // TODO: Improve
+                pdfByteArray
+        );
     }
 
     @Override

@@ -22,7 +22,7 @@ public class OrderMessageListener {
         log.info("---> Handling message in topic order.");
 
         if (orderId == null) {
-            log.error("Null orderId.");
+            log.error("Null orderId. Cannot continue with the invoice generation logic.");
             return;
         }
 

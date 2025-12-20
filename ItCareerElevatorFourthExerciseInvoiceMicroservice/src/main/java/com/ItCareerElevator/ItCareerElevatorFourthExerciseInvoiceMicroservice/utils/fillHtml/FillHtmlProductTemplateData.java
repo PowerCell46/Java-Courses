@@ -1,4 +1,4 @@
-package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils;
+package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.fillHtml;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.entities.OrderItem;
 
@@ -14,7 +14,13 @@ public class FillHtmlProductTemplateData {
     private final String quantity;
 
     public FillHtmlProductTemplateData(OrderItem orderItem) {
-        this.productName = orderItem.getProduct().getTranslations().stream().findFirst().get().getName();
+        this.productName = orderItem
+                .getProduct()
+                .getTranslations()
+                .stream()
+                .findFirst()
+                .get()
+                .getName(); // TODO: not good
         this.singlePrice = formatBigDecimalWithScale(orderItem.getProduct().getPrice(), 2);
         this.quantity = orderItem.getQuantity().toString();
     }
