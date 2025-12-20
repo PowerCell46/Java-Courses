@@ -1,6 +1,7 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.entities;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.utils.OutboxStatusEnum;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,19 +19,26 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OutboxEvent extends CommonEntity {
 
+    @Column(nullable = false, length = 50)
     private String entityType;
 
+    @Column(nullable = false, length = 64)
     private String entityId;
 
+    @Column(nullable = false, length = 100)
     private String eventType;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private OutboxStatusEnum status;
 
+    @Column(nullable = false)
     private Integer retryCount;
 
-    private String error;
+    @Column(length = 2000)
+    private String error; // * ;error1;error2;...
 
+    @Column
     private LocalDateTime processedAt;
 
     public OutboxEvent(String entityType, String entityId, String eventType, OutboxStatusEnum status) {
@@ -41,4 +49,3 @@ public class OutboxEvent extends CommonEntity {
         this.retryCount = 0;
     }
 }
-// TODO: add Col annotations

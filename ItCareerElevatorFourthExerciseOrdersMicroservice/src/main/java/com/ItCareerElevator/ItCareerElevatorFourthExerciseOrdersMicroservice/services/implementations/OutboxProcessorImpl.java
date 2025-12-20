@@ -24,10 +24,11 @@ public class OutboxProcessorImpl {
     private final OutboxEventService outboxEventService;
     private final KafkaTemplate<String, String> orderKafkaTemplate;
 
-    @Scheduled(fixedDelay = 1000 * 60) // 1 minute
+    @Scheduled(fixedDelay = 1000 * 60 * 2) // 2 minutes
     @Transactional
     public void processOutbox() {
-        log.info("Inside process outbox!");
+        log.info("ProcessOutbox call.");
+
         List<OutboxEvent> events = outboxEventService
                 .getTop100ByOutboxStatusOrderedFromFirstToLast(OutboxStatusEnum.PENDING);
 
@@ -39,16 +40,14 @@ public class OutboxProcessorImpl {
                     .send(TOPIC_NAME, key, value)
                     .whenComplete((res, ex) -> {
                         if (ex != null) {
-                           log.warn("Exception occurred with outboxEvent {}.", event.getId());
+                            log.warn("Exception occurred with outboxEvent {}.", event.getId());
                             outboxEventService.handleSendFailure(event.getId(), ex.getMessage());
 
                         } else {
-                           log.warn("Successful write to kafka of outboxEvent {}.", event.getId());
+                            log.warn("Successful write to kafka of outboxEvent {}.", event.getId());
                             outboxEventService.markSent(event.getId());
                         }
                     });
         }
     }
 }
-// ! спрямо конфигурацията може ли един месидж да се прати повече от един път
-// ! inbox pattern on the other side

@@ -28,7 +28,8 @@ public class OrderItemServiceImpl implements OrderItemService {
         Set<OrderItem> orderItems = orderItemRequestDTOs
                 .stream()
                 .map(orderItemRequestDTO -> {
-                    Product product = productService.getById(orderItemRequestDTO.getProductId());
+                    Product product = productService
+                            .getById(orderItemRequestDTO.getProductId());
 
                     return constructNonPersistedOrderItem(
                             product,

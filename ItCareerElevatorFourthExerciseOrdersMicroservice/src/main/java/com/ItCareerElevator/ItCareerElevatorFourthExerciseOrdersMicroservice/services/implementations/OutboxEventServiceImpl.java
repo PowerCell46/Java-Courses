@@ -22,17 +22,20 @@ public class OutboxEventServiceImpl implements OutboxEventService {
 
     @Override
     public OutboxEvent constructNonPersistedOutboxEventFromOrder(Order order) {
+        final String ENTITY_TYPE = "Order";
+        final String EVENT_TYPE = "OrderCreated";
+
         return new OutboxEvent(
-                "Order",
+                ENTITY_TYPE,
                 order.getId(),
-                "OrderCreated",
+                EVENT_TYPE,
                 OutboxStatusEnum.PENDING
         );
     }
 
     @Override
     public OutboxEvent save(OutboxEvent outboxEvent) {
-        log.info("Persisting outboxEvent (with aggregateId {}) to the database.", outboxEvent.getEntityId());
+        log.info("Persisting outboxEvent with aggregateId {} to the database.", outboxEvent.getEntityId());
 
         return outboxEventRepository.save(outboxEvent);
     }
@@ -60,8 +63,8 @@ public class OutboxEventServiceImpl implements OutboxEventService {
         event.setRetryCount(event.getRetryCount() + 1);
         event.setError(String.format("%s;%s", event.getError(), errorMessage));
 
-        final Integer MAXIMUM_RETRIES = 5;
-        if (event.getRetryCount().equals(MAXIMUM_RETRIES)) // TODO: Separate “dead letter” state
+        final Integer MAXIMUM_NUMBER_OF_RETRIES = 5;
+        if (event.getRetryCount().equals(MAXIMUM_NUMBER_OF_RETRIES)) // TODO: Separate “dead letter” state
             event.setStatus(OutboxStatusEnum.FAILED);
     }
 }

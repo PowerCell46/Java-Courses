@@ -19,6 +19,8 @@ public class ProductServiceImpl implements ProductService {
     public Product getById(String id) {
         return productRepository
                 .findById(id)
-                .orElseThrow(() -> new NoSuchProductException(String.format("No product found with id %s.", id)));
+                .orElseThrow(() ->
+                        new NoSuchProductException(String.format("No product found with id %s.", id))
+                );
     }
 }

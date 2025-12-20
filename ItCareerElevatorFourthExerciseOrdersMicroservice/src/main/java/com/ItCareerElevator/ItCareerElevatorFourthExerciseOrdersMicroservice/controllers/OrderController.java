@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,11 +23,6 @@ public class OrderController {
     public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO requestDTO) {
         OrderResponseDTO responseDTO = orderService.create(requestDTO);
 
-        URI location = URI.create(String.format("/api/orders/%s", responseDTO.getOrderId()));
-        return ResponseEntity.created(location).body(responseDTO);
+        return ResponseEntity.created(null).body(responseDTO); // TODO: location is null, because no such resource exists
     }
-
-    // Get single order
-
-    // Get all user orders
 }

@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
         User userCustomer = userService.getById(requestDTO.getUserId());
 
-        Order order = constructNonPersistedOrder(userCustomer);
+        Order order = new Order(userCustomer);
         order = save(order);
 
         Set<OrderItem> orderItems = orderItemService
@@ -55,10 +55,6 @@ public class OrderServiceImpl implements OrderService {
         log.info("Persisting {}'s order to the database.", order.getCustomer().getUsername());
 
         return orderRepository.save(order);
-    }
-
-    private Order constructNonPersistedOrder(User customer) {
-        return new Order(customer);
     }
 
     private OrderResponseDTO constructOrderResponseDTO(Order order) {

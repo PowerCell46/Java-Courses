@@ -19,6 +19,8 @@ public class UserServiceImpl implements UserService {
     public User getById(String id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(() -> new NoSuchUserException(String.format("No user found with id %s.", id)));
+                .orElseThrow(() ->
+                        new NoSuchUserException(String.format("No user found with id %s.", id))
+                );
     }
 }

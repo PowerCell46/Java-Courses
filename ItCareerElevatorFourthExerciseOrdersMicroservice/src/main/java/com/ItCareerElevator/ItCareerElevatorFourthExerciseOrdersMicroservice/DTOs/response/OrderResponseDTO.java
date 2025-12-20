@@ -1,6 +1,5 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseOrdersMicroservice.DTOs.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponseDTO {
 
-    @JsonProperty("id")
-    private String orderId;
+    private String id;
 
     private String customerUsername;
 
