@@ -1,6 +1,7 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.fillHtml;
 
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.entities.OrderItem;
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.entities.ProductTranslation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,10 +19,12 @@ public class FillHtmlProductTemplateData {
                 .getProduct()
                 .getTranslations()
                 .stream()
+                .map(ProductTranslation::getName)
                 .findFirst()
-                .get()
-                .getName(); // TODO: not good
+                .orElse("N/A");
+
         this.singlePrice = formatBigDecimalWithScale(orderItem.getProduct().getPrice(), 2);
+
         this.quantity = orderItem.getQuantity().toString();
     }
 

@@ -1,5 +1,6 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.services.implementations;
 
+import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.exceptions.ErrorMailingPdfInvoiceException;
 import com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.services.interfaces.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -39,7 +40,7 @@ public class EmailServiceImpl implements EmailService {
         } catch (MessagingException ex) {
             log.warn("Exception occurred while constructing/sending the email.", ex);
 
-            throw new RuntimeException(ex); // TODO: custom
+            throw new ErrorMailingPdfInvoiceException("Failed to send invoice email.", ex);
         }
     }
 }

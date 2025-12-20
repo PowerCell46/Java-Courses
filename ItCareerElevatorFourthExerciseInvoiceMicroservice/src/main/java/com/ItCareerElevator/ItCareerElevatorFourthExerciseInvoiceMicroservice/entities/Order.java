@@ -1,5 +1,6 @@
 package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -28,6 +29,9 @@ public class Order extends CommonEntity {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private Set<OrderItem> orderItems;
+
+    @Column(nullable = true, length = 500)
+    private String invoiceUrl;
 
     public Order(User customer) {
         super();

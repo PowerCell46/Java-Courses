@@ -23,7 +23,7 @@ import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroser
 @NoRepositoryBean
 public class FillHtmlInvoiceTemplateData {
 
-    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.2);
+    private static final BigDecimal VAT_RATE = BigDecimal.valueOf(0.2); // * 20% in Bulgaria
 
     private final String invoiceNumber;
 
@@ -37,11 +37,11 @@ public class FillHtmlInvoiceTemplateData {
 
     private final String customerIdentificationNumber;
 
-    private final List<FillHtmlProductTemplateData> productTemplatesData;
+    private final List<FillHtmlProductTemplateData> productsTemplateData;
 
-    private final String totalSumWithoutVATInEuros;
+    private final String totalSumWithoutVatInEuros;
 
-    private final String totalSumWithoutVATInLevs;
+    private final String totalSumWithoutVatInLevs;
 
     private final String VatInEuros;
 
@@ -55,6 +55,8 @@ public class FillHtmlInvoiceTemplateData {
 
     private final String totalAmountInLevsName;
 
+    private final String invoiceCreatorName;
+
     public FillHtmlInvoiceTemplateData(Order order) {
         this.invoiceNumber = generateRandomInvoiceNumber();
         this.generationDate = formatDateToDateMonthYear(LocalDate.now());
@@ -64,12 +66,12 @@ public class FillHtmlInvoiceTemplateData {
         this.customerEik = "BG523464624";
         this.customerIdentificationNumber = "523464624";
 
-        this.productTemplatesData = order
+        this.productsTemplateData = order
                 .getOrderItems()
                 .stream()
                 .map(FillHtmlProductTemplateData::new).toList();
 
-        BigDecimal totalSumWithoutVat = order
+        BigDecimal TOTAL_SUM_WITHOUT_VAT = order
                 .getOrderItems()
                 .stream()
                 .map(orderItem ->
@@ -77,24 +79,24 @@ public class FillHtmlInvoiceTemplateData {
                 )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        this.totalSumWithoutVATInEuros = formatBigDecimalWithScale(totalSumWithoutVat, 2);
-        this.totalSumWithoutVATInLevs = formatBigDecimalWithScale(totalSumWithoutVat.multiply(BigDecimal.valueOf(1.95583)), 2);
+        this.totalSumWithoutVatInEuros = formatBigDecimalWithScale(TOTAL_SUM_WITHOUT_VAT, 2);
+        this.totalSumWithoutVatInLevs = formatBigDecimalWithScale(convertEuroToLev(TOTAL_SUM_WITHOUT_VAT), 2);
 
-        this.VatInEuros = formatBigDecimalWithScale(totalSumWithoutVat.multiply(VAT_RATE), 2);
+        BigDecimal VAT = TOTAL_SUM_WITHOUT_VAT.multiply(VAT_RATE);
 
-        this.VatInLevs = formatBigDecimalWithScale(totalSumWithoutVat.multiply(VAT_RATE).multiply(BigDecimal.valueOf(1.95593)), 2);
+        this.VatInEuros = formatBigDecimalWithScale(VAT, 2);
+        this.VatInLevs = formatBigDecimalWithScale(VAT, 2);
 
-        BigDecimal totalSumWithVat = totalSumWithoutVat.add(totalSumWithoutVat.multiply(VAT_RATE));
+        BigDecimal TOTAL_SUM_WITH_VAT = TOTAL_SUM_WITHOUT_VAT.add(VAT);
 
-        this.totalSumWithVatInEuros = formatBigDecimalWithScale(totalSumWithVat, 2);
-
-        this.totalSumWithVatInLevs = formatBigDecimalWithScale(totalSumWithVat.multiply(BigDecimal.valueOf(1.95593)), 2);
+        this.totalSumWithVatInEuros = formatBigDecimalWithScale(TOTAL_SUM_WITH_VAT, 2);
+        this.totalSumWithVatInLevs = formatBigDecimalWithScale(convertEuroToLev(TOTAL_SUM_WITH_VAT), 2);
 
         this.totalAmountInEurosName =
                 String.format(
                                 "%s евро, %d цента",
-                                convertAmountToBulgarianWords(totalSumWithVat.intValue()),
-                                totalSumWithVat
+                                convertAmountToBulgarianWords(TOTAL_SUM_WITH_VAT.intValue()),
+                                TOTAL_SUM_WITH_VAT
                                         .setScale(2, RoundingMode.HALF_UP)
                                         .remainder(BigDecimal.ONE)
                                         .multiply(BigDecimal.valueOf(100))
@@ -106,18 +108,20 @@ public class FillHtmlInvoiceTemplateData {
         this.totalAmountInLevsName =
                 String.format(
                         "%s лева, %d стотинки",
-                        convertAmountToBulgarianWords(totalSumWithVat.multiply(BigDecimal.valueOf(1.95583)).intValue()),
-                        totalSumWithVat.multiply(BigDecimal.valueOf(1.95583))
+                        convertAmountToBulgarianWords(convertEuroToLev(TOTAL_SUM_WITH_VAT).intValue()),
+                        convertEuroToLev(TOTAL_SUM_WITH_VAT)
                                 .setScale(2, RoundingMode.HALF_UP)
                                 .remainder(BigDecimal.ONE)
                                 .multiply(BigDecimal.valueOf(100))
                                 .intValue()
                 );
+
+        this.invoiceCreatorName = "Петър Герджиков";
     }
 
     public String[] toArray() {
         final int NUMBER_OF_COPIES = 1;
-        final int INITIAL_ARRAY_LIST_CAPACITY = NUMBER_OF_COPIES * 15;
+        final int INITIAL_ARRAY_LIST_CAPACITY = NUMBER_OF_COPIES * 16;
 
         List<String> resultList = new ArrayList<>(INITIAL_ARRAY_LIST_CAPACITY);
 
@@ -130,16 +134,21 @@ public class FillHtmlInvoiceTemplateData {
             resultList.add(customerEik);
             resultList.add(customerIdentificationNumber);
 
-            resultList.add(productTemplatesData.stream().map(FillHtmlProductTemplateData::toString).collect(Collectors.joining()));
+            resultList.add(productsTemplateData
+                    .stream()
+                    .map(FillHtmlProductTemplateData::toString)
+                    .collect(Collectors.joining())
+            );
 
-            resultList.add(totalSumWithoutVATInEuros);
-            resultList.add(totalSumWithoutVATInLevs);
+            resultList.add(totalSumWithoutVatInEuros);
+            resultList.add(totalSumWithoutVatInLevs);
             resultList.add(VatInEuros);
             resultList.add(VatInLevs);
             resultList.add(totalSumWithVatInEuros);
             resultList.add(totalSumWithVatInLevs);
             resultList.add(totalAmountInEurosName);
             resultList.add(totalAmountInLevsName);
+            resultList.add(invoiceCreatorName);
         }
 
         return resultList.toArray(new String[0]);
@@ -154,6 +163,12 @@ public class FillHtmlInvoiceTemplateData {
                 .setScale(scale, RoundingMode.HALF_UP)
                 .toString()
                 .replace('.', ',');
+    }
+
+    private BigDecimal convertEuroToLev(BigDecimal amount) {
+        final BigDecimal EURO_LEV_RATIO = BigDecimal.valueOf(1.95583);
+
+        return amount.multiply(EURO_LEV_RATIO);
     }
 
     public static String generateRandomInvoiceNumber() {

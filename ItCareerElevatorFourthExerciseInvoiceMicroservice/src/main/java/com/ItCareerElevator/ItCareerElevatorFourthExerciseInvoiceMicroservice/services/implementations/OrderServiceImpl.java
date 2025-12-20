@@ -17,6 +17,7 @@ import java.io.InputStream;
 
 import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.HtmlUtils.fillHtmlTemplate;
 import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.PdfUtils.convertHtmlInputStreamToPdfByteArray;
+import static com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.utils.PdfUtils.savePdfToFileSystem;
 
 @Slf4j
 @Service
@@ -34,16 +35,23 @@ public class OrderServiceImpl implements OrderService {
         log.info("Starting the generation process of the PDF.");
 
         Order order = getById(orderId);
-        byte[] pdfByteArray = createPdfInvoiceByteArrayForOrder(order);
+        byte[] pdfByteArray = createPdfInvoiceByteArray(order);
+
+        order.setInvoiceUrl(savePdfToFileSystem(pdfByteArray, orderId));
+        save(order);
 
         log.info("Sending the PDF document to the customer through email.");
 
         emailService.sendInvoiceEmail(
-                "peter.gerdzhikov.contact@gmail.com", // TODO: Recipient is hardcoded ATM
-                "Order № º " + orderId,
+                "peter.gerdzhikov.contact@gmail.com", // TODO: Recipient is hardcoded at the moment
+                "Поръчка № º " + orderId,
                 """
-                        Message body content
-                        """, // TODO: Improve
+                        Здравейте,
+                            Вашата поръчка беше успешно регистрирана.
+                            Към това съобщение ще намерите прикачена фактура за вашата поръчка.
+                        
+                            Моля, не отговаряйте на този имейл, тъй като е автоматично генериран.
+                        """,
                 pdfByteArray
         );
     }
@@ -55,7 +63,15 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new NoSuchOrderException(String.format("No order found with id %s.", id)));
     }
 
-    private byte[] createPdfInvoiceByteArrayForOrder(Order order) {
+    @Override
+    public Order save(Order order) {
+        log.info("Persisting {}'s order to the database.", order.getCustomer().getUsername());
+
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public byte[] createPdfInvoiceByteArray(Order order) {
         FillHtmlInvoiceTemplateData htmlInvoiceTemplateData = new FillHtmlInvoiceTemplateData(order);
 
         String[] fillData = htmlInvoiceTemplateData.toArray();

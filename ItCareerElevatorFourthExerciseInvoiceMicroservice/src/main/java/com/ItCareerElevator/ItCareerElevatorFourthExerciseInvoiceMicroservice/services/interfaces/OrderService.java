@@ -7,4 +7,8 @@ public interface OrderService {
     void sendPdfInvoiceThroughEmail(String id);
 
     Order getById(String id);
+
+    Order save(Order order);
+
+    byte[] createPdfInvoiceByteArray(Order order);
 }
