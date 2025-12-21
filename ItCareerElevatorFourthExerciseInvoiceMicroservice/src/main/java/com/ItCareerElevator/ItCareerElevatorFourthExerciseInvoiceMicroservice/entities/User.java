@@ -2,10 +2,6 @@ package com.ItCareerElevator.ItCareerElevatorFourthExerciseInvoiceMicroservice.e
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -42,20 +38,11 @@ public class User extends CommonEntity {
     @OneToMany(mappedBy = "customer")
     private Set<Order> orders;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
-
     public User(String username, String password) {
         super();
 
         this.username = username;
         this.password = password;
         this.orders = new HashSet<>();
-        this.roles = new HashSet<>();
     }
 }
