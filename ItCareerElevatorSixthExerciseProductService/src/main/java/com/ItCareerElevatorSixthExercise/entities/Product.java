@@ -1,0 +1,53 @@
+package com.ItCareerElevatorSixthExercise.entities;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "products")
+public class Product extends CommonEntity {
+
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal price;
+
+    @Column(nullable = false)
+    private Integer inStockQuantity;
+
+    @Column(nullable = false, length = 500)
+    private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "producer_id")
+    private Manufacturer producer;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<ProductTranslation> translations;
+
+    public Product(BigDecimal price, Integer inStockQuantity, String imageUrl, Manufacturer producer) {
+        super();
+
+        this.price = price;
+        this.inStockQuantity = inStockQuantity;
+        this.imageUrl = imageUrl;
+        this.producer = producer;
+        this.translations = new HashSet<>();
+    }
+}
