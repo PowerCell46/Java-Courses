@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
@@ -33,6 +34,7 @@ import static com.ItCareerElevatorSixthExercise.util.ImageUtils.saveImageFileToF
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
@@ -73,6 +75,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Product getById(String id) {
         Optional<Product> optionalProduct = productRepository
                 .findById(CommonEntity.convertSnowflakeIdToId(id));
@@ -85,6 +88,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GetProductResponseDTO getProduct(String id) {
         Product product = getById(id);
 
@@ -92,6 +96,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GetProductResponseDTO> getProducts(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -101,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
                 .getContent();
     }
 
-    @Override // TODO: Make sure this is thread safe
+    @Override
     public ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage) {
         Product product = getById(productId);
 
@@ -141,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
         return objectMapper.convertValue(product, ProductResponseDTO.class);
     }
 
-    @Override // TODO: Make sure this is thread safe
+    @Override
     public DeleteProductResponseDTO deleteById(String id) {
         Product product = getById(id);
 
