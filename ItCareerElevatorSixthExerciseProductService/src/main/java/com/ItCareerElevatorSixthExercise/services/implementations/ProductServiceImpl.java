@@ -46,19 +46,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
         productTranslationService
-                .validateTranslationFields(
-                        requestDTO.getNameTranslations(),
-                        requestDTO.getDescriptionTranslations()
-                );
+                .validateTranslations(requestDTO.getNameTranslations());
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 
         product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY_NAME));
-        product.setManufacturer(manufacturerService.getOrCreateByName(requestDTO.getProducerName()));
+        product.setManufacturer(manufacturerService.getOrCreateByName(requestDTO.getManufacturerName()));
         if (product.getInStockQuantity() == null)
             product.setInStockQuantity(0);
 
-        // ! This should be transactional
+        // ! This should be transactional (if createTranslations throws an error, the product shouldn't be created
         product = save(product);
 
         Set<ProductTranslation> translations = productTranslationService
@@ -67,7 +64,6 @@ public class ProductServiceImpl implements ProductService {
 
         return constructProductResponseDTO(product);
     }
-
 
     @Override
     public Product save(Product product) {
@@ -88,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
         return optionalProduct.get();
     }
 
-    @Override
+    @Override // TODO: Make sure this is thread safe
     public ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage) {
         Product product = getById(productId);
 
@@ -100,8 +96,8 @@ public class ProductServiceImpl implements ProductService {
         ) {
             productTranslationService.updateTranslations(requestDTO, product);
         }
-        if (requestDTO.getProducerName() != null) {
-            Manufacturer producer = manufacturerService.getOrCreateByName(requestDTO.getProducerName());
+        if (requestDTO.getManufacturerName() != null) {
+            Manufacturer producer = manufacturerService.getOrCreateByName(requestDTO.getManufacturerName());
             product.setManufacturer(producer);
         }
         if (requestDTO.getPrice() != null) {
@@ -118,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
             // @formatter:off
                 (requestDTO.getNameTranslations() != null && !requestDTO.getNameTranslations().isEmpty()) ||
                 (requestDTO.getDescriptionTranslations() != null && !requestDTO.getDescriptionTranslations().isEmpty()) ||
-                requestDTO.getProducerName() != null || requestDTO.getPrice() != null ||
+                requestDTO.getManufacturerName() != null || requestDTO.getPrice() != null ||
                 requestDTO.getInStockQuantity() != null || (fileImage != null && !fileImage.isEmpty())
             // @formatter:on
         ) {
@@ -128,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
         return constructProductResponseDTO(product);
     }
 
-    @Override
+    @Override // TODO: Make sure this is thread safe
     public DeleteProductResponseDTO deleteById(String id) {
         Product product = getById(id);
 

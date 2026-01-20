@@ -16,7 +16,7 @@ public class CreateProductRequestDTO {
 
     private List<TranslationFieldRequestDTO> descriptionTranslations;
 
-    private String producerName;
+    private String manufacturerName;
 
     private BigDecimal price;
 

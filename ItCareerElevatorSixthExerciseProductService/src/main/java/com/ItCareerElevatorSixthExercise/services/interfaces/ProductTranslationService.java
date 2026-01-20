@@ -18,5 +18,5 @@ public interface ProductTranslationService {
 
     ProductTranslation save(ProductTranslation productTranslation);
 
-    void validateTranslationFields(List<TranslationFieldRequestDTO> nameTranslations, List<TranslationFieldRequestDTO> descriptionTranslations);
+    void validateTranslations(List<TranslationFieldRequestDTO> nameTranslations);
 }

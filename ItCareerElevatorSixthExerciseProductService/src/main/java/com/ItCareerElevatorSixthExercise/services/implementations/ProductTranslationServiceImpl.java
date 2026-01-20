@@ -56,35 +56,35 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     @Override
     public void updateTranslations(UpdateProductRequestDTO requestDto, Product product) {
         if (requestDto.getNameTranslations() != null) {
-            for (TranslationFieldRequestDTO locale: requestDto.getNameTranslations()) {
+            for (TranslationFieldRequestDTO localeRequestDTO: requestDto.getNameTranslations()) {
 
                 ProductTranslation previousTranslation = productTranslationRepository
-                        .findByProductAndLocaleCode(product, locale.getCode())
+                        .findByProductAndLocaleCode(product, localeRequestDTO.getCode())
                         .orElseThrow(() -> new InvalidTranslationsException(
                                 String.format(
                                         "No such translation locale (%s) found for the updated product.",
-                                        locale.getCode()
+                                        localeRequestDTO.getCode()
                                 )
                         ));
 
-                previousTranslation.setName(locale.getTranslation());
+                previousTranslation.setName(localeRequestDTO.getTranslation());
                 save(previousTranslation);
             }
         }
 
         if (requestDto.getDescriptionTranslations() != null) {
-            for (TranslationFieldRequestDTO locale: requestDto.getDescriptionTranslations()) {
+            for (TranslationFieldRequestDTO localeRequestDTO: requestDto.getDescriptionTranslations()) {
 
                 ProductTranslation previousTranslation = productTranslationRepository
-                        .findByProductAndLocaleCode(product, locale.getCode())
+                        .findByProductAndLocaleCode(product, localeRequestDTO.getCode())
                         .orElseThrow(() -> new InvalidTranslationsException(
                                 String.format(
                                         "No such translation locale (%s) found for the updated product.",
-                                        locale.getCode()
+                                        localeRequestDTO.getCode()
                                 )
                         ));
 
-                previousTranslation.setDescription(locale.getTranslation());
+                previousTranslation.setDescription(localeRequestDTO.getTranslation());
                 save(previousTranslation);
             }
         }
@@ -98,12 +98,8 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     }
 
     @Override
-    public void validateTranslationFields(List<TranslationFieldRequestDTO> nameTranslations, List<TranslationFieldRequestDTO> descriptionTranslations) {
-        if (nameTranslations.isEmpty() || descriptionTranslations.isEmpty()) {
-            throw new InvalidTranslationsException("Name translations and description translations cannot be empty.");
-        }
-
-        if (translatedNameAlreadyExists(nameTranslations)) { // * Don't allow a product name to be a duplicate
+    public void validateTranslations(List<TranslationFieldRequestDTO> nameTranslations) {
+        if (translatedNameAlreadyExists(nameTranslations)) {
             throw new ProductAlreadyExistsException(
                     "Cannot create product, because the name is already taken (in one or more language/s)."
             );
