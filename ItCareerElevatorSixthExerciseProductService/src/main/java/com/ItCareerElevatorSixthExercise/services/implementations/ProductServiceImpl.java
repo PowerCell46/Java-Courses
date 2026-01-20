@@ -125,9 +125,6 @@ public class ProductServiceImpl implements ProductService {
         if (requestDTO.getPrice() != null) {
             product.setPrice(requestDTO.getPrice());
         }
-        if (requestDTO.getInStockQuantity() != null) {
-            product.setInStockQuantity(requestDTO.getInStockQuantity());
-        }
         if (fileImage != null && !fileImage.isEmpty()) {
             product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY_NAME));
         }
@@ -136,8 +133,7 @@ public class ProductServiceImpl implements ProductService {
             // @formatter:off
                 (requestDTO.getNameTranslations() != null && !requestDTO.getNameTranslations().isEmpty()) ||
                 (requestDTO.getDescriptionTranslations() != null && !requestDTO.getDescriptionTranslations().isEmpty()) ||
-                requestDTO.getManufacturerName() != null || requestDTO.getPrice() != null ||
-                requestDTO.getInStockQuantity() != null || (fileImage != null && !fileImage.isEmpty())
+                requestDTO.getManufacturerName() != null || requestDTO.getPrice() != null || (fileImage != null && !fileImage.isEmpty())
             // @formatter:on
         ) {
             product = save(product);

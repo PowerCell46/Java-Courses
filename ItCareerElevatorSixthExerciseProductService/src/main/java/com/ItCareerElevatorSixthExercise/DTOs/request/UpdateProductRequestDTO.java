@@ -19,6 +19,4 @@ public class UpdateProductRequestDTO {
     private String manufacturerName;
 
     private BigDecimal price;
-
-    private Integer inStockQuantity;
 }
