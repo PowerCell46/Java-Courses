@@ -36,18 +36,18 @@ public class Product extends CommonEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "producer_id")
-    private Manufacturer producer;
+    private Manufacturer manufacturer;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ProductTranslation> translations;
 
-    public Product(BigDecimal price, Integer inStockQuantity, String imageUrl, Manufacturer producer) {
+    public Product(BigDecimal price, Integer inStockQuantity, String imageUrl, Manufacturer manufacturer) {
         super();
 
         this.price = price;
         this.inStockQuantity = inStockQuantity;
         this.imageUrl = imageUrl;
-        this.producer = producer;
+        this.manufacturer = manufacturer;
         this.translations = new HashSet<>();
     }
 }
