@@ -62,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
                 .createTranslations(requestDTO, product);
         product.setTranslations(translations);
 
-        return constructProductResponseDTO(product);
+        return objectMapper.convertValue(product, ProductResponseDTO.class);
     }
 
     @Override
@@ -82,6 +82,23 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return optionalProduct.get();
+    }
+
+    @Override
+    public GetProductResponseDTO getProduct(String id) {
+        Product product = getById(id);
+
+        return constructGetProductResponseDTO(product);
+    }
+
+    @Override
+    public List<GetProductResponseDTO> getProducts(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return productRepository
+                .findAll(pageable)
+                .map(this::constructGetProductResponseDTO)
+                .getContent();
     }
 
     @Override // TODO: Make sure this is thread safe
@@ -121,44 +138,19 @@ public class ProductServiceImpl implements ProductService {
             product = save(product);
         }
 
-        return constructProductResponseDTO(product);
+        return objectMapper.convertValue(product, ProductResponseDTO.class);
     }
 
     @Override // TODO: Make sure this is thread safe
     public DeleteProductResponseDTO deleteById(String id) {
         Product product = getById(id);
 
-        DeleteProductResponseDTO responseDTO = constructDeleteProductResponseDTO(product);
+        DeleteProductResponseDTO responseDTO = objectMapper.convertValue(product, DeleteProductResponseDTO.class);
 
         log.info("(Deleting product from the database.");
         productRepository.deleteById(CommonEntity.convertSnowflakeIdToId(id));
 
         return responseDTO;
-    }
-
-    @Override
-    public GetProductResponseDTO getProduct(String id) {
-        Product product = getById(id);
-
-        return constructGetProductResponseDTO(product);
-    }
-
-    @Override
-    public List<GetProductResponseDTO> getProducts(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return productRepository
-                .findAll(pageable)
-                .map(this::constructGetProductResponseDTO)
-                .getContent();
-    }
-
-    private ProductResponseDTO constructProductResponseDTO(Product product) {
-        return objectMapper.convertValue(product, ProductResponseDTO.class);
-    }
-
-    private DeleteProductResponseDTO constructDeleteProductResponseDTO(Product product) {
-        return objectMapper.convertValue(product, DeleteProductResponseDTO.class);
     }
 
     private GetProductResponseDTO constructGetProductResponseDTO(Product product) {

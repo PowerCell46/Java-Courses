@@ -18,11 +18,11 @@ public interface ProductService {
 
     Product getById(String id);
 
+    GetProductResponseDTO getProduct(String id);
+
+    List<GetProductResponseDTO> getProducts(Integer page, Integer size);
+
     ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
 
     DeleteProductResponseDTO deleteById(String id);
-
-    GetProductResponseDTO getProduct(String id);
-
-    List<GetProductResponseDTO> getProducts(Integer page, Integer size); // TODO: Why not list<?>
 }
