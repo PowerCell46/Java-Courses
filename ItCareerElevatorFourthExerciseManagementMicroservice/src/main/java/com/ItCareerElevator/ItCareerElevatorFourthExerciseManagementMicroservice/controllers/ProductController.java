@@ -78,7 +78,7 @@ public class ProductController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    // Post mapping ("/{productId}") -> (newQuantity): Increase the current quantity
+    // Patch mapping ("/{productId}") -> (newQuantity): Increase the current quantity
 
     // Post mapping ("/{productId}") -> (newPrice): Increase/Decrease the current price
 
