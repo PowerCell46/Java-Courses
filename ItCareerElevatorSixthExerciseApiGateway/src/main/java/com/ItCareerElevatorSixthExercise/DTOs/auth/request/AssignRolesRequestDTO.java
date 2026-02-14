@@ -21,7 +21,7 @@ public class AssignRolesRequestDTO {
     )
     private String username;
 
-    private @NotNull(message = "Roles must not be null.")
+    @NotNull(message = "Roles must not be null.")
     @NotEmpty(message = "At least one role is required.")
-    List<@Pattern(regexp = "^[A-Z_]{2,100}$", message = "Role names must be 2–100 characters long and contain only uppercase letters and underscores.") String> roles;
+    private List<@Pattern(regexp = "^[A-Z_]{2,100}$", message = "Role names must be 2–100 characters long and contain only uppercase letters and underscores.") String> roles;
 }

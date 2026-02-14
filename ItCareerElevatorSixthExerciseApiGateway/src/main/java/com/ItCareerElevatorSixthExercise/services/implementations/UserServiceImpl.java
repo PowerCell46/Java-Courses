@@ -5,7 +5,6 @@ import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AuthResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.mail.RegisterUserEmailDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.EmailIsAlreadyTakenException;
@@ -17,12 +16,9 @@ import com.ItCareerElevatorSixthExercise.services.interfaces.RoleService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import com.ItCareerElevatorSixthExercise.utils.auth.CustomUserDetails;
 import com.ItCareerElevatorSixthExercise.utils.auth.JwtUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,9 +35,6 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${app.kafka.topics.mail-register-user}")
-    private String MAIL_REGISTER_USER_TOPIC_NAME;
-
     private final UserRepository userRepository;
 
     private final JwtUtils jwtUtils;
@@ -49,14 +42,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
     private final ObjectMapper objectMapper;
     private final AuthenticationManager authenticationManager;
-//    private final KafkaTemplate<String, String> registerEmailKafkaTemplate;
 
     public UserServiceImpl(
             JwtUtils jwtUtils, RoleService roleService,
             @Lazy AuthenticationManager authenticationManager,
             PasswordEncoder encoder, UserRepository userRepository,
             ObjectMapper objectMapper
-//            , KafkaTemplate<String, String> registerEmailKafkaTemplate
     ) {
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
@@ -64,7 +55,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.objectMapper = objectMapper;
-//        this.registerEmailKafkaTemplate = registerEmailKafkaTemplate;
     }
 
     @Override
@@ -77,8 +67,6 @@ public class UserServiceImpl implements UserService {
                 encodeUserPassword(userRequest.getPassword())
         );
         user = save(user);
-
-//        sendSuccessfulRegistrationEmailToUser(user);
 
         return authenticate(user.getUsername(), userRequest.getPassword());
     }
@@ -108,29 +96,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-//    private void sendSuccessfulRegistrationEmailToUser(User user) {
-//        try {
-//            String key = String.format("register-user-email-%s", user.getId());
-//            String value = objectMapper.writeValueAsString(new RegisterUserEmailDTO(
-//                    user.getUsername(),
-//                    user.getEmail()
-//            ));
-//
-//            registerEmailKafkaTemplate
-//                    .send(MAIL_REGISTER_USER_TOPIC_NAME, key, value)
-//                    .whenComplete((result, ex) -> {
-//                        if (ex != null) {
-//                            log.error("Failed to send RegisterUserEmailDTO to topic {}.", MAIL_REGISTER_USER_TOPIC_NAME, ex);
-//
-//                        } else {
-//                            log.info("Success sending RegisterUserEmailDTO to topic {}.", MAIL_REGISTER_USER_TOPIC_NAME);
-//                        }
-//                    });
-//
-//        } catch (JsonProcessingException ex) { // TODO: Retry
-//            log.error("Failed to serialize RegisterUserEmailDTO to JSON.", ex);
-//        }
-//    }
 
     @Override
     public AuthResponseDTO authenticate(String username, String password) {
