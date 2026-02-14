@@ -1,8 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.mail.RegisterUserEmailDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService {
     private final KafkaTemplate<String, String> registerEmailKafkaTemplate;
 
     @Override
-    public User register(RegisterRequestDTO requestDTO) {
+    public User register(UserRequestDTO requestDTO) {
         validateRegisterData(requestDTO);
 
         User user = new User(
@@ -45,28 +44,28 @@ public class UserServiceImpl implements UserService {
                 requestDTO.getEmail(),
                 encodeUserPassword(requestDTO.getPassword())
         );
-
         user = save(user);
+
         sendSuccessfulRegistrationEmailToUser(user);
 
         return user;
     }
 
-    private void validateRegisterData(RegisterRequestDTO userRequest) {
-//        if (findByUsername(userRequest.getUsername()).isPresent()) {
-//            throw new UsernameIsAlreadyTakenException(
-//                    String.format("User with username %s already exists.", userRequest.getUsername())
-//            );
-//        }
-//
-//        if (findByEmail(userRequest.getEmail()).isPresent()) {
-//            throw new EmailIsAlreadyTakenException(
-//                    String.format("Email %s is already taken.", userRequest.getEmail())
-//            );
-//        }
+    private void validateRegisterData(UserRequestDTO userRequest) {
+        if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
+            throw new UsernameIsAlreadyTakenException(
+                    String.format("User with username %s already exists.", userRequest.getUsername())
+            );
+        }
+
+        if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
+            throw new EmailIsAlreadyTakenException(
+                    String.format("Email %s is already taken.", userRequest.getEmail())
+            );
+        }
     }
 
-    public String encodeUserPassword(String password) {
+    private String encodeUserPassword(String password) {
         return passwordEncoder.encode(password);
     }
 
@@ -79,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
     private void sendSuccessfulRegistrationEmailToUser(User user) {
         try {
-            String key = String.format("register-user-email-%s", user.getId());
+            String key = String.format("register-user-%s-email", user.getId());
             String value = objectMapper.writeValueAsString(new RegisterUserEmailDTO(
                     user.getUsername(),
                     user.getEmail()
@@ -127,7 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AlterUserResponseDTO updateFields(String userId, PatchUserRequestDTO requestDTO) {
+    public AlterUserResponseDTO updateFields(String userId, UserRequestDTO requestDTO) {
         User user = userRepository
                 .findById(userId)
                 .orElseThrow((() -> new NoSuchUserException(String.format("No user found with id %s.", userId))));

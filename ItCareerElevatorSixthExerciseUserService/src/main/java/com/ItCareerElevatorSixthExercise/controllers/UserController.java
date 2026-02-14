@@ -1,7 +1,6 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,19 +23,19 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> register(RegisterRequestDTO requestDTO) {
+    public ResponseEntity<User> register(@RequestBody UserRequestDTO requestDTO) {
         log.info("---> POST request on api/users with username: {}.", requestDTO.getUsername());
 
         User registeredUser = userService.register(requestDTO);
 
-        return ResponseEntity.created(null).body(registeredUser); // TODO: URL?
+        return ResponseEntity.created(null).body(registeredUser); // TODO: URL
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<AlterUserResponseDTO> updateUserDetails(
-            PatchUserRequestDTO requestDTO, @PathVariable String userId
+            @PathVariable String userId, @RequestBody UserRequestDTO requestDTO
     ) {
-        log.info("---> Patch request on api/users/{}.", userId);
+        log.info("---> PATCH request on api/users/{}.", userId);
 
         var responseDTO = userService.updateFields(userId, requestDTO);
 

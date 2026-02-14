@@ -42,9 +42,10 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
 
     public UserServiceImpl(
-            JwtUtils jwtUtils, WebClient userServiceWebClient,
-            @Lazy AuthenticationManager authenticationManager,
-            UserRepository userRepository
+            JwtUtils jwtUtils, UserRepository userRepository,
+            WebClient userServiceWebClient,
+            @Lazy AuthenticationManager authenticationManager
+
     ) {
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
@@ -112,7 +113,7 @@ public class UserServiceImpl implements UserService {
     public AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO) {
         return userServiceWebClient
                 .post()
-                .uri("/api/roles")
+                .uri("/api/roles/assign-to-user")
                 .bodyValue(requestDTO)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
@@ -129,7 +130,7 @@ public class UserServiceImpl implements UserService {
     public AlterUserResponseDTO update(User user, PatchUserRequestDTO userRequest) {
         return userServiceWebClient
                 .patch()
-                .uri("/api/users/", user.getId())
+                .uri(String.format("/api/users/%s", user.getId()))
                 .bodyValue(userRequest)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
