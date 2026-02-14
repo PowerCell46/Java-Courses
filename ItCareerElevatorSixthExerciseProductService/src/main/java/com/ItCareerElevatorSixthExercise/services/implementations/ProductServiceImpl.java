@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
         productTranslationService
-                .validateTranslations(requestDTO.getNameTranslations());
+                .validate(requestDTO.getNameTranslations());
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 
@@ -61,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
         product = save(product);
 
         Set<ProductTranslation> translations = productTranslationService
-                .createTranslations(requestDTO, product);
+                .create(requestDTO, product);
         product.setTranslations(translations);
 
         return objectMapper.convertValue(product, ProductResponseDTO.class);
@@ -116,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
                 (requestDTO.getDescriptionTranslations() != null && !requestDTO.getDescriptionTranslations().isEmpty())
             // @formatter:on
         ) {
-            productTranslationService.updateTranslations(requestDTO, product);
+            productTranslationService.update(requestDTO, product);
         }
         if (requestDTO.getManufacturerName() != null) {
             Manufacturer producer = manufacturerService.getOrCreateByName(requestDTO.getManufacturerName());

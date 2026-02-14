@@ -5,16 +5,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class UpdateProductRequestDTO {
 
-    private Collection<TranslationFieldRequestDTO> nameTranslations;
+    private List<TranslationFieldRequestDTO> nameTranslations;
 
-    private Collection<TranslationFieldRequestDTO> descriptionTranslations;
+    private List<TranslationFieldRequestDTO> descriptionTranslations;
 
     private String manufacturerName;
 

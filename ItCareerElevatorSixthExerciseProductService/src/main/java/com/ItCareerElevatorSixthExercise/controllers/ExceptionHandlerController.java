@@ -1,9 +1,9 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
-import com.ItCareerElevatorSixthExercise.DTOs.response.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.exceptions.InvalidSnowflakeIdException;
-import com.ItCareerElevatorSixthExercise.exceptions.InvalidTranslationsException;
-import com.ItCareerElevatorSixthExercise.exceptions.NoSuchLocaleException;
+import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
+import com.ItCareerElevatorSixthExercise.exceptions.common.InvalidSnowflakeIdException;
+import com.ItCareerElevatorSixthExercise.exceptions.product.InvalidTranslationsException;
+import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchLocaleException;
 import com.ItCareerElevatorSixthExercise.exceptions.image.InvalidFileImageException;
 import com.ItCareerElevatorSixthExercise.exceptions.image.ProcessImageFileException;
 import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchProductException;

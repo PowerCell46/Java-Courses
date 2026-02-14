@@ -12,11 +12,11 @@ import java.util.Set;
 
 public interface ProductTranslationService {
 
-    Set<ProductTranslation> createTranslations(CreateProductRequestDTO requestDTO, Product product);
+    Set<ProductTranslation> create(CreateProductRequestDTO requestDTO, Product product);
 
-    void updateTranslations(UpdateProductRequestDTO requestDto, Product product);
+    void update(UpdateProductRequestDTO requestDto, Product product);
 
     ProductTranslation save(ProductTranslation productTranslation);
 
-    void validateTranslations(List<TranslationFieldRequestDTO> nameTranslations);
+    void validate(List<TranslationFieldRequestDTO> nameTranslations);
 }

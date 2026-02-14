@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.exceptions;
+package com.ItCareerElevatorSixthExercise.exceptions.common;
 
 public class InvalidSnowflakeIdException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.exceptions;
+package com.ItCareerElevatorSixthExercise.exceptions.product;
 
 public class NoSuchLocaleException extends RuntimeException {
 

@@ -5,7 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.request.TranslationFieldRequestDTO
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.entities.Product;
 import com.ItCareerElevatorSixthExercise.entities.ProductTranslation;
-import com.ItCareerElevatorSixthExercise.exceptions.InvalidTranslationsException;
+import com.ItCareerElevatorSixthExercise.exceptions.product.InvalidTranslationsException;
 import com.ItCareerElevatorSixthExercise.exceptions.product.ProductAlreadyExistsException;
 import com.ItCareerElevatorSixthExercise.repositories.ProductTranslationRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.LocaleService;
@@ -27,7 +27,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     private final ProductTranslationRepository productTranslationRepository;
 
     @Override
-    public Set<ProductTranslation> createTranslations(CreateProductRequestDTO requestDTO, Product product) {
+    public Set<ProductTranslation> create(CreateProductRequestDTO requestDTO, Product product) {
         if (requestDTO.getNameTranslations().size() != requestDTO.getDescriptionTranslations().size()) {
             throw new InvalidTranslationsException("Name locales and description locales don't match in size.");
         }
@@ -54,10 +54,9 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     }
 
     @Override
-    public void updateTranslations(UpdateProductRequestDTO requestDto, Product product) {
+    public void update(UpdateProductRequestDTO requestDto, Product product) {
         if (requestDto.getNameTranslations() != null) {
             for (TranslationFieldRequestDTO localeRequestDTO: requestDto.getNameTranslations()) {
-
                 ProductTranslation previousTranslation = productTranslationRepository
                         .findByProductAndLocaleCode(product, localeRequestDTO.getCode())
                         .orElseThrow(() -> new InvalidTranslationsException(
@@ -74,7 +73,6 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
 
         if (requestDto.getDescriptionTranslations() != null) {
             for (TranslationFieldRequestDTO localeRequestDTO: requestDto.getDescriptionTranslations()) {
-
                 ProductTranslation previousTranslation = productTranslationRepository
                         .findByProductAndLocaleCode(product, localeRequestDTO.getCode())
                         .orElseThrow(() -> new InvalidTranslationsException(
@@ -98,7 +96,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     }
 
     @Override
-    public void validateTranslations(List<TranslationFieldRequestDTO> nameTranslations) {
+    public void validate(List<TranslationFieldRequestDTO> nameTranslations) {
         if (translatedNameAlreadyExists(nameTranslations)) {
             throw new ProductAlreadyExistsException(
                     "Cannot create product, because the name is already taken (in one or more language/s)."

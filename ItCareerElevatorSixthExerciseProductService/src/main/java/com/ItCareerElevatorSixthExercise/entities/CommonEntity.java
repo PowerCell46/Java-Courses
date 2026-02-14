@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.entities;
 
 import com.ItCareerElevatorSixthExercise.entities.listeners.CommonEntityListener;
-import com.ItCareerElevatorSixthExercise.exceptions.InvalidSnowflakeIdException;
+import com.ItCareerElevatorSixthExercise.exceptions.common.InvalidSnowflakeIdException;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
@@ -27,7 +27,7 @@ public class CommonEntity {
     private Long id;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt; // activeFrom
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private LocalDateTime lastModifiedAt;
