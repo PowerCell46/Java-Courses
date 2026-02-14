@@ -10,17 +10,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
 
-    AuthResponseDTO register(RegisterRequestDTO userRequest);
-
-    User save(User user);
-
-    AuthResponseDTO authenticate(String username, String password);
+    User getCurrentlyLoggedUser();
 
     User getByUsername(String username);
 
-    User getById(String id);
+    AuthResponseDTO register(RegisterRequestDTO userRequest);
 
-    User getCurrentlyLoggedUser();
+    AuthResponseDTO authenticate(String username, String password);
 
     AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO);
 

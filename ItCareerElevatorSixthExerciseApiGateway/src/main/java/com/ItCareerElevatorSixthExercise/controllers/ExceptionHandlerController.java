@@ -1,11 +1,8 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.exceptions.auth.EmailIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.InvalidCredentialsException;
-import com.ItCareerElevatorSixthExercise.exceptions.auth.NoSuchRoleException;
-import com.ItCareerElevatorSixthExercise.exceptions.auth.NoSuchUserException;
-import com.ItCareerElevatorSixthExercise.exceptions.auth.UsernameIsAlreadyTakenException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.UserServiceException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolation;
@@ -24,79 +21,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-//    @ExceptionHandler(MessagingMicroserviceException.class)
-//    public ResponseEntity<ErrorResponseDTO> handleMessagingMicroserviceException(MessagingMicroserviceException ex) {
-//        log.warn("Handling MessagingMicroserviceException.");
-//        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
-//
-//        ErrorResponseDTO error = new ErrorResponseDTO(
-//                ex.getStatus(),
-//                ex.getMessage(),
-//                ex.getTimestamp()
-//        );
-//
-//        return ResponseEntity
-//                .status(ex.getStatus())
-//                .body(error);
-//    }
-
-    @ExceptionHandler(UsernameIsAlreadyTakenException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExistsException(UsernameIsAlreadyTakenException ex) {
-        log.warn("Handling UsernameIsAlreadyTakenException.");
+    @ExceptionHandler(UserServiceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserServiceException(UserServiceException ex) {
+        log.warn("Handling UserServiceException.");
+        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
 
         ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.BAD_REQUEST.value(),
-                "Invalid username or password.", // ! Don't tell the user explicitly
-                System.currentTimeMillis()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST.value())
-                .body(error);
-    }
-
-    @ExceptionHandler(EmailIsAlreadyTakenException.class)
-    public ResponseEntity<ErrorResponseDTO> handleEmailIsAlreadyTakenException(EmailIsAlreadyTakenException ex) {
-        log.warn("Handling EmailIsAlreadyTakenException.");
-
-        ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.BAD_REQUEST.value(),
+                ex.getStatus(),
                 ex.getMessage(),
-                System.currentTimeMillis()
+                ex.getTimestamp()
         );
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST.value())
-                .body(error);
-    }
-
-    @ExceptionHandler(NoSuchUserException.class)
-    public ResponseEntity<ErrorResponseDTO> handleNoSuchUserException(NoSuchUserException ex) {
-        log.warn("Handling NoSuchUserException.");
-
-        ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                System.currentTimeMillis()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST.value())
-                .body(error);
-    }
-
-    @ExceptionHandler(NoSuchRoleException.class)
-    public ResponseEntity<ErrorResponseDTO> handleNoSuchRoleException(NoSuchRoleException ex) {
-        log.warn("Handling NoSuchRoleException.");
-
-        ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                System.currentTimeMillis()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST.value())
+                .status(ex.getStatus())
                 .body(error);
     }
 

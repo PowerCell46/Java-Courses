@@ -5,20 +5,19 @@ import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AuthResponseDTO;
-import com.ItCareerElevatorSixthExercise.entities.Role;
+import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
-import com.ItCareerElevatorSixthExercise.exceptions.auth.EmailIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.InvalidCredentialsException;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.NoSuchUserException;
-import com.ItCareerElevatorSixthExercise.exceptions.auth.UsernameIsAlreadyTakenException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.UserServiceException;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.RoleService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import com.ItCareerElevatorSixthExercise.utils.auth.CustomUserDetails;
 import com.ItCareerElevatorSixthExercise.utils.auth.JwtUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import com.ItCareerElevatorSixthExercise.utils.auth.common.RetryPolicy;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,76 +25,51 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
-import java.util.Optional;
+import java.time.Duration;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-
     private final JwtUtils jwtUtils;
-    private final RoleService roleService;
-    private final PasswordEncoder encoder;
-    private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
+    private final WebClient userServiceWebClient;
     private final AuthenticationManager authenticationManager;
 
     public UserServiceImpl(
-            JwtUtils jwtUtils, RoleService roleService,
+            JwtUtils jwtUtils, WebClient userServiceWebClient,
             @Lazy AuthenticationManager authenticationManager,
-            PasswordEncoder encoder, UserRepository userRepository,
-            ObjectMapper objectMapper
+            UserRepository userRepository
     ) {
-        this.encoder = encoder;
         this.jwtUtils = jwtUtils;
-        this.roleService = roleService;
         this.userRepository = userRepository;
+        this.userServiceWebClient = userServiceWebClient;
         this.authenticationManager = authenticationManager;
-        this.objectMapper = objectMapper;
     }
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO userRequest) {
-        validateRegisterData(userRequest);
-
-        User user = new User(
-                userRequest.getUsername(),
-                userRequest.getEmail(),
-                encodeUserPassword(userRequest.getPassword())
-        );
-        user = save(user);
+        User user = userServiceWebClient
+                .post()
+                .uri("/api/users")
+                .bodyValue(userRequest)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(UserServiceException::new)
+                                .flatMap(Mono::error))
+                .bodyToMono(User.class)
+                .retryWhen(buildRetrySpec())
+                .block();
 
         return authenticate(user.getUsername(), userRequest.getPassword());
     }
-
-    private void validateRegisterData(RegisterRequestDTO userRequest) {
-        if (findByUsername(userRequest.getUsername()).isPresent()) {
-            throw new UsernameIsAlreadyTakenException(
-                    String.format("User with username %s already exists.", userRequest.getUsername())
-            );
-        }
-
-        if (findByEmail(userRequest.getEmail()).isPresent()) {
-            throw new EmailIsAlreadyTakenException(
-                    String.format("Email %s is already taken.", userRequest.getEmail())
-            );
-        }
-    }
-
-    private String encodeUserPassword(String password) {
-        return encoder.encode(password);
-    }
-
-    @Override
-    public User save(User user) {
-        log.info("Persisting user with username {} to the database.", user.getUsername());
-
-        return userRepository.save(user);
-    }
-
 
     @Override
     public AuthResponseDTO authenticate(String username, String password) {
@@ -127,75 +101,45 @@ public class UserServiceImpl implements UserService {
         throw new IllegalStateException("Illegal state: no authenticated user.");
     }
 
-    private Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    private Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
     @Override
     public User getByUsername(String username) {
-        return findByUsername(username)
+        return userRepository
+                .findByUsername(username)
                 .orElseThrow(() -> new NoSuchUserException(String.format("No user found with username %s.", username)));
     }
 
     @Override
-    public User getById(String id) {
-        return userRepository
-                .findById(id)
-                .orElseThrow(() -> new NoSuchUserException(String.format("No user found with id %s.", id)));
-    }
-
-    @Override
     public AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO) {
-        User user = getByUsername(requestDTO.getUsername());
-
-        requestDTO
-                .getRoles()
-                .forEach(roleName -> {
-                    Role role = roleService.getByName(roleName);
-                    user.getRoles().add(role);
-                });
-        save(user);
-
-        return new AlterUserResponseDTO(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail()
-        );
+        return userServiceWebClient
+                .post()
+                .uri("/api/roles")
+                .bodyValue(requestDTO)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(UserServiceException::new)
+                                .flatMap(Mono::error))
+                .bodyToMono(AlterUserResponseDTO.class)
+                .retryWhen(buildRetrySpec())
+                .block();
     }
 
     @Override
     public AlterUserResponseDTO update(User user, PatchUserRequestDTO userRequest) {
-        if (userRequest.getUsername() != null) {
-            if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
-                throw new UsernameIsAlreadyTakenException(
-                        String.format("User with username %s already exists.", userRequest.getUsername())
-                );
-            }
-            user.setUsername(userRequest.getUsername());
-        }
-
-        if (userRequest.getEmail() != null) {
-            if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
-                throw new EmailIsAlreadyTakenException(
-                        String.format("Email %s is already taken.", userRequest.getEmail()));
-            }
-            user.setEmail(userRequest.getEmail());
-        }
-
-        if (userRequest.getPassword() != null) { // ? Normally this would happen by a link sent to the email for resetting the password
-            user.setPassword(encodeUserPassword(userRequest.getPassword()));
-        }
-
-        if (userRequest.getUsername() != null || userRequest.getEmail() != null || userRequest.getPassword() != null) {
-            log.info("Updating user {}.", user.getUsername());
-            save(user);
-        }
-
-        return new AlterUserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
+        return userServiceWebClient
+                .patch()
+                .uri("/api/users/", user.getId())
+                .bodyValue(userRequest)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(UserServiceException::new)
+                                .flatMap(Mono::error))
+                .bodyToMono(AlterUserResponseDTO.class)
+                .retryWhen(buildRetrySpec())
+                .block();
     }
 
     @Override
@@ -203,5 +147,24 @@ public class UserServiceImpl implements UserService {
         User user = getByUsername(username);
 
         return new CustomUserDetails(user);
+    }
+
+    private Retry buildRetrySpec() {
+        return Retry
+                .backoff(4, Duration.ofSeconds(2)) // 2s, 4s, 8s, 16s
+                .maxBackoff(Duration.ofSeconds(20))
+                .jitter(0.5d) // 50% jitter
+                .filter(RetryPolicy::isRetriable)
+                .onRetryExhaustedThrow((spec, signal) -> {
+                    Throwable failure = signal.failure();
+
+                    ErrorResponseDTO error = new ErrorResponseDTO(
+                            500,
+                            failure.getMessage() != null ? failure.getMessage() : "Internal server error occurred.",
+                            System.currentTimeMillis()
+                    );
+
+                    return new UserServiceException(error);
+                });
     }
 }
