@@ -3,6 +3,7 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.GetImageResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
@@ -57,7 +58,6 @@ public class ProductServiceImpl implements ProductService {
         if (product.getInStockQuantity() == null)
             product.setInStockQuantity(0);
 
-        // ! This should be transactional (if createTranslations throws an error, the product shouldn't be created
         product = save(product);
 
         Set<ProductTranslation> translations = productTranslationService
@@ -173,9 +173,12 @@ public class ProductServiceImpl implements ProductService {
                 .manufacturerName(product.getManufacturer().getName())
                 .inStockQuantity(product.getInStockQuantity())
                 .price(product.getPrice())
-                .imageName(imagePath.getFileName().toString())
-                .imageBase64(readImageToBase64(imagePath))
-                .imageContentType(getImageContentType(imagePath))
+                .image(GetImageResponseDTO
+                        .builder()
+                        .name(imagePath.getFileName().toString())
+                        .contentType(getImageContentType(imagePath))
+                        .base64(readImageToBase64(imagePath))
+                        .build())
                 .build();
     }
 }

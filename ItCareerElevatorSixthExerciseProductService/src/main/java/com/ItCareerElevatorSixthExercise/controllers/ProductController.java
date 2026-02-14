@@ -66,7 +66,7 @@ public class ProductController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<ProductResponseDTO> updateProduct( // TODO: This has to be safe, in case someone else tries to edit the entry (tries +/- the quantity)
+    public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable String productId,
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
@@ -79,7 +79,7 @@ public class ProductController {
     // TODO: increase product quantity {productId, restockQuantity (will be += to the current quantity)}
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) { // TODO: Again has to be safe, someone can be trying to buy or increase the quantity at the same time
+    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
         DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
 
         return ResponseEntity.ok(responseDTO);

@@ -26,9 +26,5 @@ public class GetProductResponseDTO {
 
     private BigDecimal price;
 
-    private String imageContentType;
-
-    private String imageName;
-
-    private String imageBase64;
+    private GetImageResponseDTO image;
 }
