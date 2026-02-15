@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-// TODO: Are there missing annotations?
 public class LoiOrderStatus extends ListOptionItem {
 
     public static final Long CREATED = 1L;
