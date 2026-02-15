@@ -1,10 +1,12 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
+import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
+import com.ItCareerElevatorSixthExercise.exceptions.NoSuchOrderFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateOrderItemRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateOrderRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.CreateOrderResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.OrderResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.LoiOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.Order;
 import com.ItCareerElevatorSixthExercise.entities.OrderItem;
@@ -31,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final KafkaTemplate<String, String> reserveItemsKafkaTemplate;
 
     @Override
-    public CreateOrderResponseDTO create(CreateOrderRequestDTO requestDTO) {
+    public OrderResponseDTO create(CreateOrderRequestDTO requestDTO) {
         var createdStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.CREATED);
 
         Order order = new Order(
@@ -47,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
         order = save(order);
         sendKafkaReverseItemsMessage(order);
 
-        return new CreateOrderResponseDTO(
+        return new OrderResponseDTO(
                 order.getSnowflakeId(),
                 order.getOrderStatus().getName()
         );
@@ -103,5 +105,19 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(failedStatus);
 
         orderRepository.save(order);
+    }
+
+    @Override
+    public OrderResponseDTO getById(String id) {
+        return orderRepository
+                .findById(CommonEntity.convertSnowflakeIdToId(id))
+                .map(order ->
+                        new OrderResponseDTO(
+                                order.getSnowflakeId(),
+                                order.getOrderStatus().getName()
+                        ))
+                .orElseThrow(() ->
+                        new NoSuchOrderFoundException(String.format("No order found with id %s.", id))
+                );
     }
 }

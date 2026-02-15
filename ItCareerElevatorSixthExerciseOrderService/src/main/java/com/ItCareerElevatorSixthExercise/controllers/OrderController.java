@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateOrderRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.CreateOrderResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.OrderResponseDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<CreateOrderResponseDTO> createOrder(@RequestBody CreateOrderRequestDTO requestDTO) {
+    public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody CreateOrderRequestDTO requestDTO) {
         log.info("---> POST request on api/orders for user with id: {}.", requestDTO.getUserId());
 
         var responseDTO = orderService.create(requestDTO);
@@ -35,9 +35,12 @@ public class OrderController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    // TODO: implement
-//    @GetMapping("/status/{id}")
-//    public ResponseEntity<> getOrderStatus(@PathVariable String id) {
-//
-//    }
+    @GetMapping("/status/{id}")
+    public ResponseEntity<OrderResponseDTO> getOrderStatus(@PathVariable String id) {
+        log.info("---> GET request on api/orders/status/{}.", id);
+
+        var responseDTO = orderService.getById(id);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }
