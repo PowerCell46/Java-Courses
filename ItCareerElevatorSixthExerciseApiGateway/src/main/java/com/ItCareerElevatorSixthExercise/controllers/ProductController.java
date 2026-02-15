@@ -35,8 +35,8 @@ public class ProductController { // TODO: Make CUD accessible only to Admins and
     private final ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String id) {
-        log.info("---> GET request on /api/products/{}.", id);
+    public ResponseEntity<GetProductResponseDTO> getProductById(@PathVariable String id) {
+        log.info("---> GET request on api/products/{}.", id);
 
         GetProductResponseDTO product = productService.getProductById(id);
 
@@ -48,7 +48,7 @@ public class ProductController { // TODO: Make CUD accessible only to Admins and
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        log.info("---> GET request on /api/products with page number '{}' and size '{}'.", page, size);
+        log.info("---> GET request on api/products with page number '{}' and size '{}'.", page, size);
 
         List<GetProductResponseDTO> pageResult = productService.getProducts(page, size);
 
@@ -63,7 +63,7 @@ public class ProductController { // TODO: Make CUD accessible only to Admins and
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
     ) {
-        log.info("---> POST request on /api/products.");
+        log.info("---> POST request on api/products.");
 
         ProductResponseDTO responseDTO = productService.create(requestDTO, fileImage);
 
@@ -81,7 +81,7 @@ public class ProductController { // TODO: Make CUD accessible only to Admins and
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
     ) {
-        log.info("---> PATCH request on /api/products/{}.", id);
+        log.info("---> PATCH request on api/products/{}.", id);
 
         ProductResponseDTO responseDTO = productService.update(id, requestDTO, fileImage);
 

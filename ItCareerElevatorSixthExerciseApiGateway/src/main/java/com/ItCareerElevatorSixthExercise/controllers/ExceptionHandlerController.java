@@ -2,6 +2,8 @@ package com.ItCareerElevatorSixthExercise.controllers;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.InvalidCredentialsException;
+import com.ItCareerElevatorSixthExercise.exceptions.auth.NoSuchUserException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.ProductServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.msvc.UserServiceException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -20,6 +22,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class ExceptionHandlerController {
+
+    @ExceptionHandler(ProductServiceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleProductServiceException(ProductServiceException ex) {
+        log.warn("Handling ProductServiceException.");
+        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                ex.getStatus(),
+                ex.getMessage(),
+                ex.getTimestamp()
+        );
+
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(error);
+    }
 
     @ExceptionHandler(UserServiceException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserServiceException(UserServiceException ex) {
@@ -48,6 +66,21 @@ public class ExceptionHandlerController {
         );
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchUserException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNoSuchUserException(NoSuchUserException ex) {
+        log.warn("Handling NoSuchUserException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST.value())
+                .body(error);
     }
 
     @ExceptionHandler(SignatureException.class) // ? Probably already handled in JwtRequestFilter (if it's thrown only there)

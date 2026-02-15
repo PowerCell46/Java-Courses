@@ -5,6 +5,7 @@ import com.ItCareerElevatorSixthExercise.utils.auth.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -48,21 +49,15 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(
-                                        "/api/auth/register",
-                                        "/api/auth/login",
-                                        "/internal/**" // TODO: Not sure if that's ok (can be accessed from outside also)
-                                ).permitAll() // ! Also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
-                                .requestMatchers(
-                                        "/api/auth/assign-roles"
-                                ).hasRole("ADMIN") // expects "ROLE_ADMIN"
-//                        .requestMatchers(
-//                                "/api/manage/**"
-//                        ).hasAnyRole("MANAGER", "ADMIN") // expects ROLE_MANAGER or ROLE_ADMIN
-                                .requestMatchers(
-                                        "/orders/**"
-                                ).authenticated()
-                                .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login"
+                        ).permitAll() // ! Also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
+                        .requestMatchers("/api/auth/assign-roles").hasRole("ADMIN") // expects "ROLE_ADMIN"
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("MANAGER", "ADMIN") // expects ROLE_MANAGER or ROLE_ADMIN
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
