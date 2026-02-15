@@ -13,11 +13,11 @@ public interface ProductService {
 
     ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage);
 
-    GetProductResponseDTO getProduct(String id);
+    GetProductResponseDTO getProductById(String id);
 
     List<GetProductResponseDTO> getProducts(Integer page, Integer size);
 
-    ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
+    ProductResponseDTO update(String id, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
 
     DeleteProductResponseDTO deleteById(String id);
 }

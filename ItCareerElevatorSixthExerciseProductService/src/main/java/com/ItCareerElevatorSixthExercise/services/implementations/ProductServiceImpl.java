@@ -89,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetProductResponseDTO getProduct(String id) {
+    public GetProductResponseDTO getProductById(String id) {
         Product product = getById(id);
 
         return constructGetProductResponseDTO(product);

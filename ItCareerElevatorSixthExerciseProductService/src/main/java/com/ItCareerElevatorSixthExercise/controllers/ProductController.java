@@ -32,11 +32,11 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String productId) {
-        log.info("---> GET request on /api/products/{}.", productId);
+    @GetMapping("/{id}")
+    public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String id) {
+        log.info("---> GET request on /api/products/{}.", id);
 
-        GetProductResponseDTO product = productService.getProduct(productId);
+        GetProductResponseDTO product = productService.getProductById(id);
 
         return ResponseEntity.ok(product);
     }
@@ -70,29 +70,29 @@ public class ProductController {
     }
 
     @PatchMapping(
-            value = "/{productId}",
+            value = "/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ProductResponseDTO> updateProduct(
-            @PathVariable String productId,
+            @PathVariable String id,
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
     ) {
-        log.info("---> PATCH request on /api/products/{}.", productId);
+        log.info("---> PATCH request on /api/products/{}.", id);
 
-        ProductResponseDTO responseDTO = productService.update(productId, requestDTO, fileImage);
+        ProductResponseDTO responseDTO = productService.update(id, requestDTO, fileImage);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     // TODO: increase product quantity {productId, restockQuantity (will be += to the current quantity)}
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
-        log.info("---> DELETE request on /api/products/{}.", productId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String id) {
+        log.info("---> DELETE request on /api/products/{}.", id);
 
-        DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
+        DeleteProductResponseDTO responseDTO = productService.deleteById(id);
 
         return ResponseEntity.ok(responseDTO);
     }

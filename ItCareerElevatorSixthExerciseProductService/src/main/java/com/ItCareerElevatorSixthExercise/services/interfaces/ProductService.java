@@ -18,7 +18,7 @@ public interface ProductService {
 
     Product getById(String id);
 
-    GetProductResponseDTO getProduct(String id);
+    GetProductResponseDTO getProductById(String id);
 
     List<GetProductResponseDTO> getProducts(Integer page, Integer size);
 

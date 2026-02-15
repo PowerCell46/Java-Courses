@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
         return managementWebClient
                 .get()
-                .uri("/api/products")
+                .uri(String.format("/api/products?page=%d&size=%d", page, size))
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, // TODO: Look for a better approach (test all possible custom errors)
                         resp -> resp
