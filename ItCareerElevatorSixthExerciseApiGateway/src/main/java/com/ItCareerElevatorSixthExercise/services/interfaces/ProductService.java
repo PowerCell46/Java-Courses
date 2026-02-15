@@ -1,0 +1,23 @@
+package com.ItCareerElevatorSixthExercise.services.interfaces;
+
+import com.ItCareerElevatorSixthExercise.DTOs.product.request.CreateProductRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.request.UpdateProductRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.response.DeleteProductResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.response.GetProductResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.response.ProductResponseDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+public interface ProductService {
+
+    ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage);
+
+    GetProductResponseDTO getProduct(String id);
+
+    List<GetProductResponseDTO> getProducts(Integer page, Integer size);
+
+    ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
+
+    DeleteProductResponseDTO deleteById(String id);
+}

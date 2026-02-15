@@ -51,7 +51,7 @@ public class AuthenticationController {
         User loggedUser = userService.getCurrentlyLoggedUser();
         log.info("---> PATCH request on api/auth/profile for user {}.", loggedUser.getUsername());
 
-        var responseDTO = userService.update(loggedUser, userRequest);
+        var responseDTO = userService.updateFields(loggedUser, userRequest);
 
         return ResponseEntity.ok(responseDTO);
     }

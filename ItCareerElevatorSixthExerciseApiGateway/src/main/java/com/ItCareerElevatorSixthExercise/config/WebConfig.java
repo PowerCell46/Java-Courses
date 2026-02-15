@@ -14,6 +14,9 @@ public class WebConfig {
     @Value("${orders-microservice.base-endpoint}")
     private String ORDERS_MICROSERVICE_BASE_URL;
 
+    @Value("${products-microservice.base-endpoint}")
+    private String PRODUCTS_MICROSERVICE_BASE_URL;
+
     @Bean
     public WebClient userServiceWebClient() {
         return WebClient
@@ -27,6 +30,14 @@ public class WebConfig {
         return WebClient
                 .builder()
                 .baseUrl(ORDERS_MICROSERVICE_BASE_URL)
+                .build();
+    }
+
+    @Bean
+    public WebClient productServiceWebClient() {
+        return WebClient
+                .builder()
+                .baseUrl(PRODUCTS_MICROSERVICE_BASE_URL)
                 .build();
     }
 }

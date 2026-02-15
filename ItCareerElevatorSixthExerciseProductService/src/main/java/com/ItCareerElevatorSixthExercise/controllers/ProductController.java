@@ -7,6 +7,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URI;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
@@ -32,6 +34,8 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String productId) {
+        log.info("---> GET request on /api/products/{}.", productId);
+
         GetProductResponseDTO product = productService.getProduct(productId);
 
         return ResponseEntity.ok(product);
@@ -42,6 +46,8 @@ public class ProductController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
+        log.info("---> GET request on /api/products with page number '{}' and size '{}'.", page, size);
+
         List<GetProductResponseDTO> pageResult = productService.getProducts(page, size);
 
         return ResponseEntity.ok(pageResult);
@@ -55,6 +61,8 @@ public class ProductController {
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
     ) {
+        log.info("---> POST request on /api/products.");
+
         ProductResponseDTO responseDTO = productService.create(requestDTO, fileImage);
 
         URI location = URI.create("/api/products/" + responseDTO.getId());
@@ -71,6 +79,8 @@ public class ProductController {
             @RequestPart("fileImage") MultipartFile fileImage,
             @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
     ) {
+        log.info("---> PATCH request on /api/products/{}.", productId);
+
         ProductResponseDTO responseDTO = productService.update(productId, requestDTO, fileImage);
 
         return ResponseEntity.ok(responseDTO);
@@ -80,6 +90,8 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
+        log.info("---> DELETE request on /api/products/{}.", productId);
+
         DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
 
         return ResponseEntity.ok(responseDTO);

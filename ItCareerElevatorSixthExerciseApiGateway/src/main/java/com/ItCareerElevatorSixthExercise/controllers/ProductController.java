@@ -1,5 +1,11 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
+import com.ItCareerElevatorSixthExercise.DTOs.product.request.CreateProductRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.request.UpdateProductRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.response.DeleteProductResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.response.GetProductResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.product.response.ProductResponseDTO;
+import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -24,62 +30,72 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
-public class ProductController {
+public class ProductController { // TODO: Make CUD accessible only to Admins and Managers
 
-//    private final ProductService productService;
-//
-//    @GetMapping("/{productId}")
-//    public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String productId) {
-//        GetProductResponseDTO product = productService.getProduct(productId);
-//
-//        return ResponseEntity.ok(product);
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity<List<GetProductResponseDTO>> getProducts(
-//            @RequestParam(defaultValue = "0") Integer page,
-//            @RequestParam(defaultValue = "20") Integer size
-//    ) {
-//        List<GetProductResponseDTO> pageResult = productService.getProducts(page, size);
-//
-//        return ResponseEntity.ok(pageResult);
-//    }
-//
-//    @PostMapping(
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE
-//    )
-//    public ResponseEntity<ProductResponseDTO> createProduct(
-//            @RequestPart("fileImage") MultipartFile fileImage,
-//            @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
-//    ) {
-//        ProductResponseDTO responseDTO = productService.create(requestDTO, fileImage);
-//
-//        URI location = URI.create("/api/products/" + responseDTO.getId());
-//        return ResponseEntity.created(location).body(responseDTO);
-//    }
-//
-//    @PatchMapping(
-//            value = "/{productId}",
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE
-//    )
-//    public ResponseEntity<ProductResponseDTO> updateProduct( // TODO: This has to be safe, in case someone else tries to edit the entry (tries +/- the quantity)
-//            @PathVariable String productId,
-//            @RequestPart("fileImage") MultipartFile fileImage,
-//            @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
-//    ) {
-//        ProductResponseDTO responseDTO = productService.update(productId, requestDTO, fileImage);
-//
-//        return ResponseEntity.ok(responseDTO);
-//    }
-//
-//    // TODO: increase product quantity {productId, restockQuantity (will be += to the current quantity)}
-//
-//    @DeleteMapping("/{productId}")
-//    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) { // TODO: Again has to be safe, someone can be trying to buy or increase the quantity at the same time
-//        DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
-//
-//        return ResponseEntity.ok(responseDTO);
-//    }
+    private final ProductService productService;
+
+    @GetMapping("/{productId}")
+    public ResponseEntity<GetProductResponseDTO> getProduct(@PathVariable String productId) {
+        log.info("---> GET request on /api/products/{}.", productId);
+
+        GetProductResponseDTO product = productService.getProduct(productId);
+
+        return ResponseEntity.ok(product);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<GetProductResponseDTO>> getProducts(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "20") Integer size
+    ) {
+        log.info("---> GET request on /api/products with page number '{}' and size '{}'.", page, size);
+
+        List<GetProductResponseDTO> pageResult = productService.getProducts(page, size);
+
+        return ResponseEntity.ok(pageResult);
+    }
+
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<ProductResponseDTO> createProduct(
+            @RequestPart("fileImage") MultipartFile fileImage,
+            @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
+    ) {
+        log.info("---> POST request on /api/products.");
+
+        ProductResponseDTO responseDTO = productService.create(requestDTO, fileImage);
+
+        URI location = URI.create("/api/products/" + responseDTO.getId());
+        return ResponseEntity.created(location).body(responseDTO);
+    }
+
+    @PatchMapping(
+            value = "/{productId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<ProductResponseDTO> updateProduct(
+            @PathVariable String productId,
+            @RequestPart("fileImage") MultipartFile fileImage,
+            @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
+    ) {
+        log.info("---> PATCH request on /api/products/{}.", productId);
+
+        ProductResponseDTO responseDTO = productService.update(productId, requestDTO, fileImage);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    // TODO: increase product quantity {productId, restockQuantity (will be += to the current quantity)}
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String productId) {
+        log.info("---> DELETE request on /api/products/{}.", productId);
+
+        DeleteProductResponseDTO responseDTO = productService.deleteById(productId);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }

@@ -55,6 +55,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO userRequest) {
+        log.info("---| Making a request to the userService.");
+
         User user = userServiceWebClient
                 .post()
                 .uri("/api/users")
@@ -111,6 +113,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO) {
+        log.info("---| Making a request to the userService.");
+
         return userServiceWebClient
                 .post()
                 .uri("/api/roles/assign-to-user")
@@ -127,7 +131,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AlterUserResponseDTO update(User user, PatchUserRequestDTO userRequest) {
+    public AlterUserResponseDTO updateFields(User user, PatchUserRequestDTO userRequest) {
+        log.info("---| Making a request to the userService.");
+
         return userServiceWebClient
                 .patch()
                 .uri(String.format("/api/users/%s", user.getId()))

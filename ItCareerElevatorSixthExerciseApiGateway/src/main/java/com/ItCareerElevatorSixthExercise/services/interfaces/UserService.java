@@ -20,5 +20,5 @@ public interface UserService extends UserDetailsService {
 
     AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO);
 
-    AlterUserResponseDTO update(User user, PatchUserRequestDTO userRequest);
+    AlterUserResponseDTO updateFields(User user, PatchUserRequestDTO userRequest);
 }
