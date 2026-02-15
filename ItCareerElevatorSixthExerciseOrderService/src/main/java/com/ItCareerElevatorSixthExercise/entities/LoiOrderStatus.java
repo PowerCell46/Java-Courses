@@ -11,6 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LoiOrderStatus extends ListOptionItem {
 
+    public static final Long FAILED = 0L;
+
     public static final Long CREATED = 1L;
 
     public static final Long CONFIRMED = 2L;

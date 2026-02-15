@@ -32,17 +32,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public CreateOrderResponseDTO create(CreateOrderRequestDTO requestDTO) {
+        var createdStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.CREATED);
+
         Order order = new Order(
                 requestDTO.getUserId(),
-                loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.CREATED),
+                createdStatus,
                 requestDTO
                         .getItems()
                         .stream()
                         .map(this::convertCreateOrderItemRequestDTOToOrderItem)
                         .toList()
         );
-        order = save(order);
 
+        order = save(order);
         sendKafkaReverseItemsMessage(order);
 
         return new CreateOrderResponseDTO(
@@ -57,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order save(Order order) {
-        log.info("Persisting order of {} items to user with id {}.", order.getItems().size(), order.getUserId());
+        log.info("Persisting an order of {} unique items to user with id {}.", order.getItems().size(), order.getUserId());
 
         return orderRepository.save(order);
     }
@@ -65,15 +67,14 @@ public class OrderServiceImpl implements OrderService {
     private void sendKafkaReverseItemsMessage(Order order) {
         try {
             String key = String.format("reserve-items-%s", order.getUserId());
-            String value = objectMapper.writeValueAsString(
-                    order.getItems()
-            );
+            String value = objectMapper.writeValueAsString(order.getItems());
 
             reserveItemsKafkaTemplate
                     .send(RESERVE_ITEMS_TOPIC_NAME, key, value)
                     .whenComplete((result, ex) -> {
-                        if (ex != null) { // TODO: This has to be avoided (make sure the bean setup retries!) If then it fails, throw some error!
+                        if (ex != null) {
                             log.error("Failed to send Order to topic {}.", RESERVE_ITEMS_TOPIC_NAME, ex);
+                            handleKafkaMessageFailure(order);
 
                         } else {
                             log.info("Sent Order {} to topic {} partition {} offset {}.",
@@ -86,7 +87,21 @@ public class OrderServiceImpl implements OrderService {
                     });
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e); // TODO: This hsa to be avoided in some way
+            log.error("An error occurred with \"objectMapper.writeValueAsString(order.getItems())\".");
+            handleKafkaMessageFailure(order);
         }
+    }
+
+    private void handleKafkaMessageFailure(Order order) {
+        log.warn("Setting the order ({}) status to FAILED.", order.getId());
+
+        order = orderRepository
+                .findById(order.getId())
+                .orElseThrow(() -> new IllegalStateException("Order not found."));
+
+        var failedStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.FAILED);
+        order.setOrderStatus(failedStatus);
+
+        orderRepository.save(order);
     }
 }
