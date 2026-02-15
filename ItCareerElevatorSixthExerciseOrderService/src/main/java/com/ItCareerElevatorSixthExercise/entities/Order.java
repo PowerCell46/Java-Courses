@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,4 +27,10 @@ public class Order extends CommonEntity {
 
     @OneToMany
     private List<OrderItem> items;
+
+    public Order(String userId, LoiOrderStatus orderStatus) {
+        this.userId = userId;
+        this.orderStatus = orderStatus;
+        this.items = new ArrayList<>();
+    }
 }

@@ -1,7 +1,6 @@
 package com.ItCareerElevatorSixthExercise.entities;
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+// TODO: Are there missing annotations?
 public class LoiOrderStatus extends ListOptionItem {
 
     public static final Long CREATED = 1L;
