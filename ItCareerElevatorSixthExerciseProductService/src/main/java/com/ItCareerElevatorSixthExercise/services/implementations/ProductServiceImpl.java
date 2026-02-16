@@ -2,7 +2,6 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetImageResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
@@ -14,17 +13,14 @@ import com.ItCareerElevatorSixthExercise.entities.ProductTranslation;
 import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchProductException;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ManufacturerService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductTranslationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
@@ -48,7 +44,6 @@ public class ProductServiceImpl implements ProductService {
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
     private final ManufacturerService manufacturerService;
-    private final ProcessedOrderService processedOrderService;
     private final ProductTranslationService productTranslationService;
 
     @Override
@@ -185,31 +180,5 @@ public class ProductServiceImpl implements ProductService {
                         .base64(readImageToBase64(imagePath))
                         .build())
                 .build();
-    }
-
-    @Override
-    @Transactional
-    public void processReserveItems(OrderDTO orderDTO) {
-        try {
-            orderDTO
-                    .getOrderItems()
-                    .forEach(orderItemDTO ->
-                            productRepository
-                                    .decreaseProductInStockQuantity(
-                                            orderItemDTO.getQuantity(),
-                                            CommonEntity.convertSnowflakeIdToId(orderItemDTO.getProductId()))
-                    );
-
-            processedOrderService.save(orderDTO.getId());
-
-            // TODO: Push to a kafka topic that the products reservation is successful
-
-        } catch (DataIntegrityViolationException ex) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-
-            log.info("One of the items is not available - returning the other items back in stock.");
-
-            // TODO: Send to topic to make the order status FAILED
-        }
     }
 }
