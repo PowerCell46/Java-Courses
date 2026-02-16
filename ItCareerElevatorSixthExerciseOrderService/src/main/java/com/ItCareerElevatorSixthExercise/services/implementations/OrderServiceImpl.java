@@ -69,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
     private void sendKafkaReverseItemsMessage(Order order) {
         try {
             String key = String.format("reserve-items-%s", order.getUserId());
-            String value = objectMapper.writeValueAsString(order.getItems());
+            String value = objectMapper.writeValueAsString(order);
 
             reserveItemsKafkaTemplate
                     .send(RESERVE_ITEMS_TOPIC_NAME, key, value)
