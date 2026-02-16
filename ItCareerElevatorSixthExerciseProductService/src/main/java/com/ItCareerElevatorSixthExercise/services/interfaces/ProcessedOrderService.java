@@ -6,5 +6,5 @@ public interface ProcessedOrderService {
 
     boolean isOrderProcessed(Long orderId);
 
-    ProcessedOrder save(ProcessedOrder processedOrder);
+    ProcessedOrder save(Long orderId);
 }

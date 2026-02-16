@@ -22,9 +22,9 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
-    public ProcessedOrder save(ProcessedOrder processedOrder) {
-        log.info("Persisting processed order with id {} to the database.", processedOrder.getOrderId());
+    public ProcessedOrder save(Long orderId) {
+        log.info("Persisting processed order with id {} to the database.", orderId);
 
-        return processedOrderRepository.save(processedOrder);
+        return processedOrderRepository.save(new ProcessedOrder(orderId));
     }
 }

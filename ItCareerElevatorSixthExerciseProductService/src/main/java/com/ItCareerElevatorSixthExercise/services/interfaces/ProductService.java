@@ -2,6 +2,7 @@ package com.ItCareerElevatorSixthExercise.services.interfaces;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
@@ -25,4 +26,6 @@ public interface ProductService {
     ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
 
     DeleteProductResponseDTO deleteById(String id);
+
+    void processReserveItems(OrderDTO orderDTO);
 }

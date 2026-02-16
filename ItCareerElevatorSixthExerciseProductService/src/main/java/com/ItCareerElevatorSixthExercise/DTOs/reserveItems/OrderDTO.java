@@ -17,7 +17,5 @@ public class OrderDTO {
 
     private String userId;
 
-    // private LoiOrderStatus orderStatus;
-
     private List<OrderItemDTO> orderItems;
 }

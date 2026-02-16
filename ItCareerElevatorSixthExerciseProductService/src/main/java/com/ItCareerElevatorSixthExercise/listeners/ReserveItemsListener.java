@@ -2,6 +2,7 @@ package com.ItCareerElevatorSixthExercise.listeners;
 
 import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReserveItemsListener {
 
+    private final ProductService productService;
     private final ProcessedOrderService processedOrderService;
 
     @KafkaListener(
@@ -24,9 +26,11 @@ public class ReserveItemsListener {
             return;
 
         if (processedOrderService.isOrderProcessed(order.getId())) {
-            log.warn("OrderDTO with id {} is already processed. Skipping...", order.getId());
+            log.warn("Order with id {} is already processed. Skipping...", order.getId());
         }
 
-        log.info("---> Handling order with id {}", order.getId());
+        log.info("---> Handling order with id {}.", order.getId());
+
+        productService.processReserveItems(order);
     }
 }
