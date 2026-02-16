@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
@@ -204,8 +205,9 @@ public class ProductServiceImpl implements ProductService {
             // TODO: Push to a kafka topic that the products reservation is successful
 
         } catch (DataIntegrityViolationException ex) {
-            // TODO: Make sure the previous elements are returned (Rollback made changes if not)
-            log.info("One of the items is not in stock");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+            log.info("One of the items is not available - returning the other items back in stock.");
 
             // TODO: Send to topic to make the order status FAILED
         }

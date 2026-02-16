@@ -18,4 +18,8 @@ public class ProcessedOrder {
 
     @Id
     private Long orderId;
+
+    // TODO: Add a counter how many times we've tried already
+
+    // TODO: Add some boolean if the push to kafka is successful
 }
