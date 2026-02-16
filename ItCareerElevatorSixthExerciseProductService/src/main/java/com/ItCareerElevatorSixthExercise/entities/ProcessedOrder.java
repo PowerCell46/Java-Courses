@@ -1,5 +1,6 @@
 package com.ItCareerElevatorSixthExercise.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -19,7 +20,15 @@ public class ProcessedOrder {
     @Id
     private Long orderId;
 
-    // TODO: Add a counter how many times we've tried already
+    @Column(nullable = false)
+    private Integer retryTimes;
 
-    // TODO: Add some boolean if the push to kafka is successful
+    @Column(nullable = false)
+    private Boolean isSentToKafka;
+
+    public ProcessedOrder(Long orderId) {
+        this.orderId = orderId;
+        this.retryTimes = 0;
+        this.isSentToKafka = false;
+    }
 }

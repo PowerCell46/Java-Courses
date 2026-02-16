@@ -88,8 +88,8 @@ public class OrderServiceImpl implements OrderService {
                         }
                     });
 
-        } catch (JsonProcessingException e) {
-            log.error("An error occurred with \"objectMapper.writeValueAsString(order.getItems())\".");
+        } catch (JsonProcessingException ex) {
+            log.error("An error occurred with \"objectMapper.writeValueAsString(order)\".");
             handleKafkaMessageFailure(order);
         }
     }
