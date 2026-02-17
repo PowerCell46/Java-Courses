@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.reserveItems;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

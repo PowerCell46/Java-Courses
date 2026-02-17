@@ -1,9 +1,11 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderItemDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.reservedItems.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reservedItems.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
+import com.ItCareerElevatorSixthExercise.entities.FailureReserveItemReason;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
@@ -66,7 +68,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             log.info("One of the items is not available - returning the other items back in stock.");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            // TODO: Send to failureReserveItems topic to make the order status FAILED
+            sendKafkaFailureReserveItemsMessage(orderDTO, FailureReserveItemReason.NOT_IN_STOCK);
         }
     }
 
@@ -79,20 +81,21 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     private BigDecimal calculateProductsSum(OrderDTO orderDTO) {
-        return productRepository.getProductsPriceSum(
-                orderDTO
-                        .getOrderItems()
-                        .stream()
-                        .map(orderItemDTO ->
-                                CommonEntity.convertSnowflakeIdToId(orderItemDTO.getProductId())
-                        )
-                        .toList()
-        );
+        return productRepository
+                .getProductsPriceSum(
+                        orderDTO
+                                .getOrderItems()
+                                .stream()
+                                .map(orderItemDTO ->
+                                        CommonEntity.convertSnowflakeIdToId(orderItemDTO.getProductId())
+                                )
+                                .toList()
+                );
     }
 
     private void sendKafkaItemsReservedMessage(ProcessedOrder processedOrder) {
         try {
-            ReservedOrderDTO reservedOrderDTO = new ReservedOrderDTO(
+            var reservedOrderDTO = new ReservedOrderDTO(
                     processedOrder.getOrderId(),
                     processedOrder.getUserId(),
                     processedOrder.getTotalPrice()
@@ -126,6 +129,41 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             log.error("An error occurred with \"objectMapper.writeValueAsString(reservedOrderDTO)\".");
             processedOrder.setRetryTimes(processedOrder.getRetryTimes() + 1);
             processedOrderRepository.save(processedOrder);
+        }
+    }
+
+    private void sendKafkaFailureReserveItemsMessage(
+            OrderDTO orderDTO,
+            FailureReserveItemReason failureReserveItemReason
+    ) {
+        try {
+            var failureReserveItemsDTO = new FailureReserveItemsDTO(
+                    orderDTO.getId(),
+                    failureReserveItemReason.getMessage()
+            );
+
+            String key = String.format("failure-reserve-items-%s", orderDTO.getUserId());
+            String value = objectMapper.writeValueAsString(failureReserveItemsDTO);
+
+            failureReserveItemsKafkaTemplate
+                    .send(FAILURE_RESERVE_ITEMS_TOPIC_NAME, key, value)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            // TODO: Has to be retries by a chron job
+
+                        } else {
+                            log.info("Sent FailureReserveItemsDTO {} to topic {} partition {} offset {}.",
+                                    key,
+                                    result.getRecordMetadata().topic(),
+                                    result.getRecordMetadata().partition(),
+                                    result.getRecordMetadata().offset()
+                            );
+                        }
+                    });
+
+        } catch (JsonProcessingException e) {
+            // TODO: Has to be retries by a chron job
+            throw new RuntimeException(e);
         }
     }
 

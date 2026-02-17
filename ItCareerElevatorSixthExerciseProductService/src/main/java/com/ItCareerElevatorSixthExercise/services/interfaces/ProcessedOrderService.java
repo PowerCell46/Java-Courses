@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
-import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 
 public interface ProcessedOrderService {

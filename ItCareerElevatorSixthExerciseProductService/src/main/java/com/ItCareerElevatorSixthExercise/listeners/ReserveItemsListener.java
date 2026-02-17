@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
-import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class ReserveItemsListener {
 
         if (processedOrderService.isOrderProcessed(order.getId())) {
             log.warn("Order with id {} is already processed. Skipping...", order.getId());
-        }
+        } // TODO: Is it possible two instances/threads to process at the same time (duplicated msg) and this to be bypassed?
 
         log.info("---> Handling order with id {}.", order.getId());
 

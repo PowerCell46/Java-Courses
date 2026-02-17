@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.config;
 
-import com.ItCareerElevatorSixthExercise.DTOs.reserveItems.OrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
