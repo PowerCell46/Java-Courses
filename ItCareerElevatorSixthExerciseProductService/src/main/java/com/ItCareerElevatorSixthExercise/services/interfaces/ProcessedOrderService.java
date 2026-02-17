@@ -9,5 +9,5 @@ public interface ProcessedOrderService {
 
     void processReserveItems(OrderDTO orderDTO);
 
-    ProcessedOrder save(Long orderId);
+    ProcessedOrder save(ProcessedOrder processedOrder);
 }

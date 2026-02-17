@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -21,14 +23,22 @@ public class ProcessedOrder {
     private Long orderId;
 
     @Column(nullable = false)
-    private Integer retryTimes;
+    private String userId;
+
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
 
     @Column(nullable = false)
     private Boolean isSentToKafka;
 
-    public ProcessedOrder(Long orderId) {
+    @Column(nullable = false)
+    private Integer retryTimes;
+
+    public ProcessedOrder(Long orderId, String userId, BigDecimal totalPrice) {
         this.orderId = orderId;
-        this.retryTimes = 0;
+        this.userId = userId;
+        this.totalPrice = totalPrice;
         this.isSentToKafka = false;
+        this.retryTimes = 0;
     }
 }

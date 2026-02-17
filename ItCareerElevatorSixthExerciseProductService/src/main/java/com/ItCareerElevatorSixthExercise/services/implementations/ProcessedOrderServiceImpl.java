@@ -53,15 +53,20 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                     .getOrderItems()
                     .forEach(this::reserveProduct);
 
-            save(orderDTO.getId());
-            sendKafkaItemsReservedMessage(orderDTO);
+            ProcessedOrder processedOrder = new ProcessedOrder(
+                    orderDTO.getId(),
+                    orderDTO.getUserId(),
+                    calculateProductsSum(orderDTO)
+            );
+            processedOrder = save(processedOrder);
+
+            sendKafkaItemsReservedMessage(processedOrder);
 
         } catch (DataIntegrityViolationException ex) {
+            log.info("One of the items is not available - returning the other items back in stock.");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            log.info("One of the items is not available - returning the other items back in stock.");
-
-            // TODO: Send to topic to make the order status FAILED
+            // TODO: Send to failureReserveItems topic to make the order status FAILED
         }
     }
 
@@ -69,47 +74,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         productRepository
                 .decreaseProductInStockQuantity(
                         orderItemDTO.getQuantity(),
-                        CommonEntity.convertSnowflakeIdToId(orderItemDTO.getProductId()));
-    }
-
-    private void sendKafkaItemsReservedMessage(OrderDTO orderDTO) {
-        try {
-            ReservedOrderDTO reservedOrderDTO = new ReservedOrderDTO(
-                    orderDTO.getId(),
-                    orderDTO.getUserId(),
-                    calculateProductsSum(orderDTO)
-                    );
-
-            String key = String.format("items-reserved-%s", orderDTO.getUserId());
-            String value = objectMapper.writeValueAsString(reservedOrderDTO);
-
-            itemsReservedKafkaTemplate
-                    .send(ITEMS_RESERVED_TOPIC_NAME, key, value)
-                    .whenComplete((result, ex) -> {
-                        if (ex != null) {
-                            log.error("Failed to send ReservedOrderDTO to topic {}.", ITEMS_RESERVED_TOPIC_NAME, ex);
-                            incrementKafkaItemsReservedFailures(orderDTO);
-
-                        } else {
-                            log.info("Sent ReservedOrderDTO {} to topic {} partition {} offset {}.",
-                                    key,
-                                    result.getRecordMetadata().topic(),
-                                    result.getRecordMetadata().partition(),
-                                    result.getRecordMetadata().offset()
-                            );
-
-                            ProcessedOrder processedOrder = processedOrderRepository
-                                    .findById(orderDTO.getId())
-                                    .get();
-                            processedOrder.setIsSentToKafka(true);
-                            processedOrderRepository.save(processedOrder);
-                        }
-                    });
-
-        } catch (JsonProcessingException ex) {
-            log.error("An error occurred with \"objectMapper.writeValueAsString(reservedOrderDTO)\".");
-            incrementKafkaItemsReservedFailures(orderDTO);
-        }
+                        CommonEntity.convertSnowflakeIdToId(orderItemDTO.getProductId())
+                );
     }
 
     private BigDecimal calculateProductsSum(OrderDTO orderDTO) {
@@ -124,18 +90,48 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         );
     }
 
-    private void incrementKafkaItemsReservedFailures(OrderDTO orderDTO) {
-        ProcessedOrder processedOrder = processedOrderRepository
-                .findById(orderDTO.getId())
-                .get();
-        processedOrder.setRetryTimes(processedOrder.getRetryTimes() + 1);
-        processedOrderRepository.save(processedOrder);
+    private void sendKafkaItemsReservedMessage(ProcessedOrder processedOrder) {
+        try {
+            ReservedOrderDTO reservedOrderDTO = new ReservedOrderDTO(
+                    processedOrder.getOrderId(),
+                    processedOrder.getUserId(),
+                    processedOrder.getTotalPrice()
+            );
+
+            String key = String.format("items-reserved-%s", processedOrder.getUserId());
+            String value = objectMapper.writeValueAsString(reservedOrderDTO);
+
+            itemsReservedKafkaTemplate
+                    .send(ITEMS_RESERVED_TOPIC_NAME, key, value)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to send ReservedOrderDTO to topic {}.", ITEMS_RESERVED_TOPIC_NAME, ex);
+                            processedOrder.setRetryTimes(processedOrder.getRetryTimes() + 1);
+                            processedOrderRepository.save(processedOrder);
+
+                        } else {
+                            log.info("Sent ReservedOrderDTO {} to topic {} partition {} offset {}.",
+                                    key,
+                                    result.getRecordMetadata().topic(),
+                                    result.getRecordMetadata().partition(),
+                                    result.getRecordMetadata().offset()
+                            );
+
+                            processedOrder.setIsSentToKafka(true);
+                            processedOrderRepository.save(processedOrder);
+                        }
+                    });
+
+        } catch (JsonProcessingException ex) {
+            log.error("An error occurred with \"objectMapper.writeValueAsString(reservedOrderDTO)\".");
+            processedOrder.setRetryTimes(processedOrder.getRetryTimes() + 1);
+            processedOrderRepository.save(processedOrder);
+        }
     }
 
     @Override
-    public ProcessedOrder save(Long orderId) {
-        log.info("Persisting processed order with id {} to the database.", orderId);
-
-        return processedOrderRepository.save(new ProcessedOrder(orderId));
+    public ProcessedOrder save(ProcessedOrder processedOrder) {
+        log.info("Persisting processed order with id {} to the database.", processedOrder.getOrderId());
+        return processedOrderRepository.save(processedOrder);
     }
 }
