@@ -5,7 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reservedItems.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
-import com.ItCareerElevatorSixthExercise.entities.OrderStatus;
+import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
@@ -59,7 +59,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
             processedOrder.setUserId(orderDTO.getUserId());
             processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
-            processedOrder.setStatus(OrderStatus.RESERVED.getMessage());
+            processedOrder.setStatus(ProcessedOrderStatus.RESERVED.getMessage());
             processedOrder = save(processedOrder);
 
             sendKafkaItemsReservedMessage(processedOrder);
@@ -68,7 +68,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             log.info("One of the items is not available - returning the other items back in stock.");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            processedOrder.setStatus(OrderStatus.NOT_IN_STOCK.getMessage());
+            processedOrder.setStatus(ProcessedOrderStatus.NOT_IN_STOCK.getMessage());
             save(processedOrder);
 
             sendKafkaFailureReserveItemsMessage(processedOrder);
@@ -76,7 +76,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     private ProcessedOrder initializeProcessedOrder(Long orderId) {
-        return save(new ProcessedOrder(orderId, OrderStatus.PROCESSING.getMessage()));
+        return save(new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING.getMessage()));
     }
 
     private void reserveProduct(OrderItemDTO orderItemDTO) {
@@ -118,7 +118,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                         if (ex != null) {
                             log.error("Failed to send ReservedOrderDTO to topic {}.", ITEMS_RESERVED_TOPIC_NAME, ex);
 
-                            processedOrder.setStatus(OrderStatus.RETRY_KAFKA_SEND.getMessage());
+                            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND.getMessage());
                             processedOrderRepository.save(processedOrder);
 
                         } else {
@@ -129,7 +129,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().offset()
                             );
 
-                            processedOrder.setStatus(OrderStatus.SENT_TO_KAFKA.getMessage());
+                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA.getMessage());
                             processedOrderRepository.save(processedOrder);
                         }
                     });
@@ -137,12 +137,13 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(reservedOrderDTO)\".");
 
-            processedOrder.setStatus(OrderStatus.RETRY_KAFKA_SEND.getMessage());
+            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND.getMessage());
             processedOrderRepository.save(processedOrder);
         }
     }
 
-    private void sendKafkaFailureReserveItemsMessage(ProcessedOrder processedOrder) {
+    @Override
+    public void sendKafkaFailureReserveItemsMessage(ProcessedOrder processedOrder) {
         try {
             var failureReserveItemsDTO = new FailureReserveItemsDTO(
                     processedOrder.getOrderId(),
@@ -166,7 +167,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().offset()
                             );
 
-                            processedOrder.setStatus(OrderStatus.SENT_TO_KAFKA.getMessage());
+                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA.getMessage());
                             save(processedOrder);
                         }
                     });

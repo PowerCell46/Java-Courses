@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum OrderStatus {
+public enum ProcessedOrderStatus {
 
     PROCESSING("PROCESSING"),
 
@@ -15,7 +15,7 @@ public enum OrderStatus {
 
     SENT_TO_KAFKA("SENT_TO_KAFKA"),
 
-    RETRY_KAFKA_SEND("RETRY_KAFKA_SEND"); // TODO: Write chron job until it becomes SENT_TO_KAFKA
+    RETRY_KAFKA_SEND("RETRY_KAFKA_SEND");
 
     private final String message;
 }

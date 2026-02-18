@@ -29,7 +29,7 @@ public class ProcessedOrder {
     private BigDecimal totalPrice;
 
     @Column(nullable = false)
-    private String status;
+    private String status; // ? Can we directly refer ProcessedOrderStatus (and the db to create a table with the enum values)?
 
     public ProcessedOrder(Long orderId, String status) {
         this.orderId = orderId;

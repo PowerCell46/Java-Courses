@@ -9,9 +9,7 @@ import java.util.List;
 @Repository
 public interface ProcessedOrderRepository extends JpaRepository<ProcessedOrder, Long> {
 
-    List<ProcessedOrder> findAllByIsSentToKafkaAndRetryTimesGreaterThanEqualAndRetryTimesLessThanEqual(
-            Boolean isSentToKafka,
-            Integer minRetryTimes,
-            Integer maxRetryTimes
+    List<ProcessedOrder> findAllByStatus(
+            String status
     );
 }

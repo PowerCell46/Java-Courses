@@ -11,5 +11,7 @@ public interface ProcessedOrderService {
 
     void sendKafkaItemsReservedMessage(ProcessedOrder processedOrder);
 
+    void sendKafkaFailureReserveItemsMessage(ProcessedOrder processedOrder);
+
     ProcessedOrder save(ProcessedOrder processedOrder);
 }
