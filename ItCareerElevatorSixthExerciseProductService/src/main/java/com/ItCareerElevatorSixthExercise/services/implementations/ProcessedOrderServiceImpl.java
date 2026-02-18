@@ -59,16 +59,17 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
             processedOrder.setUserId(orderDTO.getUserId());
             processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
-            processedOrder.setStatus(ProcessedOrderStatus.RESERVED.getMessage());
+            processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
             processedOrder = save(processedOrder);
 
+            log.info("Successful reservation of products for order with id {}.", orderDTO.getId());
             sendKafkaItemsReservedMessage(processedOrder);
 
         } catch (DataIntegrityViolationException ex) {
             log.info("One of the items is not available - returning the other items back in stock.");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            processedOrder.setStatus(ProcessedOrderStatus.NOT_IN_STOCK.getMessage());
+            processedOrder.setStatus(ProcessedOrderStatus.NOT_IN_STOCK);
             save(processedOrder);
 
             sendKafkaFailureReserveItemsMessage(processedOrder);
@@ -76,7 +77,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     private ProcessedOrder initializeProcessedOrder(Long orderId) {
-        return save(new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING.getMessage()));
+        return save(new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING));
     }
 
     private void reserveProduct(OrderItemDTO orderItemDTO) {
@@ -118,7 +119,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                         if (ex != null) {
                             log.error("Failed to send ReservedOrderDTO to topic {}.", ITEMS_RESERVED_TOPIC_NAME, ex);
 
-                            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND.getMessage());
+                            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
                             processedOrderRepository.save(processedOrder);
 
                         } else {
@@ -129,7 +130,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().offset()
                             );
 
-                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA.getMessage());
+                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA);
                             processedOrderRepository.save(processedOrder);
                         }
                     });
@@ -137,7 +138,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(reservedOrderDTO)\".");
 
-            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND.getMessage());
+            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
             processedOrderRepository.save(processedOrder);
         }
     }
@@ -147,7 +148,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         try {
             var failureReserveItemsDTO = new FailureReserveItemsDTO(
                     processedOrder.getOrderId(),
-                    processedOrder.getStatus()
+                    processedOrder.getStatus().name()
             );
 
             String key = String.format("failure-reserve-items-%s", processedOrder.getUserId());
@@ -167,7 +168,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().offset()
                             );
 
-                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA.getMessage());
+                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA);
                             save(processedOrder);
                         }
                     });

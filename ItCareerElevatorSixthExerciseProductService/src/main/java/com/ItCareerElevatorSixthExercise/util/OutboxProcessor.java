@@ -29,17 +29,19 @@ public class OutboxProcessor {
         failedNotInStockOrders
                 .forEach(processedOrderService::sendKafkaFailureReserveItemsMessage);
 
+        // TODO: If 5-10 minutes have passed and status is PROCESSING, call sendKafkaFailureReserveItemsMessage
+
         // TODO: If you add a lastModifiedAt timestamp in ProcessedOrder, you can delete the ones with
         // TODO: status SENT_TO_KAFKA and 24 hours past last modify
     }
 
     private List<ProcessedOrder> fetchReservedFailedOrders() {
         return processedOrderRepository
-                .findAllByStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND.getMessage());
+                .findAllByStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
     }
 
     private List<ProcessedOrder> fetchNotInStockFailedOrders() {
         return processedOrderRepository
-                .findAllByStatus(ProcessedOrderStatus.NOT_IN_STOCK.getMessage());
+                .findAllByStatus(ProcessedOrderStatus.NOT_IN_STOCK);
     }
 }

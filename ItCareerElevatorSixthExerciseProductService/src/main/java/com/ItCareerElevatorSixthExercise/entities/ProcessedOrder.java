@@ -2,6 +2,8 @@ package com.ItCareerElevatorSixthExercise.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -28,10 +30,11 @@ public class ProcessedOrder {
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
-    private String status; // ? Can we directly refer ProcessedOrderStatus (and the db to create a table with the enum values)?
+    private ProcessedOrderStatus status;
 
-    public ProcessedOrder(Long orderId, String status) {
+    public ProcessedOrder(Long orderId, ProcessedOrderStatus status) {
         this.orderId = orderId;
         this.userId = "N/A";
         this.totalPrice = BigDecimal.ZERO;
