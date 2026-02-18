@@ -29,16 +29,12 @@ public class ProcessedOrder {
     private BigDecimal totalPrice;
 
     @Column(nullable = false)
-    private Boolean isSentToKafka;
+    private String status;
 
-    @Column(nullable = false)
-    private Integer retryTimes;
-
-    public ProcessedOrder(Long orderId, String userId, BigDecimal totalPrice) {
+    public ProcessedOrder(Long orderId, String status) {
         this.orderId = orderId;
-        this.userId = userId;
-        this.totalPrice = totalPrice;
-        this.isSentToKafka = false;
-        this.retryTimes = 0;
+        this.userId = "N/A";
+        this.totalPrice = BigDecimal.ZERO;
+        this.status = status;
     }
 }

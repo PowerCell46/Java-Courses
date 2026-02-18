@@ -5,7 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reservedItems.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
-import com.ItCareerElevatorSixthExercise.entities.FailureReserveItemReason;
+import com.ItCareerElevatorSixthExercise.entities.OrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
@@ -50,16 +50,16 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Override
     @Transactional
     public void processReserveItems(OrderDTO orderDTO) {
+        ProcessedOrder processedOrder = initializeProcessedOrder(orderDTO.getId());
+
         try {
             orderDTO
                     .getOrderItems()
                     .forEach(this::reserveProduct);
 
-            ProcessedOrder processedOrder = new ProcessedOrder(
-                    orderDTO.getId(),
-                    orderDTO.getUserId(),
-                    calculateProductsSum(orderDTO)
-            );
+            processedOrder.setUserId(orderDTO.getUserId());
+            processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
+            processedOrder.setStatus(OrderStatus.RESERVED.getMessage());
             processedOrder = save(processedOrder);
 
             sendKafkaItemsReservedMessage(processedOrder);
@@ -68,8 +68,15 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             log.info("One of the items is not available - returning the other items back in stock.");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            sendKafkaFailureReserveItemsMessage(orderDTO, FailureReserveItemReason.NOT_IN_STOCK);
+            processedOrder.setStatus(OrderStatus.NOT_IN_STOCK.getMessage());
+            save(processedOrder);
+
+            sendKafkaFailureReserveItemsMessage(processedOrder);
         }
+    }
+
+    private ProcessedOrder initializeProcessedOrder(Long orderId) {
+        return save(new ProcessedOrder(orderId, OrderStatus.PROCESSING.getMessage()));
     }
 
     private void reserveProduct(OrderItemDTO orderItemDTO) {
@@ -93,7 +100,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                 );
     }
 
-    private void sendKafkaItemsReservedMessage(ProcessedOrder processedOrder) {
+    @Override
+    public void sendKafkaItemsReservedMessage(ProcessedOrder processedOrder) {
         try {
             var reservedOrderDTO = new ReservedOrderDTO(
                     processedOrder.getOrderId(),
@@ -109,7 +117,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
                             log.error("Failed to send ReservedOrderDTO to topic {}.", ITEMS_RESERVED_TOPIC_NAME, ex);
-                            processedOrder.setRetryTimes(processedOrder.getRetryTimes() + 1);
+
+                            processedOrder.setStatus(OrderStatus.RETRY_KAFKA_SEND.getMessage());
                             processedOrderRepository.save(processedOrder);
 
                         } else {
@@ -120,36 +129,34 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().offset()
                             );
 
-                            processedOrder.setIsSentToKafka(true);
+                            processedOrder.setStatus(OrderStatus.SENT_TO_KAFKA.getMessage());
                             processedOrderRepository.save(processedOrder);
                         }
                     });
 
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(reservedOrderDTO)\".");
-            processedOrder.setRetryTimes(processedOrder.getRetryTimes() + 1);
+
+            processedOrder.setStatus(OrderStatus.RETRY_KAFKA_SEND.getMessage());
             processedOrderRepository.save(processedOrder);
         }
     }
 
-    private void sendKafkaFailureReserveItemsMessage(
-            OrderDTO orderDTO,
-            FailureReserveItemReason failureReserveItemReason
-    ) {
+    private void sendKafkaFailureReserveItemsMessage(ProcessedOrder processedOrder) {
         try {
             var failureReserveItemsDTO = new FailureReserveItemsDTO(
-                    orderDTO.getId(),
-                    failureReserveItemReason.getMessage()
+                    processedOrder.getOrderId(),
+                    processedOrder.getStatus()
             );
 
-            String key = String.format("failure-reserve-items-%s", orderDTO.getUserId());
+            String key = String.format("failure-reserve-items-%s", processedOrder.getUserId());
             String value = objectMapper.writeValueAsString(failureReserveItemsDTO);
 
             failureReserveItemsKafkaTemplate
                     .send(FAILURE_RESERVE_ITEMS_TOPIC_NAME, key, value)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
-                            // TODO: Has to be retries by a chron job
+                            log.error("Failed to send FailureReserveItemsDTO to topic {}.", FAILURE_RESERVE_ITEMS_TOPIC_NAME, ex);
 
                         } else {
                             log.info("Sent FailureReserveItemsDTO {} to topic {} partition {} offset {}.",
@@ -158,12 +165,14 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().partition(),
                                     result.getRecordMetadata().offset()
                             );
+
+                            processedOrder.setStatus(OrderStatus.SENT_TO_KAFKA.getMessage());
+                            save(processedOrder);
                         }
                     });
 
         } catch (JsonProcessingException e) {
-            // TODO: Has to be retries by a chron job
-            throw new RuntimeException(e);
+            log.error("An error occurred with \"objectMapper.writeValueAsString(failureReserveItemsDTO)\".");
         }
     }
 

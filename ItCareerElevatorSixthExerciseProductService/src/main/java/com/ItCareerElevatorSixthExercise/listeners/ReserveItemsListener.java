@@ -25,7 +25,8 @@ public class ReserveItemsListener {
 
         if (processedOrderService.isOrderProcessed(order.getId())) {
             log.warn("Order with id {} is already processed. Skipping...", order.getId());
-        } // TODO: Is it possible two instances/threads to process at the same time (duplicated msg) and this to be bypassed?
+            return;
+        }
 
         log.info("---> Handling order with id {}.", order.getId());
 

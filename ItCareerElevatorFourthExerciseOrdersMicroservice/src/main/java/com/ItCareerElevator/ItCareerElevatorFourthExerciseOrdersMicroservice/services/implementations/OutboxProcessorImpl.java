@@ -24,8 +24,8 @@ public class OutboxProcessorImpl {
     private final OutboxEventService outboxEventService;
     private final KafkaTemplate<String, String> orderKafkaTemplate;
 
-    @Scheduled(fixedDelay = 1000 * 60 * 2) // 2 minutes
     @Transactional
+    @Scheduled(fixedDelay = 1000 * 60 * 2) // 2 minutes
     public void processOutbox() {
         log.info("ProcessOutbox call.");
 
