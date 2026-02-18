@@ -63,7 +63,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             processedOrder = save(processedOrder);
 
             log.info("Successful reservation of products for order with id {}.", orderDTO.getId());
-            sendKafkaItemsReservedMessage(processedOrder);
+            sendKafkaSuccessReserveItemsMessage(processedOrder);
 
         } catch (DataIntegrityViolationException ex) {
             log.info("One of the items is not available - returning the other items back in stock.");
@@ -102,7 +102,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
-    public void sendKafkaItemsReservedMessage(ProcessedOrder processedOrder) {
+    public void sendKafkaSuccessReserveItemsMessage(ProcessedOrder processedOrder) {
         try {
             var reservedOrderDTO = new ReservedOrderDTO(
                     processedOrder.getOrderId(),

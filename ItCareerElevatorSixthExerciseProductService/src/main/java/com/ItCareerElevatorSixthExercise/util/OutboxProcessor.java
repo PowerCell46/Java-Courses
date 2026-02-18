@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -23,16 +24,11 @@ public class OutboxProcessor {
     public void processFailedKafkaMessages() {
         List<ProcessedOrder> failedReservedOrders = fetchReservedFailedOrders();
         failedReservedOrders
-                .forEach(processedOrderService::sendKafkaItemsReservedMessage);
+                .forEach(processedOrderService::sendKafkaSuccessReserveItemsMessage);
 
         List<ProcessedOrder> failedNotInStockOrders = fetchNotInStockFailedOrders();
         failedNotInStockOrders
                 .forEach(processedOrderService::sendKafkaFailureReserveItemsMessage);
-
-        // TODO: If 5-10 minutes have passed and status is PROCESSING, call sendKafkaFailureReserveItemsMessage
-
-        // TODO: If you add a lastModifiedAt timestamp in ProcessedOrder, you can delete the ones with
-        // TODO: status SENT_TO_KAFKA and 24 hours past last modify
     }
 
     private List<ProcessedOrder> fetchReservedFailedOrders() {
@@ -43,5 +39,36 @@ public class OutboxProcessor {
     private List<ProcessedOrder> fetchNotInStockFailedOrders() {
         return processedOrderRepository
                 .findAllByStatus(ProcessedOrderStatus.NOT_IN_STOCK);
+    }
+
+    @Transactional
+    @Scheduled(fixedDelay = 1_000 * 60 * 10) // 10 minutes
+    public void processFailedProcessingOrders() {
+        List<ProcessedOrder> failedProcessingOrders = fetchFailedProcessingOrders();
+        failedProcessingOrders
+                .forEach(processedOrderService::sendKafkaFailureReserveItemsMessage);
+    }
+
+    private List<ProcessedOrder> fetchFailedProcessingOrders() {
+        return processedOrderRepository
+                .findAllByStatusAndLastModifiedAtBefore(
+                        ProcessedOrderStatus.PROCESSING,
+                        LocalDateTime.now().minusMinutes(10)
+                );
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 48 0 * * *") // Every day at 12:48 AM
+    public void cleanupOldSentToKafkaOrders() {
+        List<ProcessedOrder> staleEntries = fetchOldSentToKafkaOrders();
+        processedOrderRepository.deleteAll(staleEntries);
+    }
+
+    private List<ProcessedOrder> fetchOldSentToKafkaOrders() {
+        return processedOrderRepository
+                .findAllByStatusAndLastModifiedAtBefore(
+                        ProcessedOrderStatus.SENT_TO_KAFKA,
+                        LocalDateTime.now().minusDays(1)
+                );
     }
 }

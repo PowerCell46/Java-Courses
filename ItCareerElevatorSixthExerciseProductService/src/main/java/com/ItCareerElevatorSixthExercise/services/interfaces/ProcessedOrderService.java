@@ -9,7 +9,7 @@ public interface ProcessedOrderService {
 
     void processReserveItems(OrderDTO orderDTO);
 
-    void sendKafkaItemsReservedMessage(ProcessedOrder processedOrder);
+    void sendKafkaSuccessReserveItemsMessage(ProcessedOrder processedOrder);
 
     void sendKafkaFailureReserveItemsMessage(ProcessedOrder processedOrder);
 
