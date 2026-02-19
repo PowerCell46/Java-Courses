@@ -141,6 +141,7 @@ services:
       SNOWFLAKE_DATA_CENTER_ID: 11
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_FAILURE_RESERVE_ITEMS_CONSUMER_GROUP: failure-reserve-items-first-consumer-group
+      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items-reserved-first-consumer-group
     depends_on:
       postgres_orders:
         condition: service_healthy

@@ -17,9 +17,11 @@ public class LoiOrderStatus extends ListOptionItem {
 
     public static final Long CREATED = 3L;
 
-    public static final Long CONFIRMED = 4L;
+    public static final Long RESERVED = 4L;
 
-    public static final Long CANCELLED = 5L;
+    public static final Long CONFIRMED = 5L;
+
+    public static final Long CANCELLED = 6L;
 
     public LoiOrderStatus(String name, Long code) {
         super(name, code);

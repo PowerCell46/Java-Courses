@@ -3,7 +3,7 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reservedItems.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
