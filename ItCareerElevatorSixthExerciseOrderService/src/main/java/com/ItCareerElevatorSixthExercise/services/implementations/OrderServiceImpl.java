@@ -4,8 +4,8 @@ import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchOrderFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ItCareerElevatorSixthExercise.DTOs.request.CreateOrderItemRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.request.CreateOrderRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.OrderRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.OrderResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.LoiOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.Order;
@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final KafkaTemplate<String, String> reserveItemsKafkaTemplate;
 
     @Override
-    public OrderResponseDTO create(CreateOrderRequestDTO requestDTO) {
+    public OrderResponseDTO create(OrderRequestDTO requestDTO) {
         var createdStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.CREATED);
 
         Order order = new Order(
@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    private OrderItem convertCreateOrderItemRequestDTOToOrderItem(CreateOrderItemRequestDTO requestDTO) {
+    private OrderItem convertCreateOrderItemRequestDTOToOrderItem(OrderItemRequestDTO requestDTO) {
         return new OrderItem(requestDTO.getProductId(), requestDTO.getQuantity());
     }
 

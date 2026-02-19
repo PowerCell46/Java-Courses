@@ -1,8 +1,10 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
-import com.ItCareerElevatorSixthExercise.DTOs.request.OrderRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.OrderResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.order.request.OrderRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.order.response.OrderResponseDTO;
+import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +25,15 @@ import java.net.URI;
 @RequestMapping("/api/orders")
 public class OrderController {
 
+    private final UserService userService;
     private final OrderService orderService;
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO requestDTO) {
-        log.info("---> POST request on api/orders for user with id: {}.", requestDTO.getUserId());
+        User loggedUser = userService.getCurrentlyLoggedUser();
+        log.info("---> POST request on api/orders for user {}.", loggedUser.getUsername());
 
-        var responseDTO = orderService.create(requestDTO);
+        var responseDTO = orderService.create(requestDTO, loggedUser);
 
         URI location = URI.create("/api/orders/status/" + responseDTO.getId());
         return ResponseEntity.created(location).body(responseDTO);

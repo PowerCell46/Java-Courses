@@ -3,6 +3,7 @@ package com.ItCareerElevatorSixthExercise.controllers;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.InvalidCredentialsException;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.NoSuchUserException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.OrderServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.msvc.ProductServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.msvc.UserServiceException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -22,6 +23,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class ExceptionHandlerController {
+
+    @ExceptionHandler(OrderServiceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleOrderServiceException(OrderServiceException ex) {
+        log.warn("Handling OrderServiceException.");
+        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                ex.getStatus(),
+                ex.getMessage(),
+                ex.getTimestamp()
+        );
+
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(error);
+    }
 
     @ExceptionHandler(ProductServiceException.class)
     public ResponseEntity<ErrorResponseDTO> handleProductServiceException(ProductServiceException ex) {

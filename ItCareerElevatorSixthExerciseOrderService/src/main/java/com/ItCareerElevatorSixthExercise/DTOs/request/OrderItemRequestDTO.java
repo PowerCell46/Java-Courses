@@ -5,15 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateOrderRequestDTO {
+public class OrderItemRequestDTO {
 
-    private String userId;
+    private String productId; // snowflakeId
 
-    private List<CreateOrderItemRequestDTO> items;
+    private Integer quantity;
 }
