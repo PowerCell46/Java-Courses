@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.config;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,18 +22,18 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${spring.kafka.reserve-items-consumer.group-id}")
-    private String reserveItemsConsumerGroupId;
+    @Value("${spring.kafka.failure-reserve-items-consumer.group-id}")
+    private String failureReserveItemsConsumerGroup;
 
     @Bean
-    public ConsumerFactory<String, OrderDTO> reserveItemsConsumerFactory() {
+    public ConsumerFactory<String, FailureReserveItemsDTO> failureReserveItemsConsumerFactory() {
         Map<String, Object> properties = new HashMap<>();
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, reserveItemsConsumerGroupId);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, failureReserveItemsConsumerGroup);
 
         var keyDeserializer = new StringDeserializer();
-        var valueDeserializer = new JacksonJsonDeserializer<>(OrderDTO.class);
+        var valueDeserializer = new JacksonJsonDeserializer<>(FailureReserveItemsDTO.class);
         valueDeserializer.addTrustedPackages("*");
 
         return new DefaultKafkaConsumerFactory<>(
@@ -44,9 +44,9 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderDTO> reserveItemsKafkaListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, OrderDTO>();
-        factory.setConsumerFactory(reserveItemsConsumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, FailureReserveItemsDTO> failureReserveItemsKafkaListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, FailureReserveItemsDTO>();
+        factory.setConsumerFactory(failureReserveItemsConsumerFactory());
         return factory;
     }
 }

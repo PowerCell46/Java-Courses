@@ -137,8 +137,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_orders:5432/web_store_orders_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
-      # TODO: Add the other properties
+      SNOWFLAKE_WORKER_ID: 4
+      SNOWFLAKE_DATA_CENTER_ID: 11
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_FAILURE_RESERVE_ITEMS_CONSUMER_GROUP: failure-reserve-items-first-consumer-group
     depends_on:
       postgres_orders:
         condition: service_healthy
@@ -156,8 +158,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_products:5432/web_store_products_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
-      # TODO: Add the other properties
+      SNOWFLAKE_WORKER_ID: 3
+      SNOWFLAKE_DATA_CENTER_ID: 5
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_RESERVE_ITEMS_CONSUMER_GROUP: reserve-items-first-consumer-group
     depends_on:
       postgres_products:
         condition: service_healthy

@@ -24,7 +24,8 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     private void seedOrderStatuses() {
-        orderStatusRepository.save(new LoiOrderStatus("FAILED", LoiOrderStatus.FAILED));
+        orderStatusRepository.save(new LoiOrderStatus("NOT_IN_STOCK", LoiOrderStatus.NOT_IN_STOCK));
+        orderStatusRepository.save(new LoiOrderStatus("INTERNAL_FAILURE", LoiOrderStatus.SYSTEM_FAILURE));
         orderStatusRepository.save(new LoiOrderStatus("CREATED", LoiOrderStatus.CREATED));
         orderStatusRepository.save(new LoiOrderStatus("CONFIRMED", LoiOrderStatus.CONFIRMED));
         orderStatusRepository.save(new LoiOrderStatus("CANCELLED", LoiOrderStatus.CANCELLED));

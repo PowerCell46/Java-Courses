@@ -60,7 +60,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             processedOrder.setUserId(orderDTO.getUserId());
             processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
             processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
-            processedOrder = save(processedOrder);
+            processedOrder = processedOrderRepository.save(processedOrder);
 
             log.info("Successful reservation of products for order with id {}.", orderDTO.getId());
             sendKafkaSuccessReserveItemsMessage(processedOrder);
@@ -70,7 +70,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             processedOrder.setStatus(ProcessedOrderStatus.NOT_IN_STOCK);
-            save(processedOrder);
+            processedOrderRepository.save(processedOrder);
 
             sendKafkaFailureReserveItemsMessage(processedOrder);
         }
@@ -169,7 +169,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                             );
 
                             processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA);
-                            save(processedOrder);
+                            processedOrderRepository.save(processedOrder);
                         }
                     });
 

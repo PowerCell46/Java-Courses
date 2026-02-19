@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -101,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
                 .findById(order.getId())
                 .orElseThrow(() -> new IllegalStateException("Order not found."));
 
-        var failedStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.FAILED);
+        var failedStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.SYSTEM_FAILURE);
         order.setOrderStatus(failedStatus);
 
         orderRepository.save(order);
@@ -119,5 +121,17 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() ->
                         new NoSuchOrderFoundException(String.format("No order found with id %s.", id))
                 );
+    }
+
+    @Override
+    public void setStatusById(Long id, Long loiOrderStatusCode) {
+        Optional<Order> order = orderRepository.findById(id);
+
+        order
+                .ifPresent(value -> {
+                    var orderStatus = loiOrderStatusService.getByListOptionItemCode(loiOrderStatusCode);
+                    value.setOrderStatus(orderStatus);
+                    orderRepository.save(order.get());
+                });
     }
 }

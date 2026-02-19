@@ -11,4 +11,6 @@ public interface OrderService {
     OrderResponseDTO create(CreateOrderRequestDTO requestDTO);
 
     OrderResponseDTO getById(String id);
+
+    void setStatusById(Long id, Long loiOrderStatusCode);
 }

@@ -16,7 +16,7 @@ public class ReserveItemsListener {
 
     @KafkaListener(
             topics = "${app.kafka.topics.reserve-items:reserveItems}",
-            groupId = "${spring.kafka.consumer.group-id}",
+            groupId = "${spring.kafka.reserve-items-consumer.group-id}",
             containerFactory = "reserveItemsKafkaListenerContainerFactory"
     )
     public void handleReserveItemsMessage(OrderDTO order) {
