@@ -25,10 +25,12 @@ public class OutboxProcessor {
     @Scheduled(fixedDelay = 1_000 * 60 * 2) // 2 minutes
     public void processFailedKafkaMessages() {
         List<ProcessedOrder> failedReservedOrders = fetchReservedFailedOrders();
+        // TODO: You don't filter by lastModified and that can cause duplication of messages
         failedReservedOrders
                 .forEach(processedOrderService::sendKafkaSuccessReserveItemsMessage);
 
         List<ProcessedOrder> failedNotInStockOrders = fetchNotInStockFailedOrders();
+        // TODO: You don't filter by lastModified and that can cause duplication of messages
         failedNotInStockOrders
                 .forEach(processedOrderService::sendKafkaFailureReserveItemsMessage);
     }
