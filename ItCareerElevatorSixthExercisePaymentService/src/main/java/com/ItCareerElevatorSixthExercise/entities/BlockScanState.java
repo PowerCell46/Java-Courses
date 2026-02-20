@@ -25,4 +25,8 @@ public class BlockScanState {
     private Long id;
 
     private BigInteger lastProcessedBlock;
+
+    public BlockScanState(BigInteger lastProcessedBlock) {
+        this.lastProcessedBlock = lastProcessedBlock;
+    }
 }
