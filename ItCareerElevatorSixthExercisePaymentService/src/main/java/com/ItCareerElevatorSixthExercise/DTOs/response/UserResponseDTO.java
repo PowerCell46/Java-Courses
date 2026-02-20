@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentVerificationResponse {
+public class UserResponseDTO {
 
-    private boolean success;
-
-    private String message;
+    private String id;
 }

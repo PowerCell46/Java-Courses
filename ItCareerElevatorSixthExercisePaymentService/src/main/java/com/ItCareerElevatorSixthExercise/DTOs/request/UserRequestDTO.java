@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentVerificationRequest {
+public class UserRequestDTO {
 
-    private String transactionHash;
+    private String id;
+
+    private String walletAddress;
 }
