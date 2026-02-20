@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
         } else {
             User user = new User(requestDTO.getId(), requestDTO.getWalletAddress());
-            save(user);
+            user = save(user);
         }
 
         return new UserResponseDTO(requestDTO.getId());
@@ -39,5 +39,12 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         log.info("Persisting user with id {} to the database.", user.getId());
         return userRepository.save(user);
+    }
+
+    @Override
+    public boolean isUserWalletAddressPresent(String id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        return optionalUser.isPresent() && optionalUser.get().getWalletAddress() != null;
     }
 }

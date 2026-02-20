@@ -1,7 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
-import com.ItCareerElevatorSixthExercise.services.interfaces.PaymentService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ItemsReservedListener {
 
-    private final PaymentService paymentService;
     private final ProcessedOrderService processedOrderService;
 
     @KafkaListener(
@@ -30,7 +28,7 @@ public class ItemsReservedListener {
             return;
         }
 
-//        paymentService.
+        processedOrderService.process(orderDTO);
     }
 
     private boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO) {

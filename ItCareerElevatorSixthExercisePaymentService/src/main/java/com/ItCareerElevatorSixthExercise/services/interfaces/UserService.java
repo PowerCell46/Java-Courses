@@ -8,5 +8,7 @@ public interface UserService {
 
     User save(User user);
 
+    boolean isUserWalletAddressPresent(String id);
+
     UserResponseDTO setWalletAddress(UserRequestDTO requestDTO);
 }
