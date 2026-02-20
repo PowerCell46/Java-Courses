@@ -10,5 +10,7 @@ public enum OrderStatus {
 
     PAID,
 
-    SENT_TO_KAFKA
+    SENT_TO_KAFKA,
+
+    RETRY_KAFKA_SEND
 }

@@ -12,4 +12,6 @@ public interface ProcessedOrderService {
     void process(ReservedOrderDTO orderDTO);
 
     ProcessedOrder save(ProcessedOrder processedOrder);
+
+    void sendKafkaFailureOrderPayment(ProcessedOrder processedOrder);
 }

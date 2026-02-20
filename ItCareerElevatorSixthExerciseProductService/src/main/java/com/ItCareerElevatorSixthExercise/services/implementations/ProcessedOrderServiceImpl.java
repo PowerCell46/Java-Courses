@@ -173,7 +173,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                         }
                     });
 
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(failureReserveItemsDTO)\".");
         }
     }
