@@ -13,5 +13,7 @@ public interface ProcessedOrderService {
 
     ProcessedOrder save(ProcessedOrder processedOrder);
 
+    void sendKafkaSuccessfulOrderPayment(ProcessedOrder processedOrder);
+
     void sendKafkaFailureOrderPayment(ProcessedOrder processedOrder);
 }

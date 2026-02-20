@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.entities;
 
-public enum OrderStatus {
+public enum ProcessedOrderStatus {
 
     MISSING_WALLET_ADDRESS,
 

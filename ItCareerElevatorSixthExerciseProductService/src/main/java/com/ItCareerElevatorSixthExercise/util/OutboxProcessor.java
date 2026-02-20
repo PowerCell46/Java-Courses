@@ -5,6 +5,7 @@ import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OutboxProcessor {
@@ -61,6 +63,8 @@ public class OutboxProcessor {
     @Scheduled(cron = "0 48 0 * * *") // Every day at 12:48 AM
     public void cleanupOldSentToKafkaOrders() {
         List<ProcessedOrder> staleEntries = fetchOldSentToKafkaOrders();
+
+        log.info("Daily cleanup of stale processed orders [{}]", staleEntries.size());
         processedOrderRepository.deleteAll(staleEntries);
     }
 

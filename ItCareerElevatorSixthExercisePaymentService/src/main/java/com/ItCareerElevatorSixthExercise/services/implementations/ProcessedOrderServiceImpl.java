@@ -3,7 +3,7 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful.PaymentSuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
-import com.ItCareerElevatorSixthExercise.entities.OrderStatus;
+import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
@@ -46,7 +46,9 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         if (!userService.isUserWalletAddressPresent(orderDTO.getUserId())) {
             ProcessedOrder processedOrder = new ProcessedOrder(
                     orderDTO.getOrderId(),
-                    OrderStatus.MISSING_WALLET_ADDRESS
+                    orderDTO.getUserId(),
+                    orderDTO.getTotalPrice(),
+                    ProcessedOrderStatus.MISSING_WALLET_ADDRESS
             );
             processedOrder = save(processedOrder);
 
@@ -56,7 +58,9 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } else {
             ProcessedOrder processedOrder = new ProcessedOrder(
                     orderDTO.getOrderId(),
-                    OrderStatus.PROCESSING
+                    orderDTO.getUserId(),
+                    orderDTO.getTotalPrice(),
+                    ProcessedOrderStatus.PROCESSING
             );
             save(processedOrder);
         }
@@ -68,10 +72,12 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         return processedOrderRepository.save(processedOrder);
     }
 
+    @Override
     public void sendKafkaSuccessfulOrderPayment(ProcessedOrder processedOrder) {
         try {
             var paymentSuccessfulDTO = new PaymentSuccessfulDTO(
-                // TODO:
+                processedOrder.getOrderId(),
+                processedOrder.getTotalPrice()
             );
 
             String key = String.format("payment-successful-%d", processedOrder.getOrderId());
@@ -83,7 +89,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                         if (ex != null) {
                             log.error("Failed to send PaymentSuccessfulDTO to topic {}.", PAYMENT_SUCCESSFUL_TOPIC_NAME, ex);
 
-                            processedOrder.setStatus(OrderStatus.RETRY_KAFKA_SEND);
+                            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
                             processedOrderRepository.save(processedOrder);
 
                         } else {
@@ -94,7 +100,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().offset()
                             );
 
-                            processedOrder.setStatus(OrderStatus.SENT_TO_KAFKA);
+                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA);
                             processedOrderRepository.save(processedOrder);
                         }
                     });
@@ -102,7 +108,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(paymentSuccessfulDTO)\".");
 
-            processedOrder.setStatus(OrderStatus.RETRY_KAFKA_SEND);
+            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
             processedOrderRepository.save(processedOrder);
         }
     }
@@ -132,7 +138,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().offset()
                             );
 
-                            processedOrder.setStatus(OrderStatus.SENT_TO_KAFKA);
+                            processedOrder.setStatus(ProcessedOrderStatus.SENT_TO_KAFKA);
                             processedOrderRepository.save(processedOrder);
                         }
                     });
