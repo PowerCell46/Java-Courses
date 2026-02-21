@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Slf4j
@@ -42,7 +43,19 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
-    public void process(ReservedOrderDTO orderDTO) {
+    public Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice) {
+        final BigDecimal ALLOWED_DEVIATION_IN_PRICE = BigDecimal.ONE;
+
+        return processedOrderRepository
+                .findByUserIdAndTotalPriceBetween(
+                        userId,
+                        totalPrice.subtract(ALLOWED_DEVIATION_IN_PRICE),
+                        totalPrice.add(ALLOWED_DEVIATION_IN_PRICE)
+                );
+    }
+
+    @Override
+    public void processReservedOrder(ReservedOrderDTO orderDTO) {
         if (!userService.isUserWalletAddressPresent(orderDTO.getUserId())) {
             ProcessedOrder processedOrder = new ProcessedOrder(
                     orderDTO.getOrderId(),

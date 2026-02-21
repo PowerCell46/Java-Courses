@@ -3,6 +3,7 @@ package com.ItCareerElevatorSixthExercise.util;
 import com.ItCareerElevatorSixthExercise.entities.LastProcessedBlockNumber;
 import com.ItCareerElevatorSixthExercise.repositories.LastProcessedBlockNumberRepository;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class CryptocurrencyScheduler {
     private String walletAddress;
 
     private final Web3j web3j;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final LastProcessedBlockNumberRepository blockNumberRepository;
 
     @SneakyThrows
@@ -51,12 +52,9 @@ public class CryptocurrencyScheduler {
             block
                     .getTransactions()
                     .stream()
-                    .map(tx -> (EthBlock.TransactionObject) tx)
-                    .filter(tx -> tx.getTo() != null && tx.getTo().equalsIgnoreCase(walletAddress))
-                    .map(tx -> userRepository.findByWalletAddress(tx.getFrom()))
-                    .filter(Optional::isPresent)
-//                    .forEach() // TODO: Verify the amount
-            ;
+                    .map(transaction -> (EthBlock.TransactionObject) transaction)
+                    .filter(transaction -> transaction.getTo() != null && transaction.getTo().equalsIgnoreCase(walletAddress))
+                    .forEach(userService::processTransaction);
         }
 
         lastScannedBlockState.setLastProcessedBlock(currentBlockNumber);

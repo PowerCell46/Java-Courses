@@ -28,7 +28,7 @@ public class ItemsReservedListener {
             return;
         }
 
-        processedOrderService.process(orderDTO);
+        processedOrderService.processReservedOrder(orderDTO);
     }
 
     private boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO) {
