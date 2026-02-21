@@ -3,6 +3,7 @@ package com.ItCareerElevatorSixthExercise.util;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
+import com.ItCareerElevatorSixthExercise.repositories.ReservedProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class OutboxProcessor {
 
     private final ProcessedOrderService processedOrderService;
     private final ProcessedOrderRepository processedOrderRepository;
+    private final ReservedProductRepository reservedProductRepository;
 
     @Transactional
     @Scheduled(fixedDelay = 1_000 * 60 * 2) // 2 minutes
@@ -65,6 +67,9 @@ public class OutboxProcessor {
     @Scheduled(cron = "0 48 0 * * *") // Every day at 12:48 AM
     public void cleanupOldSentToKafkaOrders() {
         List<ProcessedOrder> staleEntries = fetchOldSentToKafkaOrders();
+
+        staleEntries
+                .forEach(reservedProductRepository::deleteAllByOrder);
 
         log.info("Daily cleanup of stale processed orders [{}]", staleEntries.size());
         processedOrderRepository.deleteAll(staleEntries);

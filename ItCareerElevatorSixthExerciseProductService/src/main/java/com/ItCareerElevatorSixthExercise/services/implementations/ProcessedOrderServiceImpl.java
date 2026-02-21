@@ -10,6 +10,7 @@ import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.ReservedProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
+    private final ReservedProductService reservedProductService;
     private final ProcessedOrderRepository processedOrderRepository;
     private final KafkaTemplate<String, String> itemsReservedKafkaTemplate;
     private final KafkaTemplate<String, String> failureReserveItemsKafkaTemplate;
@@ -61,6 +63,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
             processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
             processedOrder = processedOrderRepository.save(processedOrder);
+
+            reservedProductService.initializeOrderItems(orderDTO.getOrderItems(), processedOrder);
 
             log.info("Successful reservation of products for order with id {}.", orderDTO.getId());
             sendKafkaSuccessReserveItemsMessage(processedOrder);

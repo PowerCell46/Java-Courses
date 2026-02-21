@@ -20,11 +20,11 @@ public class SuccessfulPaymentListener {
             groupId = "${spring.kafka.payment-successful.group-id}",
             containerFactory = "paymentSuccessfulKafkaListenerContainerFactory"
     )
-    public void handleSuccessfulPayment(PaymentSuccessfulDTO paymentDTO) {
+    public void handlePaymentSuccessful(PaymentSuccessfulDTO paymentDTO) {
         if (paymentDTO == null || paymentDTO.getOrderId() == null)
             return;
 
-        // TODO: Keep the total price also
+        // TODO: Keep the total price also (add it as a field in order)
         orderService.setStatusById(paymentDTO.getOrderId(), LoiOrderStatus.PAID);
     }
 }

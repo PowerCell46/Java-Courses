@@ -20,7 +20,7 @@ public class UnsuccessfulPaymentListener {
             groupId = "${spring.kafka.payment-unsuccessful.group-id}",
             containerFactory = "paymentUnsuccessfulKafkaListenerContainerFactory"
     )
-    public void handleUnsuccessfulPayment(PaymentUnsuccessfulDTO paymentDTO) {
+    public void handlePaymentUnsuccessful(PaymentUnsuccessfulDTO paymentDTO) {
         if (paymentDTO == null || paymentDTO.getOrderId() == null)
             return;
 
