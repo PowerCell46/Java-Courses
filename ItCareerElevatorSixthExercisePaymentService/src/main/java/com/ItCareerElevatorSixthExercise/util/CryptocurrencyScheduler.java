@@ -2,7 +2,6 @@ package com.ItCareerElevatorSixthExercise.util;
 
 import com.ItCareerElevatorSixthExercise.entities.LastProcessedBlockNumber;
 import com.ItCareerElevatorSixthExercise.repositories.LastProcessedBlockNumberRepository;
-import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,7 +16,6 @@ import org.web3j.protocol.core.methods.response.EthBlock;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -33,19 +31,18 @@ public class CryptocurrencyScheduler {
 
     @SneakyThrows
     @Transactional
-    @Scheduled(fixedDelay = 1_000 * 60 * 15) // TODO: 15 ATM, maybe should be more frequent
+    @Scheduled(fixedDelay = 1_000 * 60 * 5) // 5 minutes
     public void processIncomingTransactions() {
         LastProcessedBlockNumber lastScannedBlockState = fetchCurrentBlockScanState();
         BigInteger currentBlockNumber = web3j.ethBlockNumber().send().getBlockNumber();
 
-        // TODO: With the current logic, when we are initializing the entity, won't we skip the loop?
         for (
                 BigInteger blockNum = lastScannedBlockState.getLastProcessedBlock().add(BigInteger.ONE);
                 blockNum.compareTo(currentBlockNumber) <= 0;
                 blockNum = blockNum.add(BigInteger.ONE)
         ) {
             EthBlock.Block block = web3j
-                    .ethGetBlockByNumber(DefaultBlockParameter.valueOf(lastScannedBlockState.getLastProcessedBlock()), true)
+                    .ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNum), true)
                     .send()
                     .getBlock();
 
@@ -70,7 +67,8 @@ public class CryptocurrencyScheduler {
             BigInteger blockNumber = web3j
                     .ethBlockNumber()
                     .send()
-                    .getBlockNumber();
+                    .getBlockNumber()
+                    .subtract(BigInteger.ONE);
 
             log.info("Initializing blockScanState with value {}.", blockNumber);
             return blockNumberRepository.save(new LastProcessedBlockNumber(blockNumber));

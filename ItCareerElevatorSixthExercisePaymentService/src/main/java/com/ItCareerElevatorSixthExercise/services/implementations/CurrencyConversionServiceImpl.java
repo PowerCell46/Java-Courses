@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -16,18 +18,23 @@ import java.util.Map;
 public class CurrencyConversionServiceImpl implements CurrencyConversionService {
 
     @Value("${ethereum-euro.ratio.url}")
-    private String ETH_EUR_RATIO_ENDPOINT;
+    private String ethEurRatioEndpoint;
 
     private final RestTemplate restTemplate;
 
     @Override
     public BigDecimal convertEtherToEuro(BigDecimal ether) {
-        return ether.multiply(getEthEurPrice());
+        return ether.multiply(getEthEurPrice()).setScale(2, RoundingMode.HALF_UP);
     }
 
-    public BigDecimal getEthEurPrice() {
-        Map response = restTemplate.getForObject(ETH_EUR_RATIO_ENDPOINT, Map.class);
-        Map ethereum = (Map) response.get("ethereum");
-        return new BigDecimal(ethereum.get("eur").toString());
+    private BigDecimal getEthEurPrice() {
+        Map<String, Map<String, Object>> response = restTemplate.getForObject(ethEurRatioEndpoint, Map.class);
+
+        return Optional
+                .ofNullable(response)
+                .map(r -> r.get("ethereum"))
+                .map(eth -> eth.get("eur"))
+                .map(price -> new BigDecimal(price.toString()))
+                .orElseThrow(() -> new IllegalStateException("Failed to fetch ETH/EUR price"));
     }
 }

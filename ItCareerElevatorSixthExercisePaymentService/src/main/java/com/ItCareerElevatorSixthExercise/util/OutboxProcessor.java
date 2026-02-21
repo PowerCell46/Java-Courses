@@ -19,7 +19,7 @@ import java.util.List;
 public class OutboxProcessor {
 
     private static final Integer MAX_TIME_FOR_A_GIVEN_STATE = 5;
-    private static final Integer MAX_WAITING_TIME_FOR_PAYMENT = 60;
+    private static final Integer MAX_WAITING_TIME_FOR_PAYMENT = 15;
 
     private final ProcessedOrderService processedOrderService;
     private final ProcessedOrderRepository processedOrderRepository;

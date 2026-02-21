@@ -1,5 +1,6 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
+import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
@@ -30,12 +31,13 @@ public class UserController {
         return ResponseEntity.created(null).body(responseDTO); // TODO: URL?
     }
 
-//    @PatchMapping("/{id}") // TODO: If you use /id you don't have to pass it in the request body
-//    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable String id, @RequestBody UserRequestDTO requestDTO) {
-//        log.info("---> PATCH request on api/users/{}.", requestDTO.getId());
-//
-//        UserResponseDTO responseDTO = userService.setWalletAddress(requestDTO);
-//
-//        return ResponseEntity.ok(responseDTO);
-//    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable String id, @RequestBody UpdateUserRequestDTO requestDTO) {
+        log.info("---> PATCH request on api/users/{}.", id);
+
+        UserResponseDTO responseDTO = userService
+                .setWalletAddress(new UserRequestDTO(id, requestDTO.getWalletAddress()));
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }
