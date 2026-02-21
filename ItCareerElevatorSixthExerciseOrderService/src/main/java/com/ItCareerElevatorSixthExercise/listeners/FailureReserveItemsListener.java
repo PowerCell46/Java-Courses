@@ -25,7 +25,7 @@ public class FailureReserveItemsListener {
             return;
 
         switch (failureDTO.getReason()) {
-            case "PROCESSING" -> orderService.setStatusById(failureDTO.getOrderId(), LoiOrderStatus.SYSTEM_FAILURE);
+            case "PROCESSING" -> orderService.setStatusById(failureDTO.getOrderId(), LoiOrderStatus.INTERNAL_FAILURE);
             case "NOT_IN_STOCK" -> orderService.setStatusById(failureDTO.getOrderId(), LoiOrderStatus.NOT_IN_STOCK);
         }
     }

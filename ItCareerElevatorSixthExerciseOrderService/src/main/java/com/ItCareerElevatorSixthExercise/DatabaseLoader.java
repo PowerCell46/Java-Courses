@@ -25,10 +25,12 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private void seedOrderStatuses() {
         orderStatusRepository.save(new LoiOrderStatus("NOT_IN_STOCK", LoiOrderStatus.NOT_IN_STOCK));
-        orderStatusRepository.save(new LoiOrderStatus("INTERNAL_FAILURE", LoiOrderStatus.SYSTEM_FAILURE));
+        orderStatusRepository.save(new LoiOrderStatus("INTERNAL_FAILURE", LoiOrderStatus.INTERNAL_FAILURE));
         orderStatusRepository.save(new LoiOrderStatus("CREATED", LoiOrderStatus.CREATED));
         orderStatusRepository.save(new LoiOrderStatus("RESERVED", LoiOrderStatus.RESERVED));
-        orderStatusRepository.save(new LoiOrderStatus("CONFIRMED", LoiOrderStatus.CONFIRMED));
+        orderStatusRepository.save(new LoiOrderStatus("MISSING_WALLET_ADDRESS", LoiOrderStatus.MISSING_WALLET_ADDRESS));
+        orderStatusRepository.save(new LoiOrderStatus("UNPAID", LoiOrderStatus.UNPAID));
+        orderStatusRepository.save(new LoiOrderStatus("PAID", LoiOrderStatus.PAID));
         orderStatusRepository.save(new LoiOrderStatus("CANCELLED", LoiOrderStatus.CANCELLED));
     }
 }

@@ -62,6 +62,9 @@ public class UserServiceImpl implements UserService {
             return;
 
         BigDecimal paidAmountInEther = Convert.fromWei(new BigDecimal(transaction.getValue()), Convert.Unit.ETHER);
+        // ! You have to get the ether/euro when the transaction happened (execution price)
+        // ! 1. Get timestamp of the transaction;
+        // ! 2. Fetch the price ratio on that timestamp
         BigDecimal paidAmountInEuros = currencyConversionService.convertEtherToEuro(paidAmountInEther);
 
         Optional<ProcessedOrder> optionalProcessedOrder = processedOrderService

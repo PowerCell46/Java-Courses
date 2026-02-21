@@ -103,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
                 .findById(order.getId())
                 .orElseThrow(() -> new IllegalStateException("Order not found."));
 
-        var failedStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.SYSTEM_FAILURE);
+        var failedStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.INTERNAL_FAILURE);
         order.setOrderStatus(failedStatus);
 
         orderRepository.save(order);
