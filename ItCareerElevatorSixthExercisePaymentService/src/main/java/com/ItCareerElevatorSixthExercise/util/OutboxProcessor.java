@@ -18,6 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OutboxProcessor {
 
+    private static final Integer MAX_TIME_FOR_A_GIVEN_STATE = 5;
+    private static final Integer MAX_WAITING_TIME_FOR_PAYMENT = 60;
+
     private final ProcessedOrderService processedOrderService;
     private final ProcessedOrderRepository processedOrderRepository;
 
@@ -31,13 +34,17 @@ public class OutboxProcessor {
         List<ProcessedOrder> retryPaidFailedInKafkaOrders = fetchPaidOrdersFailedInKafka();
         retryPaidFailedInKafkaOrders
                 .forEach(processedOrderService::sendKafkaSuccessfulOrderPayment);
+
+        List<ProcessedOrder> timedOutOrders = fetchTimedOutOrders();
+        timedOutOrders
+                .forEach(processedOrderService::sendKafkaFailureOrderPayment);
     }
 
     private List<ProcessedOrder> fetchOrdersWithMissingWalletAddress() {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
                         ProcessedOrderStatus.MISSING_WALLET_ADDRESS,
-                        LocalDateTime.now().minusMinutes(4)
+                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
                 );
     }
 
@@ -45,7 +52,15 @@ public class OutboxProcessor {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
                         ProcessedOrderStatus.RETRY_KAFKA_SEND,
-                        LocalDateTime.now().minusMinutes(4)
+                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
+                );
+    }
+
+    private List<ProcessedOrder> fetchTimedOutOrders() {
+        return processedOrderRepository
+                .findAllByStatusAndLastModifiedAtBefore(
+                        ProcessedOrderStatus.TIMED_OUT,
+                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
                 );
     }
 
@@ -67,20 +82,20 @@ public class OutboxProcessor {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
                         ProcessedOrderStatus.PROCESSING,
-                        LocalDateTime.now().minusHours(1)
+                        LocalDateTime.now().minusMinutes(MAX_WAITING_TIME_FOR_PAYMENT)
                 );
     }
 
     @Transactional
     @Scheduled(cron = "1 23 0 * * *") // Every day at 01:23 AM
     public void cleanupOldSentToKafkaOrders() {
-        List<ProcessedOrder> staleEntries = fetchOldSentToKafkaOrders();
+        List<ProcessedOrder> staleEntries = fetchStaleSentToKafkaOrders();
 
-        log.info("Daily cleanup of stale processed orders [{}]", staleEntries.size());
+        log.info("Daily cleanup of stale processed orders [{}].", staleEntries.size());
         processedOrderRepository.deleteAll(staleEntries);
     }
 
-    private List<ProcessedOrder> fetchOldSentToKafkaOrders() {
+    private List<ProcessedOrder> fetchStaleSentToKafkaOrders() {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
                         ProcessedOrderStatus.SENT_TO_KAFKA,

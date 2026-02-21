@@ -11,7 +11,5 @@ import java.util.List;
 @Repository
 public interface ProcessedOrderRepository extends JpaRepository<ProcessedOrder, Long> {
 
-    List<ProcessedOrder> findAllByStatus(ProcessedOrderStatus status);
-
     List<ProcessedOrder> findAllByStatusAndLastModifiedAtBefore(ProcessedOrderStatus status, LocalDateTime before);
 }

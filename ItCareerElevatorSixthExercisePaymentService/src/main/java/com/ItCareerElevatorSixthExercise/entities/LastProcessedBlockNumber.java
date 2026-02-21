@@ -1,5 +1,6 @@
 package com.ItCareerElevatorSixthExercise.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,16 +18,17 @@ import java.math.BigInteger;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "block_scan_state")
-public class BlockScanState {
+@Table(name = "last_processed_block_number")
+public class LastProcessedBlockNumber {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false)
     private BigInteger lastProcessedBlock;
 
-    public BlockScanState(BigInteger lastProcessedBlock) {
+    public LastProcessedBlockNumber(BigInteger lastProcessedBlock) {
         this.lastProcessedBlock = lastProcessedBlock;
     }
 }

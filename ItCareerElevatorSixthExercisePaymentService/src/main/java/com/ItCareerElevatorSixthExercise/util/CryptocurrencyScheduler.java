@@ -1,14 +1,11 @@
 package com.ItCareerElevatorSixthExercise.util;
 
-import com.ItCareerElevatorSixthExercise.entities.BlockScanState;
-import com.ItCareerElevatorSixthExercise.entities.User;
-import com.ItCareerElevatorSixthExercise.repositories.BlockScanStateRepository;
+import com.ItCareerElevatorSixthExercise.entities.LastProcessedBlockNumber;
+import com.ItCareerElevatorSixthExercise.repositories.LastProcessedBlockNumberRepository;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -31,16 +28,16 @@ public class CryptocurrencyScheduler {
 
     private final Web3j web3j;
     private final UserRepository userRepository;
-    private final BlockScanStateRepository blockScanStateRepository;
+    private final LastProcessedBlockNumberRepository blockNumberRepository;
 
     @SneakyThrows
     @Transactional
     @Scheduled(fixedDelay = 1_000 * 60 * 15) // TODO: 15 ATM, maybe should be more frequent
-    public void func() { // TODO: Change name
-        BlockScanState lastScannedBlockState = fetchCurrentBlockScanState();
+    public void processIncomingTransactions() {
+        LastProcessedBlockNumber lastScannedBlockState = fetchCurrentBlockScanState();
         BigInteger currentBlockNumber = web3j.ethBlockNumber().send().getBlockNumber();
 
-        // Not sure if correct
+        // TODO: With the current logic, when we are initializing the entity, won't we skip the loop?
         for (
                 BigInteger blockNum = lastScannedBlockState.getLastProcessedBlock().add(BigInteger.ONE);
                 blockNum.compareTo(currentBlockNumber) <= 0;
@@ -59,17 +56,17 @@ public class CryptocurrencyScheduler {
                     .map(tx -> userRepository.findByWalletAddress(tx.getFrom()))
                     .filter(Optional::isPresent)
 //                    .forEach() // TODO: Verify the amount
-                    ;
+            ;
         }
 
         lastScannedBlockState.setLastProcessedBlock(currentBlockNumber);
-        blockScanStateRepository.save(lastScannedBlockState);
+        blockNumberRepository.save(lastScannedBlockState);
     }
 
-    @SneakyThrows // * Allows us to throw any checked exception without defining it explicitly in the method signature.
     // * Imitating the characteristics of a runtime exception.
-    private BlockScanState fetchCurrentBlockScanState() {
-        List<BlockScanState> blockScanQueryResult = blockScanStateRepository.findAll();
+    @SneakyThrows // * Allows us to throw any checked exception without defining it explicitly in the method signature.
+    private LastProcessedBlockNumber fetchCurrentBlockScanState() {
+        List<LastProcessedBlockNumber> blockScanQueryResult = blockNumberRepository.findAll();
 
         if (blockScanQueryResult.isEmpty()) {
             BigInteger blockNumber = web3j
@@ -78,7 +75,7 @@ public class CryptocurrencyScheduler {
                     .getBlockNumber();
 
             log.info("Initializing blockScanState with value {}.", blockNumber);
-            return blockScanStateRepository.save(new BlockScanState(blockNumber));
+            return blockNumberRepository.save(new LastProcessedBlockNumber(blockNumber));
         }
 
         return blockScanQueryResult.getFirst();

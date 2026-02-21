@@ -12,5 +12,5 @@ public enum ProcessedOrderStatus {
 
     SENT_TO_KAFKA,
 
-    RETRY_KAFKA_SEND
+    RETRY_KAFKA_SEND // TODO: You don't need this, you can retry PAID with 5 minutes without altering
 }

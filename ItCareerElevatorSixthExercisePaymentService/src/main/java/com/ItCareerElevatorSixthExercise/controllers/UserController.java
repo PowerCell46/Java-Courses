@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.created(null).body(responseDTO); // TODO: URL?
     }
 
-//    @PatchMapping("/{id}")
+//    @PatchMapping("/{id}") // TODO: If you use /id you don't have to pass it in the request body
 //    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable String id, @RequestBody UserRequestDTO requestDTO) {
 //        log.info("---> PATCH request on api/users/{}.", requestDTO.getId());
 //
