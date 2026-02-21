@@ -6,8 +6,9 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentU
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
+import com.ItCareerElevatorSixthExercise.entities.User;
+import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Value("${app.kafka.topics.payment-unsuccessful}")
     private String PAYMENT_UNSUCCESSFUL_TOPIC_NAME;
 
-    private final UserService userService;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
     private final ProcessedOrderRepository processedOrderRepository;
     private final KafkaTemplate<String, String> orderPaymentSuccessfulKafkaTemplate;
     private final KafkaTemplate<String, String> orderPaymentUnsuccessfulKafkaTemplate;
@@ -56,7 +57,13 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     @Override
     public void processReservedOrder(ReservedOrderDTO orderDTO) {
-        if (!userService.isUserWalletAddressPresent(orderDTO.getUserId())) {
+        boolean walletPresent = userRepository
+                .findById(orderDTO.getUserId())
+                .map(User::getWalletAddress)
+                .filter(addr -> !addr.isBlank())
+                .isPresent();
+
+        if (!walletPresent) {
             ProcessedOrder processedOrder = new ProcessedOrder(
                     orderDTO.getOrderId(),
                     orderDTO.getUserId(),

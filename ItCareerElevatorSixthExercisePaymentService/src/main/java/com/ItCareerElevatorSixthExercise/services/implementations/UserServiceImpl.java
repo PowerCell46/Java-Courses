@@ -54,13 +54,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isUserWalletAddressPresent(String id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-
-        return optionalUser.isPresent() && optionalUser.get().getWalletAddress() != null;
-    }
-
-    @Override
     @Transactional
     public void processTransaction(EthBlock.TransactionObject transaction) {
         Optional<User> optionalUser = userRepository.findById(transaction.getFrom());
