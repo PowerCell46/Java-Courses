@@ -36,10 +36,10 @@ public class Order extends CommonEntity {
     @OneToMany(mappedBy = "order")
     private List<OrderItem> items;
 
-    public Order(String userId, LoiOrderStatus orderStatus, List<OrderItem> items) {
+    public Order(String userId, LoiOrderStatus orderStatus) {
         this.userId = userId;
         this.totalPrice = null;
         this.orderStatus = orderStatus;
-        this.items = items;
+        this.items = new ArrayList<>();
     }
 }

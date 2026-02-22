@@ -1,8 +1,10 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchOrderFoundException;
+import com.ItCareerElevatorSixthExercise.exceptions.NonUniqueItemsException;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderItemService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,8 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,26 +41,38 @@ public class OrderServiceImpl implements OrderService {
     private final KafkaTemplate<String, String> reserveItemsKafkaTemplate;
 
     @Override
+    @Transactional
     public OrderResponseDTO create(OrderRequestDTO requestDTO) {
-        var createdStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.CREATED);
+        if (!areOrderItemsUnique(requestDTO)) {
+            throw new NonUniqueItemsException("The items in the order must be unique.");
+        }
 
-        Order order = new Order(
-                requestDTO.getUserId(),
-                createdStatus,
-                requestDTO
-                        .getItems()
-                        .stream()
-                        .map(orderItemService::initialize)
-                        .toList()
-        );
+        var createdStatus = loiOrderStatusService
+                .getByListOptionItemCode(LoiOrderStatus.CREATED);
 
-        order = save(order);
-        sendKafkaReverseItemsMessage(order);
+        Order order = save(new Order(requestDTO.getUserId(), createdStatus));
+
+        requestDTO
+                .getItems()
+                .forEach(orderItem -> orderItemService.constructFromRequest(orderItem, order));
+
+        sendKafkaReserveItemsMessage(order);
 
         return new OrderResponseDTO(
                 order.getSnowflakeId(),
                 order.getOrderStatus().getName()
         );
+    }
+
+    private boolean areOrderItemsUnique(OrderRequestDTO requestDTO) {
+        return requestDTO
+                .getItems()
+                .stream()
+                .map(OrderItemRequestDTO::getProductId)
+                .collect(Collectors.toSet())
+                .size() == requestDTO
+                .getItems()
+                .size();
     }
 
     @Override
@@ -65,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
-    private void sendKafkaReverseItemsMessage(Order order) {
+    private void sendKafkaReserveItemsMessage(Order order) {
         try {
             String key = String.format("reserve-items-%s", order.getUserId());
             String value = objectMapper.writeValueAsString(order);
@@ -94,13 +111,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void handleKafkaMessageFailure(Order order) {
-        log.warn("Setting the order ({}) status to FAILED.", order.getId());
+        log.warn("Setting the order ({}) status to INTERNAL_FAILURE.", order.getId());
 
         order = orderRepository
                 .findById(order.getId())
                 .orElseThrow(() -> new IllegalStateException("Order not found."));
 
-        var failedStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.INTERNAL_FAILURE);
+        var failedStatus = loiOrderStatusService
+                .getByListOptionItemCode(LoiOrderStatus.INTERNAL_FAILURE);
         order.setOrderStatus(failedStatus);
 
         orderRepository.save(order);

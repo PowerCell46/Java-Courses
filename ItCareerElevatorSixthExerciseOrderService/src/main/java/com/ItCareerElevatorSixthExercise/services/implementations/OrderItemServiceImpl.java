@@ -1,6 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
+import com.ItCareerElevatorSixthExercise.entities.Order;
 import com.ItCareerElevatorSixthExercise.entities.OrderItem;
 import com.ItCareerElevatorSixthExercise.repositories.OrderItemRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderItemService;
@@ -16,10 +17,11 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public OrderItem initialize(OrderItemRequestDTO requestDTO) {
+    public OrderItem constructFromRequest(OrderItemRequestDTO requestDTO, Order order) {
         OrderItem orderItem = new OrderItem(
                 requestDTO.getProductId(),
-                requestDTO.getQuantity()
+                requestDTO.getQuantity(),
+                order
         );
 
         return save(orderItem);
@@ -27,7 +29,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItem save(OrderItem orderItem) {
-        log.info("Persisting orderItem product with id {} and quantity {} to the database.", orderItem.getProductId(), orderItem.getQuantity());
+        log.info("Persisting orderItem with product id {} and quantity {} to the database.", orderItem.getProductId(), orderItem.getQuantity());
 
         return orderItemRepository.save(orderItem);
     }

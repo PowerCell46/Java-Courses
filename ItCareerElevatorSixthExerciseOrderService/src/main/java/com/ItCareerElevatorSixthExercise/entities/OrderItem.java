@@ -19,7 +19,7 @@ import lombok.Setter;
 public class OrderItem extends CommonEntity {
 
     @Column(nullable = false)
-    private String productId;
+    private String productId; // snowflake id
 
     @Column(nullable = false)
     private Integer quantity;
@@ -27,9 +27,4 @@ public class OrderItem extends CommonEntity {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
-
-    public OrderItem(String productId, Integer quantity) {
-        this.productId = productId;
-        this.quantity = quantity;
-    }
 }
