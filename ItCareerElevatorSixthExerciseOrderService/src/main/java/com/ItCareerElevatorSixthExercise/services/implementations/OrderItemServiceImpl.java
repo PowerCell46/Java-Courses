@@ -1,0 +1,34 @@
+package com.ItCareerElevatorSixthExercise.services.implementations;
+
+import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
+import com.ItCareerElevatorSixthExercise.entities.OrderItem;
+import com.ItCareerElevatorSixthExercise.repositories.OrderItemRepository;
+import com.ItCareerElevatorSixthExercise.services.interfaces.OrderItemService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class OrderItemServiceImpl implements OrderItemService {
+
+    private final OrderItemRepository orderItemRepository;
+
+    @Override
+    public OrderItem initialize(OrderItemRequestDTO requestDTO) {
+        OrderItem orderItem = new OrderItem(
+                requestDTO.getProductId(),
+                requestDTO.getQuantity()
+        );
+
+        return save(orderItem);
+    }
+
+    @Override
+    public OrderItem save(OrderItem orderItem) {
+        log.info("Persisting orderItem product with id {} and quantity {} to the database.", orderItem.getProductId(), orderItem.getQuantity());
+
+        return orderItemRepository.save(orderItem);
+    }
+}

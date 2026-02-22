@@ -20,6 +20,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @Service
@@ -30,9 +31,10 @@ public class UserServiceImpl implements UserService {
     private String MAIL_REGISTER_USER_TOPIC_NAME;
 
     private final RoleService roleService;
+    private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ObjectMapper objectMapper;
+    private final WebClient paymentServiceWebClient;
     private final KafkaTemplate<String, String> registerEmailKafkaTemplate;
 
     @Override
@@ -45,6 +47,10 @@ public class UserServiceImpl implements UserService {
                 encodeUserPassword(requestDTO.getPassword())
         );
         user = save(user);
+
+        if (requestDTO.getWalletAddress() != null) {
+            initializeUserWalletAddress(user.getId(), requestDTO.getWalletAddress());
+        }
 
         sendSuccessfulRegistrationEmailToUser(user);
 
@@ -76,13 +82,22 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    private void initializeUserWalletAddress(String id, String walletAddress) {
+        log.info("---| Making a request to the paymentMicroservice.");
+
+        var requestBody = new MsvcUserPaymentRequestDTO(id, walletAddress);
+
+        paymentServiceWebClient
+                .post()
+                .uri("/api/users")
+                .bodyValue(requestBody)
+                .retrieve()
+    }
+
     private void sendSuccessfulRegistrationEmailToUser(User user) {
         try {
             String key = String.format("register-user-%s-email", user.getId());
-            String value = objectMapper.writeValueAsString(new RegisterUserEmailDTO(
-                    user.getUsername(),
-                    user.getEmail()
-            ));
+            String value = objectMapper.writeValueAsString(new RegisterUserEmailDTO(user.getUsername(), user.getEmail()));
 
             registerEmailKafkaTemplate
                     .send(MAIL_REGISTER_USER_TOPIC_NAME, key, value)
@@ -95,8 +110,8 @@ public class UserServiceImpl implements UserService {
                         }
                     });
 
-        } catch (JsonProcessingException ex) { // TODO: Retry
-            log.error("Failed to serialize RegisterUserEmailDTO to JSON.", ex);
+        } catch (JsonProcessingException ex) {
+            log.error("An error occurred with \"objectMapper.writeValueAsString(new RegisterUserEmailDTO(user.getUsername(), user.getEmail()))\".");
         }
     }
 

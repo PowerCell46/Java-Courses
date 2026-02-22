@@ -17,7 +17,7 @@ public class DatabaseLoader implements CommandLineRunner {
     private final LoiOrderStatusRepository orderStatusRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if (orderStatusRepository.findAll().isEmpty()) {
             seedOrderStatuses();
         }

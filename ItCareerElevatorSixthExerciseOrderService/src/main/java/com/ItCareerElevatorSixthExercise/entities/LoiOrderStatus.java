@@ -13,7 +13,7 @@ public class LoiOrderStatus extends ListOptionItem {
 
     public static final Long NOT_IN_STOCK = 1L;
 
-    public static final Long INTERNAL_FAILURE = 2L;
+    public static final Long INTERNAL_FAILURE = 2L; // Kafka failure most likely
 
     public static final Long CREATED = 3L;
 
@@ -21,7 +21,7 @@ public class LoiOrderStatus extends ListOptionItem {
 
     public static final Long MISSING_WALLET_ADDRESS = 5L;
 
-    public static final Long UNPAID = 6L;
+    public static final Long UNPAID = 6L; // Didn't pay in time
 
     public static final Long PAID = 7L;
 

@@ -24,9 +24,8 @@ public class SuccessfulPaymentListener {
         if (paymentDTO == null || paymentDTO.getOrderId() == null)
             return;
 
-        log.info(""); // TODO
+        log.info("---> Handling paymentSuccessful for order with id {}.", paymentDTO.getOrderId());
 
-        // TODO: Keep the total price also (add it as a field in order)
         orderService.setStatusById(paymentDTO.getOrderId(), LoiOrderStatus.PAID);
     }
 }

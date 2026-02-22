@@ -31,7 +31,7 @@ public class OrderController {
 
         var responseDTO = orderService.create(requestDTO);
 
-        URI location = URI.create("/api/orders/status/" + responseDTO.getId());
+        URI location = URI.create(String.format("/api/orders/status/%s", responseDTO.getId()));
         return ResponseEntity.created(location).body(responseDTO);
     }
 

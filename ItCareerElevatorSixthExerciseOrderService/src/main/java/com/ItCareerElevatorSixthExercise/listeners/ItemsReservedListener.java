@@ -1,7 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
-import com.ItCareerElevatorSixthExercise.entities.LoiOrderStatus;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +23,8 @@ public class ItemsReservedListener {
         if (orderDTO == null || orderDTO.getOrderId() == null)
             return;
 
-        log.info(""); // TODO
+        log.info("---> Handling itemsReserved for order with id {}.", orderDTO.getOrderId());
 
-        orderService.setStatusById(orderDTO.getOrderId(), LoiOrderStatus.RESERVED);
+        orderService.processReservedOrder(orderDTO);
     }
 }

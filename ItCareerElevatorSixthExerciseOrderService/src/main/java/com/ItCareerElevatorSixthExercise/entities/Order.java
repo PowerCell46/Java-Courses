@@ -1,6 +1,8 @@
 package com.ItCareerElevatorSixthExercise.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -9,28 +11,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "orders")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "orders")
 public class Order extends CommonEntity {
 
+    @Column(nullable = false)
     private String userId; // UUID
 
+    @Column
+    private BigDecimal totalPrice;
+
     @ManyToOne
+    @JoinColumn(name = "loi_order_status_id")
     private LoiOrderStatus orderStatus;
 
-    @OneToMany
+    @OneToMany(mappedBy = "order")
     private List<OrderItem> items;
 
-    public Order(String userId, LoiOrderStatus orderStatus) {
+    public Order(String userId, LoiOrderStatus orderStatus, List<OrderItem> items) {
         this.userId = userId;
+        this.totalPrice = null;
         this.orderStatus = orderStatus;
-        this.items = new ArrayList<>();
+        this.items = items;
     }
 }

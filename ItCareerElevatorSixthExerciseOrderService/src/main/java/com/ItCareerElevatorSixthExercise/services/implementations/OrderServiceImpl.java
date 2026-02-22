@@ -1,15 +1,15 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchOrderFoundException;
+import com.ItCareerElevatorSixthExercise.services.interfaces.OrderItemService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.OrderRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.OrderResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.LoiOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.Order;
-import com.ItCareerElevatorSixthExercise.entities.OrderItem;
 import com.ItCareerElevatorSixthExercise.repositories.OrderRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.LoiOrderStatusService;
@@ -31,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final ObjectMapper objectMapper;
     private final OrderRepository orderRepository;
+    private final OrderItemService orderItemService;
     private final LoiOrderStatusService loiOrderStatusService;
     private final KafkaTemplate<String, String> reserveItemsKafkaTemplate;
 
@@ -44,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
                 requestDTO
                         .getItems()
                         .stream()
-                        .map(this::convertCreateOrderItemRequestDTOToOrderItem)
+                        .map(orderItemService::initialize)
                         .toList()
         );
 
@@ -55,10 +56,6 @@ public class OrderServiceImpl implements OrderService {
                 order.getSnowflakeId(),
                 order.getOrderStatus().getName()
         );
-    }
-
-    private OrderItem convertCreateOrderItemRequestDTOToOrderItem(OrderItemRequestDTO requestDTO) {
-        return new OrderItem(requestDTO.getProductId(), requestDTO.getQuantity());
     }
 
     @Override
@@ -124,6 +121,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public void processReservedOrder(ReservedOrderDTO orderDTO) {
+        setStatusById(orderDTO.getOrderId(), LoiOrderStatus.RESERVED);
+
+        orderRepository
+                .findById(orderDTO.getOrderId())
+                .ifPresent(value -> {
+                    value.setTotalPrice(orderDTO.getTotalPrice());
+                    orderRepository.save(value);
+                });
+    }
+
+    @Override
     public void setStatusById(Long id, Long loiOrderStatusCode) {
         Optional<Order> order = orderRepository.findById(id);
 
@@ -131,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
                 .ifPresent(value -> {
                     var orderStatus = loiOrderStatusService.getByListOptionItemCode(loiOrderStatusCode);
                     value.setOrderStatus(orderStatus);
-                    orderRepository.save(order.get());
+                    orderRepository.save(value);
                 });
     }
 }

@@ -24,7 +24,7 @@ public class UnsuccessfulPaymentListener {
         if (paymentDTO == null || paymentDTO.getOrderId() == null)
             return;
 
-        log.info(""); // TODO
+        log.info("---> Handling paymentUnsuccessful for order with id {}.", paymentDTO.getOrderId());
 
         switch (paymentDTO.getReason()) {
             case "MISSING_WALLET_ADDRESS": orderService.setStatusById(paymentDTO.getOrderId(), LoiOrderStatus.MISSING_WALLET_ADDRESS);

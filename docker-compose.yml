@@ -115,8 +115,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_users:5432/web_store_users_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
-      # TODO: Add the other properties
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      USER_ADMIN_USERNAME: ${USER_ADMIN_USERNAME}
+      USER_ADMIN_EMAIL: ${USER_ADMIN_EMAIL}
+      USER_ADMIN_PASSWORD: ${USER_ADMIN_PASSWORD}
     depends_on:
       postgres_users:
         condition: service_healthy

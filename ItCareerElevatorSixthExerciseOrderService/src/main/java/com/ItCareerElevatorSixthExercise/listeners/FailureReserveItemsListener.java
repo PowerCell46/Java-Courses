@@ -24,7 +24,7 @@ public class FailureReserveItemsListener {
         if (failureDTO == null || failureDTO.getOrderId() == null || failureDTO.getReason() == null)
             return;
 
-        log.info(""); // TODO
+        log.info("---> Handling failureReserveItems for order with id {}.", failureDTO.getOrderId());
 
         switch (failureDTO.getReason()) {
             case "PROCESSING" -> orderService.setStatusById(failureDTO.getOrderId(), LoiOrderStatus.INTERNAL_FAILURE);
