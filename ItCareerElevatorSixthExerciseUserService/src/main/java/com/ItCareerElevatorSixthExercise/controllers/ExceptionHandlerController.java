@@ -4,6 +4,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.exceptions.EmailIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchRoleException;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
+import com.ItCareerElevatorSixthExercise.exceptions.PaymentServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.UsernameIsAlreadyTakenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class ExceptionHandlerController {
+
+    @ExceptionHandler(PaymentServiceException.class)
+    public ResponseEntity<ErrorResponseDTO> handlePaymentServiceException(PaymentServiceException ex) {
+        log.warn("Handling PaymentServiceException.");
+        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                ex.getStatus(),
+                ex.getMessage(),
+                ex.getTimestamp()
+        );
+
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(error);
+    }
 
     @ExceptionHandler(UsernameIsAlreadyTakenException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExistsException(UsernameIsAlreadyTakenException ex) {

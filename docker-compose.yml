@@ -119,6 +119,7 @@ services:
       USER_ADMIN_USERNAME: ${USER_ADMIN_USERNAME}
       USER_ADMIN_EMAIL: ${USER_ADMIN_EMAIL}
       USER_ADMIN_PASSWORD: ${USER_ADMIN_PASSWORD}
+      PAYMENT_MICROSERVICE_BASE_ENDPOINT: http://server_payment_service:8084
     depends_on:
       postgres_users:
         condition: service_healthy

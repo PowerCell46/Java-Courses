@@ -1,13 +1,17 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcCreateUserPaymentRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUpdateUserPaymentRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.mail.RegisterUserEmailDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.EmailIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
+import com.ItCareerElevatorSixthExercise.exceptions.PaymentServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.UsernameIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.RoleService;
@@ -16,11 +20,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import static com.ItCareerElevatorSixthExercise.util.RetryPolicy.buildRetrySpec;
 
 @Slf4j
 @Service
@@ -85,13 +93,21 @@ public class UserServiceImpl implements UserService {
     private void initializeUserWalletAddress(String id, String walletAddress) {
         log.info("---| Making a request to the paymentMicroservice.");
 
-        var requestBody = new MsvcUserPaymentRequestDTO(id, walletAddress);
+        var requestBody = new MsvcCreateUserPaymentRequestDTO(id, walletAddress);
 
         paymentServiceWebClient
                 .post()
                 .uri("/api/users")
                 .bodyValue(requestBody)
                 .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PaymentServiceException::new)
+                                .flatMap(Mono::error))
+                .toBodilessEntity()
+                .retryWhen(buildRetrySpec())
+                .block();
     }
 
     private void sendSuccessfulRegistrationEmailToUser(User user) {
@@ -172,6 +188,30 @@ public class UserServiceImpl implements UserService {
             save(user);
         }
 
+        if (requestDTO.getWalletAddress() != null) {
+            updateUserWalletAddress(userId, requestDTO.getWalletAddress());
+        }
+
         return new AlterUserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
+    }
+
+    private void updateUserWalletAddress(String id, String walletAddress) {
+        log.info("---| Making a request to the paymentMicroservice.");
+
+        var requestBody = new MsvcUpdateUserPaymentRequestDTO(walletAddress);
+
+        paymentServiceWebClient
+                .patch()
+                .uri(String.format("/api/users/%s", id))
+                .bodyValue(requestBody)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PaymentServiceException::new)
+                                .flatMap(Mono::error))
+                .toBodilessEntity()
+                .retryWhen(buildRetrySpec())
+                .block();
     }
 }
