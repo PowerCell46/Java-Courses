@@ -49,7 +49,7 @@ public class AuthenticationController {
     @PatchMapping("/profile")
     public ResponseEntity<AlterUserResponseDTO> updateUser(@Valid @RequestBody PatchUserRequestDTO userRequest) {
         User loggedUser = userService.getCurrentlyLoggedUser();
-        log.info("---> PATCH request on api/auth/profile for user {}.", loggedUser.getUsername());
+        log.info("---> PATCH request on api/auth/profile for user with username: {}.", loggedUser.getUsername());
 
         var responseDTO = userService.updateFields(loggedUser, userRequest);
 

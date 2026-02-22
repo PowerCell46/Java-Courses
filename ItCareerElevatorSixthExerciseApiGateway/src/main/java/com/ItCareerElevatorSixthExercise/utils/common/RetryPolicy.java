@@ -1,14 +1,14 @@
-package com.ItCareerElevatorSixthExercise.utils.auth.common;
+package com.ItCareerElevatorSixthExercise.utils.common;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.exceptions.msvc.UserServiceException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.MicroserviceException;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
 
 public class RetryPolicy {
 
-    public static Retry buildRetrySpec() { // TODO: Declare once and import in the services
+    public static Retry buildRetrySpec() {
         return Retry
                 .backoff(4, Duration.ofSeconds(2)) // 2s, 4s, 8s, 16s
                 .maxBackoff(Duration.ofSeconds(20))
@@ -23,11 +23,11 @@ public class RetryPolicy {
                             System.currentTimeMillis()
                     );
 
-                    return new UserServiceException(error);
+                    return new MicroserviceException(error);
                 });
     }
 
-    public static boolean isRetriable(Throwable throwable) {
+    private static boolean isRetriable(Throwable throwable) {
         return isNetworkIssue(throwable) || isTransientHttpResponse(throwable);
     }
 

@@ -45,13 +45,4 @@ public class User extends CommonEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
-
-    public User(String username, String email, String password) {
-        super();
-
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.roles = new HashSet<>();
-    }
 }

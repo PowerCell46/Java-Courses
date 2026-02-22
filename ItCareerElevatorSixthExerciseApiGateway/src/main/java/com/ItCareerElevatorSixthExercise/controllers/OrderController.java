@@ -5,6 +5,9 @@ import com.ItCareerElevatorSixthExercise.DTOs.order.response.OrderResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +32,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO requestDTO) {
+    public ResponseEntity<OrderResponseDTO> createOrder(@Valid @RequestBody OrderRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
         log.info("---> POST request on api/orders for user {}.", loggedUser.getUsername());
 
@@ -40,7 +43,12 @@ public class OrderController {
     }
 
     @GetMapping("/status/{id}")
-    public ResponseEntity<OrderResponseDTO> getOrderStatus(@PathVariable String id) {
+    public ResponseEntity<OrderResponseDTO> getOrderStatus(
+            @PathVariable
+            @NotNull(message = "Id is required.")
+            @Pattern(regexp = "^[A-Za-z0-9_-]{11}$", message = "Id must be a valid snowflake id.")
+            String id
+    ) {
         log.info("---> GET request on api/orders/status/{}.", id);
 
         var responseDTO = orderService.getById(id);

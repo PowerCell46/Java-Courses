@@ -97,6 +97,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      USERS_MICROSERVICE_BASE_ENDPOINT: http://server_user_service:8081
+      ORDERS_MICROSERVICE_BASE_ENDPOINT: http://server_order_service:8082
+      PRODUCTS_MICROSERVICE_BASE_ENDPOINT: http://server_product_service:8083
     depends_on:
       postgres_users:
         condition: service_healthy

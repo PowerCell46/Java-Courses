@@ -11,4 +11,3 @@ public class DeleteProductResponseDTO {
 
     private String id;
 }
-// TODO: Add validations

@@ -6,6 +6,9 @@ import com.ItCareerElevatorSixthExercise.DTOs.product.response.DeleteProductResp
 import com.ItCareerElevatorSixthExercise.DTOs.product.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.product.response.ProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -30,12 +33,17 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
-public class ProductController { // TODO: Make CUD accessible only to Admins and Managers
+public class ProductController {
 
     private final ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetProductResponseDTO> getProductById(@PathVariable String id) {
+    public ResponseEntity<GetProductResponseDTO> getProductById(
+            @PathVariable
+            @NotNull(message = "Id is required.")
+            @Pattern(regexp = "^[A-Za-z0-9_-]{11}$", message = "Id must be a valid snowflake id.")
+            String id
+    ) {
         log.info("---> GET request on api/products/{}.", id);
 
         GetProductResponseDTO product = productService.getProductById(id);
@@ -60,8 +68,8 @@ public class ProductController { // TODO: Make CUD accessible only to Admins and
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ProductResponseDTO> createProduct(
-            @RequestPart("fileImage") MultipartFile fileImage,
-            @RequestPart("requestDTO") CreateProductRequestDTO requestDTO
+            @RequestPart("fileImage") @NotNull(message = "Image is required.") MultipartFile fileImage,
+            @RequestPart("requestDTO") @Valid CreateProductRequestDTO requestDTO
     ) {
         log.info("---> POST request on api/products.");
 
@@ -77,9 +85,12 @@ public class ProductController { // TODO: Make CUD accessible only to Admins and
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<ProductResponseDTO> updateProduct(
-            @PathVariable String id,
+            @PathVariable
+            @NotNull(message = "Id is required.")
+            @Pattern(regexp = "^[A-Za-z0-9_-]{11}$", message = "Id must be a valid snowflake id.")
+            String id,
             @RequestPart("fileImage") MultipartFile fileImage,
-            @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
+            @RequestPart("requestDTO") @Valid UpdateProductRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on api/products/{}.", id);
 
@@ -91,7 +102,12 @@ public class ProductController { // TODO: Make CUD accessible only to Admins and
     // TODO: increase product quantity {id, restockQuantity (will be += to the current quantity)}
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String id) {
+    public ResponseEntity<DeleteProductResponseDTO> deleteProduct(
+            @PathVariable
+            @NotNull(message = "Id is required.")
+            @Pattern(regexp = "^[A-Za-z0-9_-]{11}$", message = "Id must be a valid snowflake id.")
+            String id
+    ) {
         log.info("---> DELETE request on /api/products/{}.", id);
 
         DeleteProductResponseDTO responseDTO = productService.deleteById(id);

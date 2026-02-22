@@ -27,7 +27,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import static com.ItCareerElevatorSixthExercise.utils.auth.common.RetryPolicy.buildRetrySpec;
+
+import static com.ItCareerElevatorSixthExercise.utils.common.RetryPolicy.buildRetrySpec;
 
 @Slf4j
 @Service
@@ -97,7 +98,7 @@ public class UserServiceImpl implements UserService {
             return cud.getUser();
         }
 
-        // Practically would never happen (it would, if you call from an endpoint method, where you aren't authenticated)
+        // Practically would never happen (it would, if you call from an endpoint method, where user isn't authenticated)
         throw new IllegalStateException("Illegal state: no authenticated user.");
     }
 

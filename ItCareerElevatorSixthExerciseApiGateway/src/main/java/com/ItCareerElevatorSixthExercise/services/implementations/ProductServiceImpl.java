@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Objects;
 
-import static com.ItCareerElevatorSixthExercise.utils.auth.common.RetryPolicy.buildRetrySpec;
+import static com.ItCareerElevatorSixthExercise.utils.common.RetryPolicy.buildRetrySpec;
 
 @Slf4j
 @Service

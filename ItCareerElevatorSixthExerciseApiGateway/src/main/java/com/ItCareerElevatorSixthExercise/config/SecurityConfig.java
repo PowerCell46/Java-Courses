@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login"
-                        ).permitAll() // ! Also have to be added in JwtRequestFilter -> PUBLIC_ENDPOINTS
+                        ).permitAll() // ! public endpoints also have to be added in JwtRequestFilter->PUBLIC_ENDPOINTS
                         .requestMatchers("/api/auth/assign-roles").hasRole("ADMIN") // expects "ROLE_ADMIN"
                         .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("MANAGER", "ADMIN") // Create product
                         .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasAnyRole("MANAGER", "ADMIN") // Edit product

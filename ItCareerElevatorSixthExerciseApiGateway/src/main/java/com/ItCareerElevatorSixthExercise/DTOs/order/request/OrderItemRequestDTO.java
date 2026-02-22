@@ -14,10 +14,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderItemRequestDTO {
 
-    @NotNull(message = "Product ID is required.")
+    @NotNull(message = "Product id is required.")
     @Pattern(
             regexp = "^[A-Za-z0-9_-]{11}$",
-            message = "Product ID must be a valid snowflake ID."
+            message = "Product id must be a valid snowflake ID."
     )
     private String productId;
 
