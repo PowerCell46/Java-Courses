@@ -1,6 +1,31 @@
 package com.ItCareerElevatorSixthExercise.utils.auth.common;
 
+import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.UserServiceException;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
+
 public class RetryPolicy {
+
+    public static Retry buildRetrySpec() { // TODO: Declare once and import in the services
+        return Retry
+                .backoff(4, Duration.ofSeconds(2)) // 2s, 4s, 8s, 16s
+                .maxBackoff(Duration.ofSeconds(20))
+                .jitter(0.5d) // 50% jitter
+                .filter(RetryPolicy::isRetriable)
+                .onRetryExhaustedThrow((spec, signal) -> {
+                    Throwable failure = signal.failure();
+
+                    ErrorResponseDTO error = new ErrorResponseDTO(
+                            500,
+                            failure.getMessage() != null ? failure.getMessage() : "Internal server error occurred.",
+                            System.currentTimeMillis()
+                    );
+
+                    return new UserServiceException(error);
+                });
+    }
 
     public static boolean isRetriable(Throwable throwable) {
         return isNetworkIssue(throwable) || isTransientHttpResponse(throwable);

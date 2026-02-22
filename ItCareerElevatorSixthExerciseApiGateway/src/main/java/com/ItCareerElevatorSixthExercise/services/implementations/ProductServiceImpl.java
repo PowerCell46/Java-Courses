@@ -19,11 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+
+import static com.ItCareerElevatorSixthExercise.utils.auth.common.RetryPolicy.buildRetrySpec;
 
 @Slf4j
 @Service
@@ -137,24 +137,5 @@ public class ProductServiceImpl implements ProductService {
                 .bodyToMono(DeleteProductResponseDTO.class)
                 .retryWhen(buildRetrySpec())
                 .block();
-    }
-
-    private Retry buildRetrySpec() {
-        return Retry
-                .backoff(4, Duration.ofSeconds(2)) // 2s, 4s, 8s, 16s
-                .maxBackoff(Duration.ofSeconds(20))
-                .jitter(0.5d) // 50% jitter
-                .filter(com.ItCareerElevatorSixthExercise.utils.auth.common.RetryPolicy::isRetriable)
-                .onRetryExhaustedThrow((spec, signal) -> {
-                    Throwable failure = signal.failure();
-
-                    ErrorResponseDTO error = new ErrorResponseDTO(
-                            500,
-                            failure.getMessage() != null ? failure.getMessage() : "Internal server error occurred.",
-                            System.currentTimeMillis()
-                    );
-
-                    return new ProductServiceException(error);
-                });
     }
 }

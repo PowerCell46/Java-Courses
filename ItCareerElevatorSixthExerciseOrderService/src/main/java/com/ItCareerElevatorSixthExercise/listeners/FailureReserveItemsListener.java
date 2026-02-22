@@ -20,9 +20,11 @@ public class FailureReserveItemsListener {
             groupId = "${spring.kafka.failure-reserve-items-consumer.group-id}",
             containerFactory = "failureReserveItemsKafkaListenerContainerFactory"
     )
-    public void handleFailedOrderReservationOfProducts(FailureReserveItemsDTO failureDTO) {
+    public void handleFailedOrderReservationOfProductsMessage(FailureReserveItemsDTO failureDTO) {
         if (failureDTO == null || failureDTO.getOrderId() == null || failureDTO.getReason() == null)
             return;
+
+        log.info(""); // TODO
 
         switch (failureDTO.getReason()) {
             case "PROCESSING" -> orderService.setStatusById(failureDTO.getOrderId(), LoiOrderStatus.INTERNAL_FAILURE);

@@ -15,7 +15,6 @@ import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import com.ItCareerElevatorSixthExercise.utils.auth.CustomUserDetails;
 import com.ItCareerElevatorSixthExercise.utils.auth.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
-import com.ItCareerElevatorSixthExercise.utils.auth.common.RetryPolicy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,9 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
-
-import java.time.Duration;
+import static com.ItCareerElevatorSixthExercise.utils.auth.common.RetryPolicy.buildRetrySpec;
 
 @Slf4j
 @Service
@@ -154,24 +151,5 @@ public class UserServiceImpl implements UserService {
         User user = getByUsername(username);
 
         return new CustomUserDetails(user);
-    }
-
-    private Retry buildRetrySpec() {
-        return Retry
-                .backoff(4, Duration.ofSeconds(2)) // 2s, 4s, 8s, 16s
-                .maxBackoff(Duration.ofSeconds(20))
-                .jitter(0.5d) // 50% jitter
-                .filter(RetryPolicy::isRetriable)
-                .onRetryExhaustedThrow((spec, signal) -> {
-                    Throwable failure = signal.failure();
-
-                    ErrorResponseDTO error = new ErrorResponseDTO(
-                            500,
-                            failure.getMessage() != null ? failure.getMessage() : "Internal server error occurred.",
-                            System.currentTimeMillis()
-                    );
-
-                    return new UserServiceException(error);
-                });
     }
 }

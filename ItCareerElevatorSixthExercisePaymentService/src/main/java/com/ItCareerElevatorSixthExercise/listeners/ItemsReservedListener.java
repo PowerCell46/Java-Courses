@@ -19,7 +19,7 @@ public class ItemsReservedListener {
             groupId = "${spring.kafka.items-reserved-consumer.group-id}",
             containerFactory = "itemsReservedKafkaListenerContainerFactory"
     )
-    public void handleItemsReserved(ReservedOrderDTO orderDTO) {
+    public void handleItemsReservedMessage(ReservedOrderDTO orderDTO) {
         if (orderDTO == null || orderDTO.getOrderId() == null)
             return;
 

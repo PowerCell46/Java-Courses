@@ -1,6 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
@@ -186,5 +187,18 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     public ProcessedOrder save(ProcessedOrder processedOrder) {
         log.info("Persisting processed order with id {} to the database.", processedOrder.getOrderId());
         return processedOrderRepository.save(processedOrder);
+    }
+
+    @Override
+    public void processPaymentUnsuccessful(PaymentUnsuccessfulDTO paymentDTO) {
+        ProcessedOrder processedOrder = processedOrderRepository
+                .findById(paymentDTO.getOrderId())
+                .get();
+
+        // TODO: First return back the reserved items
+
+        // TODO: Delete the ReservedProduct instance
+
+        // TODO: Delete the ProcessedOrder instance
     }
 }

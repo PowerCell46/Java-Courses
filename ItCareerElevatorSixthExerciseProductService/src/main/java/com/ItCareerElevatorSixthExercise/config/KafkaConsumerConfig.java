@@ -1,5 +1,6 @@
 package com.ItCareerElevatorSixthExercise.config;
 
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -25,6 +26,9 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.reserve-items-consumer.group-id}")
     private String reserveItemsConsumerGroupId;
 
+    @Value("${app.kafka.topics.payment-unsuccessful}")
+    private String paymentUnsuccessfulConsumerGroupId;
+
     @Bean
     public ConsumerFactory<String, OrderDTO> reserveItemsConsumerFactory() {
         Map<String, Object> properties = new HashMap<>();
@@ -47,6 +51,31 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, OrderDTO> reserveItemsKafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, OrderDTO>();
         factory.setConsumerFactory(reserveItemsConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, PaymentUnsuccessfulDTO> paymentUnsuccessfulConsumerFactory() {
+        Map<String, Object> properties = new HashMap<>();
+
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, paymentUnsuccessfulConsumerGroupId);
+
+        var keyDeserializer = new StringDeserializer();
+        var valueDeserializer = new JacksonJsonDeserializer<>(PaymentUnsuccessfulDTO.class);
+        valueDeserializer.addTrustedPackages("*");
+
+        return new DefaultKafkaConsumerFactory<>(
+                properties,
+                keyDeserializer,
+                valueDeserializer
+        );
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentUnsuccessfulDTO> paymentUnsuccessfulKafkaListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, PaymentUnsuccessfulDTO>();
+        factory.setConsumerFactory(paymentUnsuccessfulConsumerFactory());
         return factory;
     }
 }
