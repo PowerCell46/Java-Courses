@@ -21,7 +21,7 @@ public class ReservedProduct extends CommonEntity {
 
     @JoinColumn(name = "order_id")
     @ManyToOne(fetch = FetchType.EAGER)
-    private ProcessedOrder order;
+    private ProcessedOrder processedOrder;
 
     @JoinColumn(name = "product_id")
     @ManyToOne(fetch = FetchType.EAGER)

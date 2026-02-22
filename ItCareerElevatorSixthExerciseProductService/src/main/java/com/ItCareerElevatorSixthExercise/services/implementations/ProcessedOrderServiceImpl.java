@@ -8,6 +8,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderD
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.entities.ReservedProduct;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -195,10 +197,20 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                 .findById(paymentDTO.getOrderId())
                 .get();
 
-        // TODO: First return back the reserved items
+        List<ReservedProduct> reservedProducts = reservedProductService
+                .getAllByProcessedOrder(processedOrder);
 
-        // TODO: Delete the ReservedProduct instance
+        reservedProducts
+                .forEach(this::returnBackProduct);
 
-        // TODO: Delete the ProcessedOrder instance
+        processedOrderRepository.delete(processedOrder);
+    }
+
+    public void returnBackProduct(ReservedProduct reservedProduct) {
+        productRepository
+                .increaseProductInStockQuantity(
+                        reservedProduct.getQuantity(),
+                        reservedProduct.getProduct().getId()
+                );
     }
 }

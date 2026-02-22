@@ -26,6 +26,11 @@ public class ReservedProductServiceImpl implements ReservedProductService {
                 .forEach(orderItemDTO -> save(instantiateFromOrderItem(orderItemDTO, processedOrder)));
     }
 
+    @Override
+    public List<ReservedProduct> getAllByProcessedOrder(ProcessedOrder processedOrder) {
+        return reservedProductRepository.findAllByProcessedOrder(processedOrder);
+    }
+
     public ReservedProduct save(ReservedProduct reservedProduct) {
         log.info("Persisting reservedProduct to the database.");
 

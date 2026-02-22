@@ -16,6 +16,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("UPDATE Product p set p.inStockQuantity = p.inStockQuantity - :quantity WHERE p.id = :id")
     void decreaseProductInStockQuantity(Integer quantity, Long id);
 
+    @Modifying
+    @Query("UPDATE Product p set p.inStockQuantity = p.inStockQuantity + :quantity WHERE p.id = :id")
+    void increaseProductInStockQuantity(Integer quantity, Long id);
+
     @Query("SELECT COALESCE(SUM(p.price), 0) FROM Product p WHERE p.id IN :productIds")
     BigDecimal getProductsPriceSum(List<Long> productIds);
 }
