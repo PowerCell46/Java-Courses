@@ -5,6 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcCreateUserPa
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUpdateUserPaymentRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.response.MsvcGetUserWalletAddressResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.mail.RegisterUserEmailDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
@@ -146,7 +147,8 @@ public class UserServiceImpl implements UserService {
         return new AlterUserResponseDTO(
                 user.getId(),
                 user.getUsername(),
-                user.getEmail()
+                user.getEmail(),
+                fetchWalletAddress(user.getId())
         );
     }
 
@@ -192,7 +194,12 @@ public class UserServiceImpl implements UserService {
             updateUserWalletAddress(userId, requestDTO.getWalletAddress());
         }
 
-        return new AlterUserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
+        return new AlterUserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                fetchWalletAddress(userId)
+        );
     }
 
     private void updateUserWalletAddress(String id, String walletAddress) {
@@ -213,5 +220,22 @@ public class UserServiceImpl implements UserService {
                 .toBodilessEntity()
                 .retryWhen(buildRetrySpec())
                 .block();
+    }
+
+    private String fetchWalletAddress(String userId) {
+        var responseDTO = paymentServiceWebClient
+                .get()
+                .uri(String.format("/api/users/%s", userId))
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PaymentServiceException::new)
+                                .flatMap(Mono::error))
+                .bodyToMono(MsvcGetUserWalletAddressResponseDTO.class)
+                .retryWhen(buildRetrySpec())
+                .block();
+
+        return responseDTO.getWalletAddress();
     }
 }

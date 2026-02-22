@@ -1,19 +1,17 @@
-package com.ItCareerElevatorSixthExercise.DTOs.auth.response;
+package com.ItCareerElevatorSixthExercise.DTOs.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class AlterUserResponseDTO {
+public class GetUserWalletAddressResponseDTO {
 
     private String id;
-
-    private String username;
-
-    private String email;
 
     private String walletAddress;
 }

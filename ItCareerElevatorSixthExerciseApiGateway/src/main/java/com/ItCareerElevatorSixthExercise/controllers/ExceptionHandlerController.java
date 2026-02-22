@@ -28,7 +28,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(MicroserviceException.class)
     public ResponseEntity<ErrorResponseDTO> handleMicroserviceException(MicroserviceException ex) {
         log.warn("Handling MicroserviceException.");
-        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+        log.warn("Error status: {}, message: {}", ex.getStatus(), ex.getMessage());
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 ex.getStatus(),
@@ -44,7 +44,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(OrderServiceException.class)
     public ResponseEntity<ErrorResponseDTO> handleOrderServiceException(OrderServiceException ex) {
         log.warn("Handling OrderServiceException.");
-        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+        log.warn("Error status: {}, message: {}", ex.getStatus(), ex.getMessage());
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 ex.getStatus(),
@@ -60,7 +60,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(ProductServiceException.class)
     public ResponseEntity<ErrorResponseDTO> handleProductServiceException(ProductServiceException ex) {
         log.warn("Handling ProductServiceException.");
-        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+        log.warn("Error status: {}, message: {}", ex.getStatus(), ex.getMessage());
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 ex.getStatus(),
@@ -76,7 +76,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(UserServiceException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserServiceException(UserServiceException ex) {
         log.warn("Handling UserServiceException.");
-        log.warn("Error status: {}, message: {}.", ex.getStatus(), ex.getMessage());
+        log.warn("Error status: {}, message: {}", ex.getStatus(), ex.getMessage());
 
         ErrorResponseDTO error = new ErrorResponseDTO(
                 ex.getStatus(),

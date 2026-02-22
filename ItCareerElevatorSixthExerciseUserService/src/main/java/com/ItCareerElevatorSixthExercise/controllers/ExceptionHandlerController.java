@@ -82,13 +82,13 @@ public class ExceptionHandlerController {
         log.warn("Handling NoSuchRoleException.");
 
         ErrorResponseDTO error = new ErrorResponseDTO(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.NOT_FOUND.value())
                 .body(error);
     }
 }

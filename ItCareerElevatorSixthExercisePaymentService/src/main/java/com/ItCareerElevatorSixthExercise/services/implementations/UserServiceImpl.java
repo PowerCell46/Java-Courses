@@ -1,10 +1,12 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.GetUserWalletAddressResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.User;
+import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.CurrencyConversionService;
@@ -78,5 +80,15 @@ public class UserServiceImpl implements UserService {
 
         processedOrderService
                 .sendKafkaSuccessfulOrderPayment(optionalProcessedOrder.get());
+    }
+
+    @Override
+    public GetUserWalletAddressResponseDTO getWalletAddress(String id) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new NoSuchUserException(String.format("No user found with id %s.", id)));
+
+        return new GetUserWalletAddressResponseDTO(id, user.getWalletAddress());
     }
 }

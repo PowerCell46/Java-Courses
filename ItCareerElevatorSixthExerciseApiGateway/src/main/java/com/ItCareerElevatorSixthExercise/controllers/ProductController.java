@@ -75,7 +75,7 @@ public class ProductController {
 
         ProductResponseDTO responseDTO = productService.create(requestDTO, fileImage);
 
-        URI location = URI.create("/api/products/" + responseDTO.getId());
+        URI location = URI.create(String.format("/api/products/%s", responseDTO.getId()));
         return ResponseEntity.created(location).body(responseDTO);
     }
 

@@ -14,4 +14,6 @@ public class AlterUserResponseDTO {
     private String username;
 
     private String email;
+
+    private String walletAddress;
 }
