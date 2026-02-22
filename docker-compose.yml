@@ -85,6 +85,21 @@ services:
       timeout: 5s
       retries: 5
   
+  postgres_payments:
+    image: postgres:16-alpine
+    container_name: payment_service_db
+    environment:
+      POSTGRES_DB: web_store_payments_db
+      POSTGRES_USER: ${POSTGRES_SQL_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+    volumes:
+      - web_store_application_payments_db_vol:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SQL_USERNAME} -d web_store_payments_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
   server_api_gateway:
     build:
       context: ./ItCareerElevatorSixthExerciseApiGateway
@@ -171,9 +186,31 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+  
+  server_payment_service:
+    build:
+      context: ./ItCareerElevatorSixthExercisePaymentService
+      dockerfile: Dockerfile
+    container_name: payment_service_server
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_payments:5432/web_store_products_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_first_instance
+      ETHEREUM_NODE_URL: ${ETHEREUM_NODE_URL}
+      ETHEREUM_WALLET_ADDRESS: ${ETHEREUM_WALLET_ADDRESS}
+    depends_on:
+      postgres_payments:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
 
 volumes:
   web_store_application_kafka_vol:
   web_store_application_users_db_vol:
   web_store_application_orders_db_vol:
   web_store_application_products_db_vol:
+  web_store_application_payments_db_vol:
