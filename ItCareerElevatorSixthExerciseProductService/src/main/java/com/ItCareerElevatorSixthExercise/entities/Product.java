@@ -37,8 +37,8 @@ public class Product extends CommonEntity {
     @Column(nullable = false, length = 500)
     private String imageUrl;
 
-    @JoinColumn(name = "manufacturer_id")
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

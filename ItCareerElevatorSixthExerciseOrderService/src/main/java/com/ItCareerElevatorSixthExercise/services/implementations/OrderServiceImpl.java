@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
 
         requestDTO
                 .getItems()
-                .forEach(orderItem -> orderItemService.constructFromRequest(orderItem, order));
+                .forEach(orderItem -> orderItemService.initializeFromRequest(orderItem, order));
 
         sendKafkaReserveItemsMessage(order);
 

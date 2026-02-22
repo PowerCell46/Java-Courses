@@ -17,7 +17,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public OrderItem constructFromRequest(OrderItemRequestDTO requestDTO, Order order) {
+    public OrderItem initializeFromRequest(OrderItemRequestDTO requestDTO, Order order) {
         OrderItem orderItem = new OrderItem(
                 requestDTO.getProductId(),
                 requestDTO.getQuantity(),
@@ -29,7 +29,10 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItem save(OrderItem orderItem) {
-        log.info("Persisting orderItem with product id {} and quantity {} to the database.", orderItem.getProductId(), orderItem.getQuantity());
+        log.info("Persisting orderItem with product id {} and quantity {} to the database.",
+                orderItem.getProductId(),
+                orderItem.getQuantity()
+        );
 
         return orderItemRepository.save(orderItem);
     }

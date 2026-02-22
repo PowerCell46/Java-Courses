@@ -19,7 +19,7 @@ public class DatabaseLoader implements CommandLineRunner {
     private final LocaleRepository localeRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if (localeRepository.findAll().isEmpty()) {
             seedLocales();
         }

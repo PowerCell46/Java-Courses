@@ -37,7 +37,6 @@ public class ProductTranslation extends CommonEntity {
     private String description;
 
     @ManyToOne
-    @JsonIgnore // TODO: Do you need this?
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 

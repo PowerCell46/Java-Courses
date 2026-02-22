@@ -34,7 +34,7 @@ public class ProcessedOrder {
     private LocalDateTime lastModifiedAt;
 
     @Column(nullable = false)
-    private String userId;
+    private String userId; // UUID
 
     @Column(nullable = false)
     private BigDecimal totalPrice;

@@ -23,7 +23,7 @@ public class PaymentUnsuccessfulListener {
         if (paymentDTO == null || paymentDTO.getOrderId() == null)
             return;
 
-        log.info("---> Handling unsuccessful payment for oder with id {}.", paymentDTO.getOrderId());
+        log.info("---> Handling unsuccessful payment for order with id {}.", paymentDTO.getOrderId());
 
         processedOrderService.processPaymentUnsuccessful(paymentDTO);
     }

@@ -27,24 +27,22 @@ public class OutboxProcessor {
     @Scheduled(fixedDelay = 1_000 * 60 * 2) // 2 minutes
     public void processFailedKafkaMessages() {
         List<ProcessedOrder> failedReservedOrders = fetchReservedFailedOrders();
-        // TODO: You don't filter by lastModified and that can cause duplication of messages
         failedReservedOrders
                 .forEach(processedOrderService::sendKafkaSuccessReserveItemsMessage);
 
         List<ProcessedOrder> failedNotInStockOrders = fetchNotInStockFailedOrders();
-        // TODO: You don't filter by lastModified and that can cause duplication of messages
         failedNotInStockOrders
                 .forEach(processedOrderService::sendKafkaFailureReserveItemsMessage);
     }
 
     private List<ProcessedOrder> fetchReservedFailedOrders() {
         return processedOrderRepository
-                .findAllByStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
+                .findAllByStatusAndLastModifiedAtBefore(ProcessedOrderStatus.RETRY_KAFKA_SEND, LocalDateTime.now().minusMinutes(5));
     }
 
     private List<ProcessedOrder> fetchNotInStockFailedOrders() {
         return processedOrderRepository
-                .findAllByStatus(ProcessedOrderStatus.NOT_IN_STOCK);
+                .findAllByStatusAndLastModifiedAtBefore(ProcessedOrderStatus.NOT_IN_STOCK, LocalDateTime.now().minusMinutes(5));
     }
 
     @Transactional
@@ -69,7 +67,7 @@ public class OutboxProcessor {
         List<ProcessedOrder> staleEntries = fetchOldSentToKafkaOrders();
 
         staleEntries
-                .forEach(reservedProductRepository::deleteAllByOrder);
+                .forEach(reservedProductRepository::deleteAllByProcessedOrder);
 
         log.info("Daily cleanup of stale processed orders [{}]", staleEntries.size());
         processedOrderRepository.deleteAll(staleEntries);
