@@ -23,6 +23,8 @@ public class ItemsReservedListener {
         if (orderDTO == null || orderDTO.getOrderId() == null)
             return;
 
+        log.info("---> Handling itemsReserved for order with id {}.", orderDTO.getOrderId());
+
         if (isOrderAlreadyProcessed(orderDTO)) {
             log.info("Order with id {} is already processed. Skipping...", orderDTO.getOrderId());
             return;

@@ -1,5 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReserveOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReserveOrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
@@ -76,10 +78,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order save(Order order) {
-        log.info("Persisting an order of {} unique items to user with id {} to the database.",
-                order.getItems().size(),
-                order.getUserId()
-        );
+        log.info("Persisting an order of user with id {} to the database.", order.getUserId());
 
         return orderRepository.save(order);
     }
@@ -87,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
     private void sendKafkaReserveItemsMessage(Order order) {
         try {
             String key = String.format("reserve-items-%s", order.getUserId());
-            String value = objectMapper.writeValueAsString(order);
+            String value = objectMapper.writeValueAsString(constructReserveOrderDTO(order));
 
             reserveItemsKafkaTemplate
                     .send(RESERVE_ITEMS_TOPIC_NAME, key, value)
@@ -107,9 +106,23 @@ public class OrderServiceImpl implements OrderService {
                     });
 
         } catch (JsonProcessingException ex) {
-            log.error("An error occurred with \"objectMapper.writeValueAsString(order)\".");
+            log.error("An error occurred with \"objectMapper.writeValueAsString(constructReserveOrderDTO(order))\".");
             handleKafkaMessageFailure(order);
         }
+    }
+
+    private ReserveOrderDTO constructReserveOrderDTO(Order order) {
+        return new ReserveOrderDTO(
+                order.getId(),
+                order.getUserId(),
+                order.getItems()
+                        .stream()
+                        .map(item -> new ReserveOrderItemDTO(
+                                item.getProductId(),
+                                item.getQuantity()
+                        ))
+                        .toList()
+        );
     }
 
     private void handleKafkaMessageFailure(Order order) {

@@ -19,3 +19,4 @@ public class OrderRequestDTO {
     @NotEmpty(message = "At least one item is required.")
     private List<OrderItemRequestDTO> items;
 }
+// TODO: Validations don't activate atm
