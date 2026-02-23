@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful.PaymentSuccessfulDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.PaymentSuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.entities.LoiOrderStatus;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderService;
 import lombok.RequiredArgsConstructor;

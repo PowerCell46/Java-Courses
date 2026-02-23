@@ -89,7 +89,7 @@ public class ProductController {
             @NotNull(message = "Id is required.")
             @Pattern(regexp = "^[A-Za-z0-9_-]{11}$", message = "Id must be a valid snowflake id.")
             String id,
-            @RequestPart("fileImage") MultipartFile fileImage,
+            @RequestPart(value = "fileImage", required = false) MultipartFile fileImage,
             @RequestPart("requestDTO") @Valid UpdateProductRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on api/products/{}.", id);
@@ -108,7 +108,7 @@ public class ProductController {
             @Pattern(regexp = "^[A-Za-z0-9_-]{11}$", message = "Id must be a valid snowflake id.")
             String id
     ) {
-        log.info("---> DELETE request on /api/products/{}.", id);
+        log.info("---> DELETE request on api/products/{}.", id);
 
         DeleteProductResponseDTO responseDTO = productService.deleteById(id);
 

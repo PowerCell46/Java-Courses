@@ -76,7 +76,7 @@ public class ProductController {
     )
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable String id,
-            @RequestPart("fileImage") MultipartFile fileImage,
+            @RequestPart(value = "fileImage", required = false) MultipartFile fileImage,
             @RequestPart("requestDTO") UpdateProductRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on api/products/{}.", id);

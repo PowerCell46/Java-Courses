@@ -1,5 +1,6 @@
 package com.ItCareerElevatorSixthExercise.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +42,7 @@ public class Product extends CommonEntity {
     @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ProductTranslation> translations;
 

@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.FailureReserveItemsDTO;
 import com.ItCareerElevatorSixthExercise.entities.LoiOrderStatus;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderService;
 import lombok.RequiredArgsConstructor;

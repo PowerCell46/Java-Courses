@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchOrderFoundException;
@@ -76,7 +76,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order save(Order order) {
-        log.info("Persisting an order of {} unique items to user with id {}.", order.getItems().size(), order.getUserId());
+        log.info("Persisting an order of {} unique items to user with id {} to the database.",
+                order.getItems().size(),
+                order.getUserId()
+        );
 
         return orderRepository.save(order);
     }
@@ -114,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 
         order = orderRepository
                 .findById(order.getId())
-                .orElseThrow(() -> new IllegalStateException("Order not found."));
+                .orElseThrow(() -> new NoSuchOrderFoundException("No order not found."));
 
         var failedStatus = loiOrderStatusService
                 .getByListOptionItemCode(LoiOrderStatus.INTERNAL_FAILURE);

@@ -1,9 +1,9 @@
 package com.ItCareerElevatorSixthExercise.config;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful.PaymentSuccessfulDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.FailureReserveItemsDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.PaymentSuccessfulDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.PaymentUnsuccessfulDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;

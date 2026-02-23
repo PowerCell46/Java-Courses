@@ -1,21 +1,15 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservedOrderDTO {
+public class PaymentSuccessfulDTO {
 
     private Long orderId;
-
-    private String userId;
-
-    private BigDecimal totalPrice;
 }

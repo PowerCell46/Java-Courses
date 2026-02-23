@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FailureReserveItemsDTO {
+public class PaymentUnsuccessfulDTO {
 
     private Long orderId;
 
-    private String reason; // NOT_IN_STOCK, (FAILED_AT_)PROCESSING
+    private String reason; // UNPAID, MISSING_WALLET_ADDRESS
 }

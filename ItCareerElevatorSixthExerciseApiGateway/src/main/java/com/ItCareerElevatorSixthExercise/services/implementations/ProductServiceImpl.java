@@ -101,9 +101,13 @@ public class ProductServiceImpl implements ProductService {
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("requestDTO", requestDTO).contentType(MediaType.APPLICATION_JSON);
-        builder.part("fileImage", fileImage.getResource())
-                .filename(Objects.requireNonNull(fileImage.getOriginalFilename()))
-                .contentType(MediaType.parseMediaType(Objects.requireNonNull(fileImage.getContentType())));
+
+        if (fileImage != null && !fileImage.isEmpty()) {
+            builder
+                    .part("fileImage", fileImage.getResource())
+                    .filename(Objects.requireNonNull(fileImage.getOriginalFilename()))
+                    .contentType(MediaType.parseMediaType(Objects.requireNonNull(fileImage.getContentType())));
+        }
 
         return productServiceWebClient
                 .patch()

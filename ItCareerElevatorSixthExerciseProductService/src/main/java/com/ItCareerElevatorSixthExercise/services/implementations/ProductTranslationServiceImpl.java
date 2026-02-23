@@ -47,7 +47,7 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
             );
         }
 
-        log.info("Persisting {} number of product translations to the database.", productTranslations.size());
+        log.info("Persisting {} product translations to the database.", productTranslations.size());
         productTranslationRepository.saveAll(productTranslations);
 
         return productTranslations;

@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderRequestDTO {
 
-    private String userId;
+    private String userId; // UUID
 
     private List<OrderItemRequestDTO> items;
 }

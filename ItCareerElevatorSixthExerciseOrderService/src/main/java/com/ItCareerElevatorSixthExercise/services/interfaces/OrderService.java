@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.OrderRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.OrderResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.Order;

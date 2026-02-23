@@ -19,7 +19,7 @@ import lombok.Setter;
 public class OrderItem extends CommonEntity {
 
     @Column(nullable = false)
-    private String productId; // snowflake id
+    private String productId; // snowflakeId
 
     @Column(nullable = false)
     private Integer quantity;
