@@ -153,10 +153,10 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      KAFKA_FAILURE_RESERVE_ITEMS_CONSUMER_GROUP: failure_reserve_items_first_instance
-      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_first_instance
-      KAFKA_PAYMENT_SUCCESSFUL_CONSUMER_GROUP: payment_successful_first_instance
-      KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_first_instance
+      KAFKA_FAILURE_RESERVE_ITEMS_CONSUMER_GROUP: failure_reserve_items_order_service
+      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_order_service
+      KAFKA_PAYMENT_SUCCESSFUL_CONSUMER_GROUP: payment_successful_order_service
+      KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_order_service
       SNOWFLAKE_WORKER_ID: 4
       SNOWFLAKE_DATA_CENTER_ID: 11
     depends_on:
@@ -177,8 +177,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      KAFKA_RESERVE_ITEMS_CONSUMER_GROUP: reserve_items_first_instance
-      KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_first_instance
+      KAFKA_RESERVE_ITEMS_CONSUMER_GROUP: reserve_items_product_service
+      KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_product_service
       SNOWFLAKE_WORKER_ID: 3
       SNOWFLAKE_DATA_CENTER_ID: 5
     depends_on:
@@ -199,7 +199,7 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_first_instance
+      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_payment_service
       ETHEREUM_NODE_URL: ${ETHEREUM_NODE_URL}
       ETHEREUM_WALLET_ADDRESS: ${ETHEREUM_WALLET_ADDRESS}
     depends_on:
