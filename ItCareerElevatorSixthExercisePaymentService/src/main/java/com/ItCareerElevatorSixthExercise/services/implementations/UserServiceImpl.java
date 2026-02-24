@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
         } else {
             User user = new User(requestDTO.getId(), requestDTO.getWalletAddress());
-            user = save(user);
+            save(user);
         }
 
         return new UserResponseDTO(requestDTO.getId());
@@ -67,6 +67,7 @@ public class UserServiceImpl implements UserService {
         // ! You have to get the ether/euro when the transaction happened (execution price)
         // ! 1. Get timestamp of the transaction;
         // ! 2. Fetch the price ratio on that timestamp
+        // ! 3. This way paidAmountInEuros will be the actual price the user paid
         BigDecimal paidAmountInEuros = currencyConversionService.convertEtherToEuro(paidAmountInEther);
 
         Optional<ProcessedOrder> optionalProcessedOrder = processedOrderService

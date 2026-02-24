@@ -46,7 +46,10 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable String id, @RequestBody UpdateUserRequestDTO requestDTO) {
+    public ResponseEntity<UserResponseDTO> updateUser(
+            @PathVariable String id,
+            @RequestBody UpdateUserRequestDTO requestDTO
+    ) {
         log.info("---> PATCH request on api/users/{}.", id);
 
         UserResponseDTO responseDTO = userService

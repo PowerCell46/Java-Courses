@@ -38,7 +38,12 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     private final KafkaTemplate<String, String> orderPaymentUnsuccessfulKafkaTemplate;
 
     @Override
-    public Optional<ProcessedOrder> findByOrderId(Long orderId) {
+    public boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO) {
+        return findByOrderId(orderDTO.getOrderId())
+                .isPresent();
+    }
+
+    private Optional<ProcessedOrder> findByOrderId(Long orderId) {
         return processedOrderRepository
                 .findById(orderId);
     }
@@ -57,13 +62,16 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     @Override
     public void processReservedOrder(ReservedOrderDTO orderDTO) {
-        boolean walletPresent = userRepository
-                .findById(orderDTO.getUserId())
-                .map(User::getWalletAddress)
-                .filter(addr -> !addr.isBlank())
-                .isPresent();
+        if (isWalletPresent(orderDTO)) {
+            ProcessedOrder processedOrder = new ProcessedOrder(
+                    orderDTO.getOrderId(),
+                    orderDTO.getUserId(),
+                    orderDTO.getTotalPrice(),
+                    ProcessedOrderStatus.PROCESSING
+            );
+            save(processedOrder);
 
-        if (!walletPresent) {
+        } else {
             ProcessedOrder processedOrder = new ProcessedOrder(
                     orderDTO.getOrderId(),
                     orderDTO.getUserId(),
@@ -74,16 +82,15 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
             log.info("User with id {} hasn't specified his/hers wallet address.", processedOrder.getOrderId());
             sendKafkaFailureOrderPayment(processedOrder);
-
-        } else {
-            ProcessedOrder processedOrder = new ProcessedOrder(
-                    orderDTO.getOrderId(),
-                    orderDTO.getUserId(),
-                    orderDTO.getTotalPrice(),
-                    ProcessedOrderStatus.PROCESSING
-            );
-            save(processedOrder);
         }
+    }
+
+    private boolean isWalletPresent(ReservedOrderDTO orderDTO) {
+        return userRepository
+                .findById(orderDTO.getUserId())
+                .map(User::getWalletAddress)
+                .filter(addr -> !addr.isBlank())
+                .isPresent();
     }
 
     @Override
@@ -96,8 +103,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     public void sendKafkaSuccessfulOrderPayment(ProcessedOrder processedOrder) {
         try {
             var paymentSuccessfulDTO = new PaymentSuccessfulDTO(
-                processedOrder.getOrderId(),
-                processedOrder.getTotalPrice()
+                    processedOrder.getOrderId(),
+                    processedOrder.getTotalPrice()
             );
 
             String key = String.format("payment-successful-%d", processedOrder.getOrderId());

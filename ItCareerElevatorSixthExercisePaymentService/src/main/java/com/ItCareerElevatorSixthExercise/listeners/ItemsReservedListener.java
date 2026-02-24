@@ -25,17 +25,11 @@ public class ItemsReservedListener {
 
         log.info("---> Handling itemsReserved for order with id {}.", orderDTO.getOrderId());
 
-        if (isOrderAlreadyProcessed(orderDTO)) {
+        if (processedOrderService.isOrderAlreadyProcessed(orderDTO)) {
             log.info("Order with id {} is already processed. Skipping...", orderDTO.getOrderId());
             return;
         }
 
         processedOrderService.processReservedOrder(orderDTO);
-    }
-
-    private boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO) {
-        return processedOrderService
-                .findByOrderId(orderDTO.getOrderId())
-                .isPresent();
     }
 }

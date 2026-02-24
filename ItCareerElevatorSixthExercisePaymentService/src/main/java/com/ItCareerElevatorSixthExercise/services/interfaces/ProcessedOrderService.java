@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ProcessedOrderService {
 
-    Optional<ProcessedOrder> findByOrderId(Long orderId);
+    boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO);
 
     Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice);
 

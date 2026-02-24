@@ -65,7 +65,7 @@ public class OutboxProcessor {
     }
 
     @Transactional
-    @Scheduled(fixedDelay = 1_000 * 60 * 60) // 1 hour
+    @Scheduled(fixedDelay = 1_000 * 60 * 20) // 20 minutes
     public void processUnpaidOrders() {
         List<ProcessedOrder> timedOutProcessingOrders = fetchTimedOutProcessingOrders();
         timedOutProcessingOrders = timedOutProcessingOrders
