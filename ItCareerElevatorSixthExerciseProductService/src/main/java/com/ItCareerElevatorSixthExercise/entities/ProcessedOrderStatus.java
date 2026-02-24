@@ -2,13 +2,13 @@ package com.ItCareerElevatorSixthExercise.entities;
 
 public enum ProcessedOrderStatus {
 
-    PROCESSING,
+    PROCESSING, // 0
 
-    RESERVED,
+    RESERVED, // 1
 
-    NOT_IN_STOCK,
+    NOT_IN_STOCK, // 2
 
-    SENT_TO_KAFKA,
+    SENT_TO_KAFKA, // 3
 
-    RETRY_KAFKA_SEND
+    RETRY_KAFKA_SEND // 4
 }

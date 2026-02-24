@@ -30,6 +30,7 @@ public class ReserveItemsListener {
 
         log.info("---> Handling order with id {}.", order.getId());
 
-        processedOrderService.processReserveItems(order);
+        var processedOrder = processedOrderService.initializeProcessedOrder(order.getId());
+        processedOrderService.processReserveItems(order, processedOrder);
     }
 }

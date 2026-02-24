@@ -1,7 +1,8 @@
 package com.ItCareerElevatorSixthExercise.DTOs.order.request;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderRequestDTO {
 
+    @Valid
     @NotNull(message = "Items must not be null.")
-    @NotEmpty(message = "At least one item is required.")
+    @Size(min = 1, message = "Items must contain at least one entry.")
     private List<OrderItemRequestDTO> items;
 }
-// TODO: Validations don't activate atm

@@ -8,7 +8,9 @@ public interface ProcessedOrderService {
 
     boolean isOrderProcessed(Long orderId);
 
-    void processReserveItems(OrderDTO orderDTO);
+    ProcessedOrder initializeProcessedOrder(Long orderId);
+
+    void processReserveItems(OrderDTO orderDTO, ProcessedOrder processedOrder);
 
     void sendKafkaSuccessReserveItemsMessage(ProcessedOrder processedOrder);
 

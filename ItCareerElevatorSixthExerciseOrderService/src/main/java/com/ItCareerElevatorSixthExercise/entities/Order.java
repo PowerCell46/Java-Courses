@@ -2,6 +2,7 @@ package com.ItCareerElevatorSixthExercise.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -33,7 +34,7 @@ public class Order extends CommonEntity {
     @JoinColumn(name = "loi_order_status_id")
     private LoiOrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderItem> items;
 
     public Order(String userId, LoiOrderStatus orderStatus) {

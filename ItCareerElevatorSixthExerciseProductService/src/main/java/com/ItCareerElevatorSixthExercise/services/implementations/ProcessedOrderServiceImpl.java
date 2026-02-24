@@ -11,6 +11,7 @@ import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.ReservedProduct;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
+import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderPersistenceService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ReservedProductService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -44,6 +47,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     private final ProcessedOrderRepository processedOrderRepository;
     private final KafkaTemplate<String, String> itemsReservedKafkaTemplate;
     private final KafkaTemplate<String, String> failureReserveItemsKafkaTemplate;
+    private final ProcessedOrderPersistenceService processedOrderPersistenceService;
 
     @Override
     public boolean isOrderProcessed(Long orderId) {
@@ -54,9 +58,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     @Override
     @Transactional
-    public void processReserveItems(OrderDTO orderDTO) {
-        ProcessedOrder processedOrder = initializeProcessedOrder(orderDTO.getId());
-
+    public void processReserveItems(OrderDTO orderDTO, ProcessedOrder processedOrder) {
         try {
             orderDTO
                     .getOrderItems()
@@ -65,25 +67,41 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             processedOrder.setUserId(orderDTO.getUserId());
             processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
             processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
-            processedOrder = processedOrderRepository.save(processedOrder);
+            ProcessedOrder savedOrder = processedOrderRepository.save(processedOrder);
 
-            reservedProductService.initializeOrderItems(orderDTO.getOrderItems(), processedOrder);
+            reservedProductService.initializeOrderItems(orderDTO.getOrderItems(), savedOrder);
 
             log.info("Successful reservation of products for order with id {}.", orderDTO.getId());
-            sendKafkaSuccessReserveItemsMessage(processedOrder);
+
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            sendKafkaSuccessReserveItemsMessage(savedOrder);
+                        }
+                    });
 
         } catch (DataIntegrityViolationException ex) {
             log.info("One of the items is not available - returning the other items back in stock.");
+
+            final ProcessedOrder failedOrder = processedOrderPersistenceService.saveNotInStock(orderDTO.getId());
+
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            processedOrder.setStatus(ProcessedOrderStatus.NOT_IN_STOCK);
-            processedOrderRepository.save(processedOrder);
-
-            sendKafkaFailureReserveItemsMessage(processedOrder);
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCompletion(int status) {
+                            if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
+                                sendKafkaFailureReserveItemsMessage(failedOrder);
+                            }
+                        }
+                    });
         }
     }
 
-    private ProcessedOrder initializeProcessedOrder(Long orderId) {
+    @Override
+    public ProcessedOrder initializeProcessedOrder(Long orderId) {
         return save(new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING));
     }
 
@@ -119,6 +137,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
             String key = String.format("items-reserved-%s", processedOrder.getUserId());
             String value = objectMapper.writeValueAsString(reservedOrderDTO);
+            System.out.println("ITEMS RESERVED: " + value);
 
             itemsReservedKafkaTemplate
                     .send(ITEMS_RESERVED_TOPIC_NAME, key, value)

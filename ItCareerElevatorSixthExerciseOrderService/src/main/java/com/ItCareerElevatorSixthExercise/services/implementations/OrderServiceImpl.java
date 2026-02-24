@@ -5,6 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReserveOrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
+import com.ItCareerElevatorSixthExercise.entities.OrderItem;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchOrderFoundException;
 import com.ItCareerElevatorSixthExercise.exceptions.NonUniqueItemsException;
 import com.ItCareerElevatorSixthExercise.services.interfaces.OrderItemService;
@@ -24,6 +25,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,9 +55,12 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = save(new Order(requestDTO.getUserId(), createdStatus));
 
-        requestDTO
+        List<OrderItem> orderItems = requestDTO
                 .getItems()
-                .forEach(orderItem -> orderItemService.initializeFromRequest(orderItem, order));
+                .stream()
+                .map(orderItem -> orderItemService.initializeFromRequest(orderItem, order))
+                .toList();
+        order.setItems(orderItems);
 
         sendKafkaReserveItemsMessage(order);
 
