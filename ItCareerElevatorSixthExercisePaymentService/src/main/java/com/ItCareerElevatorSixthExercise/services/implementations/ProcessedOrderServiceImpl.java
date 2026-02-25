@@ -14,8 +14,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -61,7 +64,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
-    public void processReservedOrder(ReservedOrderDTO orderDTO) {
+    public void processReservedOrderCryptoPayment(ReservedOrderDTO orderDTO) {
         if (isWalletPresent(orderDTO)) {
             ProcessedOrder processedOrder = new ProcessedOrder(
                     orderDTO.getOrderId(),
@@ -83,6 +86,29 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             log.info("User with id {} hasn't specified his/hers wallet address.", processedOrder.getOrderId());
             sendKafkaFailureOrderPayment(processedOrder);
         }
+    }
+
+    @Override
+    @Transactional
+    public void processReservedOrderWalletPayment(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder) {
+        try {
+            payForOrder(orderDTO);
+
+            processedOrder.setStatus(ProcessedOrderStatus.PAID);
+            processedOrder = save(processedOrder);
+
+            log.info("Order with id {} was paid successfully.", processedOrder.getOrderId());
+            sendKafkaSuccessfulOrderPayment(processedOrder);
+
+        } catch (DataIntegrityViolationException ex) {
+            log.info("Insufficient balance to pay for the order for user with id {}.", orderDTO.getOrderId());
+
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+    }
+
+    private void payForOrder(ReservedOrderDTO orderDTO) {
+        userRepository.payForOrder(orderDTO.getTotalPrice(), orderDTO.getUserId());
     }
 
     private boolean isWalletPresent(ReservedOrderDTO orderDTO) {
@@ -173,5 +199,17 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(paymentUnsuccessfulDTO)\".");
         }
+    }
+
+    @Override
+    public ProcessedOrder initializeProcessedOrder(ReservedOrderDTO orderDTO) {
+        ProcessedOrder processedOrder = new ProcessedOrder(
+                orderDTO.getOrderId(),
+                orderDTO.getUserId(),
+                orderDTO.getTotalPrice(),
+                ProcessedOrderStatus.PROCESSING
+        );
+
+        return save(processedOrder);
     }
 }

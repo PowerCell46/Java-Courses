@@ -15,12 +15,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Modifying
     @Query("UPDATE Product p set p.inStockQuantity = p.inStockQuantity - :quantity WHERE p.id = :id")
-    int decreaseProductInStockQuantity(Integer quantity, Long id);
+    int decreaseProductInStockQuantity(@Param("quantity") Integer quantity, @Param("id") Long id);
 
     @Modifying
     @Query("UPDATE Product p set p.inStockQuantity = p.inStockQuantity + :quantity WHERE p.id = :id")
-    void increaseProductInStockQuantity(Integer quantity, Long id);
+    void increaseProductInStockQuantity(@Param("quantity") Integer quantity, @Param("id") Long id);
 
     @Query("SELECT COALESCE(SUM(p.price), 0) FROM Product p WHERE p.id IN :productIds")
     BigDecimal getProductsPriceSum(@Param("productIds") List<Long> productIds);
 }
+// TODO: We are bending the versioning this way

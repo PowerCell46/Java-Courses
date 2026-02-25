@@ -30,6 +30,7 @@ public class ItemsReservedListener {
             return;
         }
 
-        processedOrderService.processReservedOrder(orderDTO);
+        var processedOrder = processedOrderService.initializeProcessedOrder(orderDTO);
+        processedOrderService.processReservedOrderWalletPayment(orderDTO, processedOrder);
     }
 }

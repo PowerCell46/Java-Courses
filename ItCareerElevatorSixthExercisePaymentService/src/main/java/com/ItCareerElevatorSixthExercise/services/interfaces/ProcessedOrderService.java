@@ -12,11 +12,15 @@ public interface ProcessedOrderService {
 
     Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice);
 
-    void processReservedOrder(ReservedOrderDTO orderDTO);
+    void processReservedOrderCryptoPayment(ReservedOrderDTO orderDTO);
+
+    void processReservedOrderWalletPayment(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder);
 
     ProcessedOrder save(ProcessedOrder processedOrder);
 
     void sendKafkaSuccessfulOrderPayment(ProcessedOrder processedOrder);
 
     void sendKafkaFailureOrderPayment(ProcessedOrder processedOrder);
+
+    ProcessedOrder initializeProcessedOrder(ReservedOrderDTO orderDTO);
 }

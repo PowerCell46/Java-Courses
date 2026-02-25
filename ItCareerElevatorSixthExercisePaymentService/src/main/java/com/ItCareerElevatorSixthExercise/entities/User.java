@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Check;
 
 import java.math.BigDecimal;
 
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@Check(constraints = "balance >= 0")
 public class User {
 
     @Id

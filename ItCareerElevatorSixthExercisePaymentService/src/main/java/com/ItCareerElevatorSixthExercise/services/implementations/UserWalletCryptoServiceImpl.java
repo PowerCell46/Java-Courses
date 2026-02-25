@@ -27,7 +27,9 @@ public class UserWalletCryptoServiceImpl implements UserWalletService {
     @Override
     public UserDepositResponseDTO initializeUser(UserDepositRequestDTO requestDTO) {
         if (userAlreadyExists(requestDTO.getUserId())) {
-            throw new UserAlreadyExistsException(String.format("User with id %s already exists.", requestDTO.getUserId()));
+            throw new UserAlreadyExistsException(
+                    String.format("User with id %s already exists.", requestDTO.getUserId())
+            );
         }
 
         User user = new User(
@@ -45,7 +47,7 @@ public class UserWalletCryptoServiceImpl implements UserWalletService {
                 .isPresent();
     }
 
-    @Override // ! This can throw an err if an order executes at the same time
+    @Override // ! This can throw an err if an order executes at the same time (retry until successful)
     public UserDepositResponseDTO processDeposit(UserDepositRequestDTO requestDTO) {
         User user = getById(requestDTO.getUserId());
         user.setBalance(user.getBalance().add(requestDTO.getAmount()));
