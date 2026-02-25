@@ -2,13 +2,11 @@ package com.ItCareerElevatorSixthExercise.util;
 
 import com.ItCareerElevatorSixthExercise.entities.LastProcessedBlockNumber;
 import com.ItCareerElevatorSixthExercise.repositories.LastProcessedBlockNumberRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -18,7 +16,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Slf4j
-@Component
+// @Component
 @RequiredArgsConstructor
 public class CryptocurrencyScheduler {
 
@@ -26,12 +24,12 @@ public class CryptocurrencyScheduler {
     private String walletAddress;
 
     private final Web3j web3j;
-    private final UserService userService;
+    private final UserCryptoService userCryptoService;
     private final LastProcessedBlockNumberRepository blockNumberRepository;
 
     @SneakyThrows
     @Transactional
-    @Scheduled(fixedDelay = 1_000 * 60 * 5) // 5 minutes
+    // @Scheduled(fixedDelay = 1_000 * 60 * 5) // 5 minutes
     public void processIncomingTransactions() {
         LastProcessedBlockNumber lastScannedBlockState = fetchCurrentBlockScanState();
         BigInteger currentBlockNumber = web3j.ethBlockNumber().send().getBlockNumber();
@@ -51,7 +49,7 @@ public class CryptocurrencyScheduler {
                     .stream()
                     .map(transaction -> (EthBlock.TransactionObject) transaction)
                     .filter(transaction -> transaction.getTo() != null && transaction.getTo().equalsIgnoreCase(walletAddress))
-                    .forEach(userService::processTransaction);
+                    .forEach(userCryptoService::processTransaction);
         }
 
         lastScannedBlockState.setLastProcessedBlock(currentBlockNumber);

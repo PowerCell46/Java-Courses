@@ -11,7 +11,7 @@ import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.CurrencyConversionService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserCryptoCryptoServiceImpl implements UserCryptoService {
 
     private final UserRepository userRepository;
     private final ProcessedOrderService processedOrderService;
@@ -60,6 +60,8 @@ public class UserServiceImpl implements UserService {
     public void processTransaction(EthBlock.TransactionObject transaction) {
         Optional<User> optionalUser = userRepository.findById(transaction.getFrom());
 
+        log.info("Processing transaction matching the wallet.");
+
         if (optionalUser.isEmpty()) // ? Unknown wallet has sent us crypto
             return;
 
@@ -69,6 +71,8 @@ public class UserServiceImpl implements UserService {
         // ! 2. Fetch the price ratio on that timestamp
         // ! 3. This way paidAmountInEuros will be the actual price the user paid
         BigDecimal paidAmountInEuros = currencyConversionService.convertEtherToEuro(paidAmountInEther);
+
+        log.info("Paid amount in euros: {}.", paidAmountInEuros);
 
         Optional<ProcessedOrder> optionalProcessedOrder = processedOrderService
                 .findByUserIdAndApproximateTotalPrice(optionalUser.get().getId(), paidAmountInEuros);
