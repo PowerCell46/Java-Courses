@@ -32,12 +32,11 @@ public class UserController {
 
     // TODO: endpoint for getting the account balance
 
-    // TODO: endpoint for depositing/withdrawing the money amount
     @PostMapping("/deposit")
     public ResponseEntity<UserDepositResponseDTO> initializeUser(@RequestBody UserDepositRequestDTO requestDTO) {
         log.info("---> POST request on api/users/deposit for user with id {}.", requestDTO.getUserId());
 
-        var responseDTO = userWalletService.processDeposit(requestDTO);
+        var responseDTO = userWalletService.initializeUser(requestDTO);
         return ResponseEntity.created(null).body(responseDTO); // TODO: URL
     }
 

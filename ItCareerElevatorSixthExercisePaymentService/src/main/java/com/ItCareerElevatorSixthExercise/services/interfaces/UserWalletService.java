@@ -8,5 +8,7 @@ public interface UserWalletService {
 
     User save(User user);
 
+    UserDepositResponseDTO initializeUser(UserDepositRequestDTO requestDTO);
+
     UserDepositResponseDTO processDeposit(UserDepositRequestDTO requestDTO);
 }

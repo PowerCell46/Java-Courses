@@ -23,10 +23,10 @@ public class User {
     @Id
     private String id; // UUID
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private BigDecimal balance;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String walletAddress;
 
     @Version
@@ -34,6 +34,11 @@ public class User {
 
     public User(String walletAddress, String id) {
         this.walletAddress = walletAddress;
+        this.id = id;
+    }
+
+    public User(String id, BigDecimal balance) {
+        this.balance = balance;
         this.id = id;
     }
 }
