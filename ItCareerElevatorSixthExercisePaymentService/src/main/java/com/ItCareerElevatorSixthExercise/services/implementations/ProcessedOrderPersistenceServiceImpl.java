@@ -1,0 +1,2 @@
+package com.ItCareerElevatorSixthExercise.services.implementations;public class ProcessedOrderPersistenceServiceImpl {
+}
