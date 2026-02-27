@@ -33,7 +33,7 @@ public class UserCryptoCryptoServiceImpl implements UserCryptoService {
     private final CurrencyConversionService currencyConversionService;
 
     @Override
-    public UserResponseDTO setWalletAddress(UserRequestDTO requestDTO) {
+    public UserWalletResponseDTO setWalletAddress(UserRequestDTO requestDTO) {
         Optional<User> optionalUser = userRepository.findById(requestDTO.getId());
 
         if (optionalUser.isPresent()) {
@@ -46,7 +46,7 @@ public class UserCryptoCryptoServiceImpl implements UserCryptoService {
             save(user);
         }
 
-        return new UserResponseDTO(requestDTO.getId());
+        return new UserWalletResponseDTO(requestDTO.getId(), requestDTO.getWalletAddress());
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserDepositRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserDepositResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
 import com.ItCareerElevatorSixthExercise.exceptions.UserAlreadyExistsException;
@@ -25,7 +26,7 @@ public class UserWalletCryptoServiceImpl implements UserWalletService {
     }
 
     @Override
-    public UserDepositResponseDTO initializeUser(UserDepositRequestDTO requestDTO) {
+    public UserResponseDTO initializeUser(UserDepositRequestDTO requestDTO) {
         if (userAlreadyExists(requestDTO.getUserId())) {
             throw new UserAlreadyExistsException(
                     String.format("User with id %s already exists.", requestDTO.getUserId())
@@ -38,7 +39,7 @@ public class UserWalletCryptoServiceImpl implements UserWalletService {
         );
         user = save(user);
 
-        return new UserDepositResponseDTO(user.getId(), user.getBalance());
+        return new UserResponseDTO(user.getId());
     }
 
     private boolean userAlreadyExists(String userId) {
@@ -52,6 +53,13 @@ public class UserWalletCryptoServiceImpl implements UserWalletService {
         User user = getById(requestDTO.getUserId());
         user.setBalance(user.getBalance().add(requestDTO.getAmount()));
         user = userRepository.save(user);
+
+        return new UserDepositResponseDTO(user.getId(), user.getBalance());
+    }
+
+    @Override
+    public UserDepositResponseDTO getUserById(String id) {
+        User user = getById(id);
 
         return new UserDepositResponseDTO(user.getId(), user.getBalance());
     }

@@ -32,7 +32,7 @@ public class UserController {
     private final UserCryptoService userCryptoService;
 
     @GetMapping("/balance/{id}")
-    public ResponseEntity<UserDepositResponseDTO> getUser(@PathVariable String id) {
+    public ResponseEntity<UserDepositResponseDTO> getUserBalance(@PathVariable String id) {
         log.info("---> GET request on api/users/balance/{}.", id);
 
         var responseDTO = userWalletService.getUserById(id);
@@ -41,12 +41,12 @@ public class UserController {
     }
 
     @PostMapping("/deposit")
-    public ResponseEntity<UserDepositResponseDTO> initializeUser(@RequestBody UserDepositRequestDTO requestDTO) {
+    public ResponseEntity<UserResponseDTO> initializeUser(@RequestBody UserDepositRequestDTO requestDTO) {
         log.info("---> POST request on api/users/deposit for user with id {}.", requestDTO.getUserId());
 
         var responseDTO = userWalletService.initializeUser(requestDTO);
 
-        URI location = URI.create(String.format("/api/users/%s", responseDTO.getUserId()));
+        URI location = URI.create(String.format("/api/users/balance/%s", responseDTO.getId()));
         return ResponseEntity.created(location).body(responseDTO);
     }
 
@@ -62,33 +62,33 @@ public class UserController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/walletAddress/{id}")
     public ResponseEntity<UserWalletResponseDTO> getUserWalletAddress(@PathVariable String id) {
-        log.info("---> GET request on api/users/{}.", id);
+        log.info("---> GET request on api/users/walletAddress/{}.", id);
 
         var responseDTO = userCryptoService.getWalletAddress(id);
 
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PostMapping
+    @PostMapping("/wallet")
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO requestDTO) {
-        log.info("---> POST request on api/users for user with id {}.", requestDTO.getId());
+        log.info("---> POST request on api/users/wallet for user with id {}.", requestDTO.getId());
 
-        UserResponseDTO responseDTO = userCryptoService.setWalletAddress(requestDTO);
+        var responseDTO = userCryptoService.setWalletAddress(requestDTO);
 
-        URI location = URI.create(String.format("/api/users/%s", responseDTO.getId()));
-        return ResponseEntity.created(location).body(responseDTO);
+        URI location = URI.create(String.format("/api/users/walletAddress/%s", responseDTO.getId()));
+        return ResponseEntity.created(location).body(new UserResponseDTO(requestDTO.getId()));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(
+    @PatchMapping("/wallet/{id}")
+    public ResponseEntity<UserWalletResponseDTO> updateUser(
             @PathVariable String id,
             @RequestBody UpdateUserWalletRequestDTO requestDTO
     ) {
-        log.info("---> PATCH request on api/users/{}.", id);
+        log.info("---> PATCH request on api/users/wallet/{}.", id);
 
-        UserResponseDTO responseDTO = userCryptoService
+        var responseDTO = userCryptoService
                 .setWalletAddress(new UserRequestDTO(id, requestDTO.getWalletAddress()));
 
         return ResponseEntity.ok(responseDTO);
