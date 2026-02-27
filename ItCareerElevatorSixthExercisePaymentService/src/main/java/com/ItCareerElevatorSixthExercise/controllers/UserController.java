@@ -1,9 +1,10 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
-import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateUserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateUserBalanceRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateUserWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserDepositRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.GetUserWalletAddressResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.UserWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserDepositResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoService;
@@ -30,28 +31,39 @@ public class UserController {
     private final UserWalletService userWalletService;
     private final UserCryptoService userCryptoService;
 
-    // TODO: endpoint for getting the account balance
+    @GetMapping("/balance/{id}")
+    public ResponseEntity<UserDepositResponseDTO> getUser(@PathVariable String id) {
+        log.info("---> GET request on api/users/balance/{}.", id);
+
+        var responseDTO = userWalletService.getUserById(id);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 
     @PostMapping("/deposit")
     public ResponseEntity<UserDepositResponseDTO> initializeUser(@RequestBody UserDepositRequestDTO requestDTO) {
         log.info("---> POST request on api/users/deposit for user with id {}.", requestDTO.getUserId());
 
         var responseDTO = userWalletService.initializeUser(requestDTO);
-        return ResponseEntity.created(null).body(responseDTO); // TODO: URL
+
+        URI location = URI.create(String.format("/api/users/%s", responseDTO.getUserId()));
+        return ResponseEntity.created(location).body(responseDTO);
     }
 
     @PatchMapping("/deposit/{id}")
     public ResponseEntity<UserDepositResponseDTO> depositAmount(
-            @PathVariable String id, @RequestBody UserDepositRequestDTO requestDTO
+            @PathVariable String id, @RequestBody UpdateUserBalanceRequestDTO requestDTO
     ) {
-        log.info("---> PATCH request on api/users/deposit/{}.", requestDTO.getUserId());
+        log.info("---> PATCH request on api/users/deposit/{}.", id);
 
-        var responseDTO = userWalletService.processDeposit(requestDTO);
+        var responseDTO = userWalletService
+                .processDeposit(new UserDepositRequestDTO(id, requestDTO.getAmount()));
+
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetUserWalletAddressResponseDTO> getUserWalletAddress(@PathVariable String id) {
+    public ResponseEntity<UserWalletResponseDTO> getUserWalletAddress(@PathVariable String id) {
         log.info("---> GET request on api/users/{}.", id);
 
         var responseDTO = userCryptoService.getWalletAddress(id);
@@ -72,7 +84,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable String id,
-            @RequestBody UpdateUserRequestDTO requestDTO
+            @RequestBody UpdateUserWalletRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on api/users/{}.", id);
 

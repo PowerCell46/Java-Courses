@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.GetUserWalletAddressResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.UserWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
@@ -88,12 +88,12 @@ public class UserCryptoCryptoServiceImpl implements UserCryptoService {
     }
 
     @Override
-    public GetUserWalletAddressResponseDTO getWalletAddress(String id) {
+    public UserWalletResponseDTO getWalletAddress(String id) {
         User user = userRepository
                 .findById(id)
                 .orElseThrow(() ->
                         new NoSuchUserException(String.format("No user found with id %s.", id)));
 
-        return new GetUserWalletAddressResponseDTO(id, user.getWalletAddress());
+        return new UserWalletResponseDTO(id, user.getWalletAddress());
     }
 }

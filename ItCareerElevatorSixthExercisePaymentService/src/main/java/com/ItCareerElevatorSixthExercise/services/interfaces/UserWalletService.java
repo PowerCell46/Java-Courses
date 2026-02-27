@@ -11,4 +11,6 @@ public interface UserWalletService {
     UserDepositResponseDTO initializeUser(UserDepositRequestDTO requestDTO);
 
     UserDepositResponseDTO processDeposit(UserDepositRequestDTO requestDTO);
+
+    UserDepositResponseDTO getUserById(String id);
 }

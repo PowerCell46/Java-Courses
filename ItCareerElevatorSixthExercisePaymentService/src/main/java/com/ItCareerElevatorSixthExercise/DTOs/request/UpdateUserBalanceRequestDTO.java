@@ -1,17 +1,17 @@
-package com.ItCareerElevatorSixthExercise.DTOs.response;
+package com.ItCareerElevatorSixthExercise.DTOs.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetUserWalletAddressResponseDTO {
+public class UpdateUserBalanceRequestDTO {
 
-    private String id;
-
-    private String walletAddress;
+    private BigDecimal amount;
 }

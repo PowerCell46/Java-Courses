@@ -67,7 +67,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             processedOrder.setUserId(orderDTO.getUserId());
             processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
             processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
-            ProcessedOrder savedOrder = processedOrderRepository.save(processedOrder);
+            final ProcessedOrder savedOrder = processedOrderRepository.save(processedOrder);
 
             reservedProductService.initializeOrderItems(orderDTO.getOrderItems(), savedOrder);
 
@@ -84,6 +84,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (DataIntegrityViolationException ex) {
             log.info("One of the items is not available - returning the other items back in stock.");
 
+            // TODO: WHY ARE YOU CREATING A NEW ENTRY???
             final ProcessedOrder failedOrder = processedOrderPersistenceService.saveNotInStock(orderDTO.getId());
 
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

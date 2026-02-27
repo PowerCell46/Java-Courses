@@ -8,6 +8,7 @@ import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
+import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderPersistenceService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +20,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -37,6 +40,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final ProcessedOrderRepository processedOrderRepository;
+    private final ProcessedOrderPersistenceService processedOrderPersistenceService;
     private final KafkaTemplate<String, String> orderPaymentSuccessfulKafkaTemplate;
     private final KafkaTemplate<String, String> orderPaymentUnsuccessfulKafkaTemplate;
 
@@ -95,15 +99,35 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             payForOrder(orderDTO);
 
             processedOrder.setStatus(ProcessedOrderStatus.PAID);
-            processedOrder = save(processedOrder);
+            final ProcessedOrder savedOrder = save(processedOrder);
 
-            log.info("Order with id {} was paid successfully.", processedOrder.getOrderId());
-            sendKafkaSuccessfulOrderPayment(processedOrder);
+            log.info("Successful payment of order with id {}.", processedOrder.getOrderId());
+
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            sendKafkaSuccessfulOrderPayment(savedOrder);
+                        }
+                    });
 
         } catch (DataIntegrityViolationException ex) {
             log.info("Insufficient balance to pay for the order for user with id {}.", orderDTO.getOrderId());
 
+            final ProcessedOrder failedOrder = processedOrderPersistenceService
+                    .saveInsufficientBalance(processedOrder.getOrderId());
+
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCompletion(int status) {
+                            if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
+                                sendKafkaFailureOrderPayment(failedOrder);
+                            }
+                        }
+                    });
         }
     }
 
