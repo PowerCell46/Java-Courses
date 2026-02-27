@@ -56,6 +56,63 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
+    public ProcessedOrder save(ProcessedOrder processedOrder) {
+        log.info("Persisting processedOrder with id {}.", processedOrder.getOrderId());
+        return processedOrderRepository.save(processedOrder);
+    }
+
+    @Override
+    public ProcessedOrder initializeProcessedOrder(ReservedOrderDTO orderDTO) {
+        ProcessedOrder processedOrder = new ProcessedOrder(
+                orderDTO.getOrderId(),
+                orderDTO.getUserId(),
+                orderDTO.getTotalPrice(),
+                ProcessedOrderStatus.PROCESSING
+        );
+
+        return save(processedOrder);
+    }
+
+    @Override
+    @Transactional
+    public void processReservedOrderWalletPayment(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder) {
+        try {
+            userRepository.payForOrder(orderDTO.getTotalPrice(), orderDTO.getUserId());
+
+            processedOrder.setStatus(ProcessedOrderStatus.PAID);
+            final ProcessedOrder savedOrder = save(processedOrder);
+
+            log.info("Successful payment of order with id {}.", processedOrder.getOrderId());
+
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            sendKafkaSuccessfulOrderPayment(savedOrder);
+                        }
+                    });
+
+        } catch (DataIntegrityViolationException ex) {
+            log.info("Insufficient balance to pay for the order for user with id {}.", orderDTO.getOrderId());
+
+            final ProcessedOrder failedOrder = processedOrderPersistenceService
+                    .saveInsufficientBalance(processedOrder.getOrderId());
+
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCompletion(int status) {
+                            if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
+                                sendKafkaFailureOrderPayment(failedOrder);
+                            }
+                        }
+                    });
+        }
+    }
+
+    @Override
     public Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice) {
         final BigDecimal ALLOWED_DEVIATION_IN_PRICE = BigDecimal.ONE;
 
@@ -92,61 +149,12 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         }
     }
 
-    @Override
-    @Transactional
-    public void processReservedOrderWalletPayment(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder) {
-        try {
-            payForOrder(orderDTO);
-
-            processedOrder.setStatus(ProcessedOrderStatus.PAID);
-            final ProcessedOrder savedOrder = save(processedOrder);
-
-            log.info("Successful payment of order with id {}.", processedOrder.getOrderId());
-
-            TransactionSynchronizationManager
-                    .registerSynchronization(new TransactionSynchronization() {
-                        @Override
-                        public void afterCommit() {
-                            sendKafkaSuccessfulOrderPayment(savedOrder);
-                        }
-                    });
-
-        } catch (DataIntegrityViolationException ex) {
-            log.info("Insufficient balance to pay for the order for user with id {}.", orderDTO.getOrderId());
-
-            final ProcessedOrder failedOrder = processedOrderPersistenceService
-                    .saveInsufficientBalance(processedOrder.getOrderId());
-
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-
-            TransactionSynchronizationManager
-                    .registerSynchronization(new TransactionSynchronization() {
-                        @Override
-                        public void afterCompletion(int status) {
-                            if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
-                                sendKafkaFailureOrderPayment(failedOrder);
-                            }
-                        }
-                    });
-        }
-    }
-
-    private void payForOrder(ReservedOrderDTO orderDTO) {
-        userRepository.payForOrder(orderDTO.getTotalPrice(), orderDTO.getUserId());
-    }
-
     private boolean isWalletPresent(ReservedOrderDTO orderDTO) {
         return userRepository
                 .findById(orderDTO.getUserId())
                 .map(User::getWalletAddress)
                 .filter(addr -> !addr.isBlank())
                 .isPresent();
-    }
-
-    @Override
-    public ProcessedOrder save(ProcessedOrder processedOrder) {
-        log.info("Persisting processedOrder with id {}.", processedOrder.getOrderId());
-        return processedOrderRepository.save(processedOrder);
     }
 
     @Override
@@ -166,9 +174,6 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                         if (ex != null) {
                             log.error("Failed to send PaymentSuccessfulDTO to topic {}.", PAYMENT_SUCCESSFUL_TOPIC_NAME, ex);
 
-                            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
-                            processedOrderRepository.save(processedOrder);
-
                         } else {
                             log.info("Sent PaymentSuccessfulDTO {} to topic {} partition {} offset {}.",
                                     key,
@@ -184,9 +189,6 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(paymentSuccessfulDTO)\".");
-
-            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
-            processedOrderRepository.save(processedOrder);
         }
     }
 
@@ -223,17 +225,5 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(paymentUnsuccessfulDTO)\".");
         }
-    }
-
-    @Override
-    public ProcessedOrder initializeProcessedOrder(ReservedOrderDTO orderDTO) {
-        ProcessedOrder processedOrder = new ProcessedOrder(
-                orderDTO.getOrderId(),
-                orderDTO.getUserId(),
-                orderDTO.getTotalPrice(),
-                ProcessedOrderStatus.PROCESSING
-        );
-
-        return save(processedOrder);
     }
 }

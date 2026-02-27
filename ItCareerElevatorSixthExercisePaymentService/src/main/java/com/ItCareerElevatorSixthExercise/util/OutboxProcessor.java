@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OutboxProcessor {
 
-    private static final Integer MAX_TIME_FOR_A_GIVEN_STATE = 5;
+    private static final Integer MAX_TIME_FOR_A_GIVEN_STATE = 10;
     private static final Integer MAX_WAITING_TIME_FOR_PAYMENT = 15;
 
     private final ProcessedOrderService processedOrderService;
@@ -27,17 +27,21 @@ public class OutboxProcessor {
     @Transactional
     @Scheduled(fixedDelay = 1_000 * 60 * 2) // 2 minutes
     public void processFailedKafkaMessages() {
+        /*
         List<ProcessedOrder> ordersWithMissingWalletAddress = fetchOrdersWithMissingWalletAddress();
         ordersWithMissingWalletAddress
                 .forEach(processedOrderService::sendKafkaFailureOrderPayment);
+        */
 
         List<ProcessedOrder> retryPaidFailedInKafkaOrders = fetchPaidOrdersFailedInKafka();
         retryPaidFailedInKafkaOrders
                 .forEach(processedOrderService::sendKafkaSuccessfulOrderPayment);
 
+        /*
         List<ProcessedOrder> timedOutOrders = fetchTimedOutOrders();
         timedOutOrders
                 .forEach(processedOrderService::sendKafkaFailureOrderPayment);
+         */
     }
 
     private List<ProcessedOrder> fetchOrdersWithMissingWalletAddress() {
@@ -51,7 +55,7 @@ public class OutboxProcessor {
     private List<ProcessedOrder> fetchPaidOrdersFailedInKafka() {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
-                        ProcessedOrderStatus.RETRY_KAFKA_SEND,
+                        ProcessedOrderStatus.PROCESSING,
                         LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
                 );
     }
@@ -65,7 +69,7 @@ public class OutboxProcessor {
     }
 
     @Transactional
-    @Scheduled(fixedDelay = 1_000 * 60 * 20) // 20 minutes
+    // @Scheduled(fixedDelay = 1_000 * 60 * 20) // 20 minutes
     public void processUnpaidOrders() {
         List<ProcessedOrder> timedOutProcessingOrders = fetchTimedOutProcessingOrders();
         timedOutProcessingOrders = timedOutProcessingOrders
