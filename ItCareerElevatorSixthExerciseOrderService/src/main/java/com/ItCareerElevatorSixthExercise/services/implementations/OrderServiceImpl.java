@@ -1,5 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.FailureReserveItemsDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReserveOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReserveOrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
@@ -166,6 +167,18 @@ public class OrderServiceImpl implements OrderService {
                 .findById(orderDTO.getOrderId())
                 .ifPresent(value -> {
                     value.setTotalPrice(orderDTO.getTotalPrice());
+                    orderRepository.save(value);
+                });
+    }
+
+    @Override
+    public void processFailureReserveItems(FailureReserveItemsDTO failureDTO, Long loiOrderStatusCode) {
+        setStatusById(failureDTO.getOrderId(), loiOrderStatusCode);
+
+        orderRepository
+                .findById(failureDTO.getOrderId())
+                .ifPresent(value -> {
+                    value.setTotalPrice(failureDTO.getTotalPrice());
                     orderRepository.save(value);
                 });
     }

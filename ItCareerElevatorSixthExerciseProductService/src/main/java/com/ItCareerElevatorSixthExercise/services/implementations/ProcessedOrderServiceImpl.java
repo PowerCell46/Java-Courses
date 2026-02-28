@@ -59,13 +59,15 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Override
     @Transactional
     public void processReserveItems(OrderDTO orderDTO, ProcessedOrder processedOrder) {
+        // TODO: Validate that all product id's are valid
+        processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
+
         try {
             orderDTO
                     .getOrderItems()
                     .forEach(this::reserveProduct);
 
             processedOrder.setUserId(orderDTO.getUserId());
-            processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
             processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
             final ProcessedOrder savedOrder = processedOrderRepository.save(processedOrder);
 
@@ -175,6 +177,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         try {
             var failureReserveItemsDTO = new FailureReserveItemsDTO(
                     processedOrder.getOrderId(),
+                    processedOrder.getTotalPrice(),
                     processedOrder.getStatus().name()
             );
 
