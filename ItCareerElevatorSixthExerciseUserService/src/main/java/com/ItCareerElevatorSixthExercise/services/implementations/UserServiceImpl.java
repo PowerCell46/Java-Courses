@@ -1,10 +1,13 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcDepositRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUserCryptoWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUpdateUserWalletRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUpdateUserCryptoWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.mail.RegisterUserDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
@@ -199,10 +202,31 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    public DepositAmountResponseDTO depositAmount(DepositAmountRequestDTO requestDTO) {
+        log.info("---| Making a request to the paymentMicroservice.");
+
+        var requestBody = new MsvcDepositRequestDTO(requestDTO.getAmount());
+
+        return paymentServiceWebClient
+                .patch()
+                .uri(String.format("/api/users-wallets/local/%s", requestDTO.getUserId()))
+                .bodyValue(requestBody)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(PaymentServiceException::new)
+                                .flatMap(Mono::error))
+                .bodyToMono(DepositAmountResponseDTO.class)
+                .retryWhen(buildRetrySpec())
+                .block();
+    }
+
     private void updateCryptoWalletAddress(String id, String walletAddress) {
         log.info("---| Making a request to the paymentMicroservice.");
 
-        var requestBody = new MsvcUpdateUserWalletRequestDTO(walletAddress);
+        var requestBody = new MsvcUpdateUserCryptoWalletRequestDTO(walletAddress);
 
         paymentServiceWebClient
                 .patch()

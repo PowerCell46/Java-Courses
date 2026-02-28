@@ -1,15 +1,17 @@
-package com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc;
+package com.ItCareerElevatorSixthExercise.DTOs.auth.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MsvcUpdateUserWalletRequestDTO {
+public class DepositAmountResponseDTO {
 
-    private String walletAddress;
+    private BigDecimal balance;
 }

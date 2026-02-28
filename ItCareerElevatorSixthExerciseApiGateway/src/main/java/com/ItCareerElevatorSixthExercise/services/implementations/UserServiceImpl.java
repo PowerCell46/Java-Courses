@@ -1,10 +1,13 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.MsvcDepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AuthResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.InvalidCredentialsException;
@@ -143,6 +146,27 @@ public class UserServiceImpl implements UserService {
                                 .map(UserServiceException::new)
                                 .flatMap(Mono::error))
                 .bodyToMono(AlterUserResponseDTO.class)
+                .retryWhen(buildRetrySpec())
+                .block();
+    }
+
+    @Override
+    public DepositAmountResponseDTO depositAmount(User user, DepositAmountRequestDTO requestDTO) {
+        log.info("---| Making a request to the userService.");
+
+        var msvcRequestDTO = new MsvcDepositAmountRequestDTO(user.getId(), requestDTO.getAmount());
+
+        return userServiceWebClient
+                .post()
+                .uri("/api/users/deposit")
+                .bodyValue(msvcRequestDTO)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(UserServiceException::new)
+                                .flatMap(Mono::error))
+                .bodyToMono(DepositAmountResponseDTO.class)
                 .retryWhen(buildRetrySpec())
                 .block();
     }

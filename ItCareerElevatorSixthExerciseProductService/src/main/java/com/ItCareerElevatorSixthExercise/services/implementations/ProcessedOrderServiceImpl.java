@@ -84,8 +84,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (DataIntegrityViolationException ex) {
             log.info("One of the items is not available - returning the other items back in stock.");
 
-            // TODO: WHY ARE YOU CREATING A NEW ENTRY???
-            final ProcessedOrder failedOrder = processedOrderPersistenceService.saveNotInStock(orderDTO.getId());
+            processedOrder.setStatus(ProcessedOrderStatus.NOT_IN_STOCK);
+            final ProcessedOrder failedOrder = processedOrderPersistenceService.save(processedOrder);
 
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 

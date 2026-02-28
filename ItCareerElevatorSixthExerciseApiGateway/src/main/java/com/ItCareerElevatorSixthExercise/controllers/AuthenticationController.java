@@ -1,11 +1,13 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.LoginRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AuthResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -61,6 +63,16 @@ public class AuthenticationController {
         log.info("---> POST request on api/auth/assign-roles for user with username: {}.", requestDTO.getUsername());
 
         var responseDTO = userService.assignRolesToUser(requestDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PostMapping("/deposit")
+    public ResponseEntity<DepositAmountResponseDTO> depositAmount(@Valid @RequestBody DepositAmountRequestDTO requestDTO) {
+        User loggedUser = userService.getCurrentlyLoggedUser();
+        log.info("---> POST request on api/auth/deposit for user with username: {}.", loggedUser.getUsername());
+
+        var responseDTO = userService.depositAmount(loggedUser, requestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }

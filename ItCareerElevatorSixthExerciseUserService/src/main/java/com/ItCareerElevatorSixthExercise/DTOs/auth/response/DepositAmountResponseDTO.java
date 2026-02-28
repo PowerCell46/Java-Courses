@@ -1,0 +1,19 @@
+package com.ItCareerElevatorSixthExercise.DTOs.auth.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class DepositAmountResponseDTO {
+
+    private String userId; // UUID
+
+    private BigDecimal balance;
+}

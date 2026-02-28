@@ -20,8 +20,7 @@ public class ProcessedOrderPersistenceServiceImpl implements ProcessedOrderPersi
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ProcessedOrder saveNotInStock(Long orderId) {
-        log.info("Persisting NOT_IN_STOCK processed order with id {} in an independent transaction.", orderId);
-        return processedOrderRepository.save(new ProcessedOrder(orderId, ProcessedOrderStatus.NOT_IN_STOCK));
+    public ProcessedOrder save(ProcessedOrder processedOrder) {
+        return processedOrderRepository.save(processedOrder);
     }
 }

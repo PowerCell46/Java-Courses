@@ -1,7 +1,9 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,15 @@ public class UserController {
         log.info("---> PATCH request on api/users/{}.", userId);
 
         var responseDTO = userService.updateFields(userId, requestDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PostMapping("/deposit")
+    public ResponseEntity<DepositAmountResponseDTO> depositAmount(@RequestBody DepositAmountRequestDTO requestDTO) {
+        log.info("---> POST request on /api/users/deposit for user with id {}.", requestDTO.getUserId());
+
+        var responseDTO = userService.depositAmount(requestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }
