@@ -25,22 +25,22 @@ public class User {
     @Id
     private String id; // UUID
 
-    @Column(nullable = true)
+    @Column
     private BigDecimal balance;
 
-    @Column(nullable = true)
+    @Column
     private String walletAddress;
 
     @Version
     private Long version;
 
     public User(String walletAddress, String id) {
-        this.walletAddress = walletAddress;
         this.id = id;
+        this.walletAddress = walletAddress;
     }
 
     public User(String id, BigDecimal balance) {
-        this.balance = balance;
         this.id = id;
+        this.balance = balance;
     }
 }

@@ -8,15 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
-    Optional<User> findByWalletAddress(String walletAddress);
-
     @Modifying
     @Query("UPDATE User u SET u.balance = u.balance - :orderTotalPrice WHERE u.id = :id")
-    void payForOrder(@Param("orderTotalPrice") BigDecimal orderTotalPrice, @Param("id") String id);
+    void payForOrder(@Param("id") String id, @Param("orderTotalPrice") BigDecimal orderTotalPrice);
 }
-// TODO: We are bending the versioning this way
+// TODO: We are bending the versioning rule this way

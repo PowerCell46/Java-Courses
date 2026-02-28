@@ -24,7 +24,9 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
 
     @Override
     public BigDecimal convertEtherToEuro(BigDecimal ether) {
-        return ether.multiply(getEthEurPrice()).setScale(2, RoundingMode.HALF_UP);
+        return ether
+                .multiply(getEthEurPrice())
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getEthEurPrice() {
@@ -35,6 +37,6 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
                 .map(r -> r.get("ethereum"))
                 .map(eth -> eth.get("eur"))
                 .map(price -> new BigDecimal(price.toString()))
-                .orElseThrow(() -> new IllegalStateException("Failed to fetch ETH/EUR price"));
+                .orElseThrow(() -> new IllegalStateException("Failed to fetch ETH/EUR price."));
     }
 }

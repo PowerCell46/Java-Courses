@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.request;
+package com.ItCareerElevatorSixthExercise.DTOs.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequestDTO {
+public class UserCryptoWalletResponseDTO {
 
     private String id;
 

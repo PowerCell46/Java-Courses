@@ -10,17 +10,17 @@ public interface ProcessedOrderService {
 
     boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO);
 
-    Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice);
+    ProcessedOrder initializeProcessedOrder(ReservedOrderDTO orderDTO);
 
-    void processReservedOrderCryptoPayment(ReservedOrderDTO orderDTO);
+    void processReservedOrderCryptoWallet(ReservedOrderDTO orderDTO);
 
-    void processReservedOrderWalletPayment(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder);
+    void processReservedOrderLocalWallet(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder);
 
     ProcessedOrder save(ProcessedOrder processedOrder);
+
+    Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice);
 
     void sendKafkaSuccessfulOrderPayment(ProcessedOrder processedOrder);
 
     void sendKafkaFailureOrderPayment(ProcessedOrder processedOrder);
-
-    ProcessedOrder initializeProcessedOrder(ReservedOrderDTO orderDTO);
 }

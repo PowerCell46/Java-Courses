@@ -1,8 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.request.UserRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.UserWalletResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.UserCryptoWalletRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.UserCryptoWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.User;
@@ -33,11 +32,12 @@ public class UserCryptoCryptoServiceImpl implements UserCryptoService {
     private final CurrencyConversionService currencyConversionService;
 
     @Override
-    public UserWalletResponseDTO setWalletAddress(UserRequestDTO requestDTO) {
+    public UserCryptoWalletResponseDTO setWalletAddress(UserCryptoWalletRequestDTO requestDTO) {
         Optional<User> optionalUser = userRepository.findById(requestDTO.getId());
 
         if (optionalUser.isPresent()) {
             log.info("Updating wallet address of user with id {}.", requestDTO.getId());
+
             optionalUser.get().setWalletAddress(requestDTO.getWalletAddress());
             userRepository.save(optionalUser.get());
 
@@ -46,7 +46,7 @@ public class UserCryptoCryptoServiceImpl implements UserCryptoService {
             save(user);
         }
 
-        return new UserWalletResponseDTO(requestDTO.getId(), requestDTO.getWalletAddress());
+        return new UserCryptoWalletResponseDTO(requestDTO.getId(), requestDTO.getWalletAddress());
     }
 
     @Override
@@ -65,19 +65,16 @@ public class UserCryptoCryptoServiceImpl implements UserCryptoService {
         if (optionalUser.isEmpty()) // ? Unknown wallet has sent us crypto
             return;
 
-        BigDecimal paidAmountInEther = Convert.fromWei(new BigDecimal(transaction.getValue()), Convert.Unit.ETHER);
         // ! You have to get the ether/euro when the transaction happened (execution price)
-        // ! 1. Get timestamp of the transaction;
-        // ! 2. Fetch the price ratio on that timestamp
-        // ! 3. This way paidAmountInEuros will be the actual price the user paid
+        BigDecimal paidAmountInEther = Convert.fromWei(new BigDecimal(transaction.getValue()), Convert.Unit.ETHER);
         BigDecimal paidAmountInEuros = currencyConversionService.convertEtherToEuro(paidAmountInEther);
 
-        log.info("Paid amount in euros: {}.", paidAmountInEuros);
+        log.info("Paid amount in euros: {}. Paid amount in ether: {}.", paidAmountInEuros, paidAmountInEther);
 
         Optional<ProcessedOrder> optionalProcessedOrder = processedOrderService
                 .findByUserIdAndApproximateTotalPrice(optionalUser.get().getId(), paidAmountInEuros);
 
-        if (optionalProcessedOrder.isEmpty()) // ? Couldn't find such order
+        if (optionalProcessedOrder.isEmpty()) // ? Couldn't find such order (with payer's wallet address, order with the paid amount)
             return;
 
         optionalProcessedOrder.get().setStatus(ProcessedOrderStatus.PAID);
@@ -88,12 +85,12 @@ public class UserCryptoCryptoServiceImpl implements UserCryptoService {
     }
 
     @Override
-    public UserWalletResponseDTO getWalletAddress(String id) {
+    public UserCryptoWalletResponseDTO getWalletAddress(String id) {
         User user = userRepository
                 .findById(id)
                 .orElseThrow(() ->
                         new NoSuchUserException(String.format("No user found with id %s.", id)));
 
-        return new UserWalletResponseDTO(id, user.getWalletAddress());
+        return new UserCryptoWalletResponseDTO(id, user.getWalletAddress());
     }
 }

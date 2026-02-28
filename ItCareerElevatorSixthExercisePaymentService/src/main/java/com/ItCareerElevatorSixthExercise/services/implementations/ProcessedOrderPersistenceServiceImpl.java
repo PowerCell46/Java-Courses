@@ -20,7 +20,10 @@ public class ProcessedOrderPersistenceServiceImpl implements ProcessedOrderPersi
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ProcessedOrder saveInsufficientBalance(Long orderId) {
-        ProcessedOrder processedOrder = processedOrderRepository.findById(orderId).get();
+        ProcessedOrder processedOrder = processedOrderRepository
+                .findById(orderId)
+                .get();
+
         processedOrder.setStatus(ProcessedOrderStatus.INSUFFICIENT_BALANCE);
 
         return processedOrderRepository.save(processedOrder);

@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.request;
+package com.ItCareerElevatorSixthExercise.DTOs.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDepositRequestDTO {
+public class UserLocalWalletResponseDTO {
 
     private String userId;
 
-    private BigDecimal amount;
+    private BigDecimal balance;
 }

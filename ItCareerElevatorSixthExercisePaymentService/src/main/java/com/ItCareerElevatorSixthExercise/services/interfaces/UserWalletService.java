@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
-import com.ItCareerElevatorSixthExercise.DTOs.request.UserDepositRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.UserDepositResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.UserLocalWalletRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.UserLocalWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 
@@ -9,9 +9,9 @@ public interface UserWalletService {
 
     User save(User user);
 
-    UserResponseDTO initializeUser(UserDepositRequestDTO requestDTO);
+    UserResponseDTO initializeUser(UserLocalWalletRequestDTO requestDTO);
 
-    UserDepositResponseDTO processDeposit(UserDepositRequestDTO requestDTO);
+    UserLocalWalletResponseDTO processDeposit(UserLocalWalletRequestDTO requestDTO);
 
-    UserDepositResponseDTO getUserById(String id);
+    UserLocalWalletResponseDTO getUserById(String id);
 }

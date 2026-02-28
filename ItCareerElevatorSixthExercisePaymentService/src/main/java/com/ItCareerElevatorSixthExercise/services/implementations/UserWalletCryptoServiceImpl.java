@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.request.UserDepositRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.UserDepositResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.UserLocalWalletRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.UserLocalWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
@@ -26,7 +26,7 @@ public class UserWalletCryptoServiceImpl implements UserWalletService {
     }
 
     @Override
-    public UserResponseDTO initializeUser(UserDepositRequestDTO requestDTO) {
+    public UserResponseDTO initializeUser(UserLocalWalletRequestDTO requestDTO) {
         if (userAlreadyExists(requestDTO.getUserId())) {
             throw new UserAlreadyExistsException(
                     String.format("User with id %s already exists.", requestDTO.getUserId())
@@ -49,19 +49,19 @@ public class UserWalletCryptoServiceImpl implements UserWalletService {
     }
 
     @Override // ! This can throw an err if an order executes at the same time (retry until successful)
-    public UserDepositResponseDTO processDeposit(UserDepositRequestDTO requestDTO) {
+    public UserLocalWalletResponseDTO processDeposit(UserLocalWalletRequestDTO requestDTO) {
         User user = getById(requestDTO.getUserId());
         user.setBalance(user.getBalance().add(requestDTO.getAmount()));
         user = userRepository.save(user);
 
-        return new UserDepositResponseDTO(user.getId(), user.getBalance());
+        return new UserLocalWalletResponseDTO(user.getId(), user.getBalance());
     }
 
     @Override
-    public UserDepositResponseDTO getUserById(String id) {
+    public UserLocalWalletResponseDTO getUserById(String id) {
         User user = getById(id);
 
-        return new UserDepositResponseDTO(user.getId(), user.getBalance());
+        return new UserLocalWalletResponseDTO(user.getId(), user.getBalance());
     }
 
     private User getById(String userId) {

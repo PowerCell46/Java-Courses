@@ -28,9 +28,6 @@ public class ProcessedOrder {
     private Long orderId;
 
     @Column(nullable = false)
-    private LocalDateTime lastModifiedAt;
-
-    @Column(nullable = false)
     private String userId;
 
     @Column(nullable = false)
@@ -38,6 +35,9 @@ public class ProcessedOrder {
 
     @Enumerated(value = EnumType.ORDINAL)
     private ProcessedOrderStatus status;
+
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedAt;
 
     @PrePersist // * Called once before the entity is first saved (INSERT)
     public void prePersist() {

@@ -46,13 +46,9 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     @Override
     public boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO) {
-        return findByOrderId(orderDTO.getOrderId())
-                .isPresent();
-    }
-
-    private Optional<ProcessedOrder> findByOrderId(Long orderId) {
         return processedOrderRepository
-                .findById(orderId);
+                .findById(orderDTO.getOrderId())
+                .isPresent();
     }
 
     @Override
@@ -75,12 +71,12 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     @Override
     @Transactional
-    public void processReservedOrderWalletPayment(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder) {
+    public void processReservedOrderLocalWallet(ReservedOrderDTO orderDTO, ProcessedOrder processedOrder) {
         try {
-            userRepository.payForOrder(orderDTO.getTotalPrice(), orderDTO.getUserId());
+            userRepository.payForOrder(orderDTO.getUserId(), orderDTO.getTotalPrice());
 
             processedOrder.setStatus(ProcessedOrderStatus.PAID);
-            final ProcessedOrder savedOrder = save(processedOrder);
+            final ProcessedOrder savedOrder = processedOrderRepository.save(processedOrder);
 
             log.info("Successful payment of order with id {}.", processedOrder.getOrderId());
 
@@ -95,26 +91,18 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (DataIntegrityViolationException ex) {
             log.info("Insufficient balance to pay for the order for user with id {}.", orderDTO.getOrderId());
 
-            final ProcessedOrder failedOrder = processedOrderPersistenceService
-                    .saveInsufficientBalance(processedOrder.getOrderId());
+            processedOrder.setStatus(ProcessedOrderStatus.INSUFFICIENT_BALANCE);
+            final ProcessedOrder failedOrder = processedOrderRepository.save(processedOrder);
 
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-
-            TransactionSynchronizationManager
-                    .registerSynchronization(new TransactionSynchronization() {
-                        @Override
-                        public void afterCompletion(int status) {
-                            if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
-                                sendKafkaFailureOrderPayment(failedOrder);
-                            }
-                        }
-                    });
+            // TODO: Do you need this TransactionSync... when calling the kafka failure
+            // If you don't need it, delete the other process order service
+            sendKafkaFailureOrderPayment(failedOrder);
         }
     }
 
     @Override
     public Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice) {
-        final BigDecimal ALLOWED_DEVIATION_IN_PRICE = BigDecimal.ONE;
+        final BigDecimal ALLOWED_DEVIATION_IN_PRICE = BigDecimal.valueOf(2L);
 
         return processedOrderRepository
                 .findByUserIdAndTotalPriceBetween(
@@ -125,7 +113,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
-    public void processReservedOrderCryptoPayment(ReservedOrderDTO orderDTO) {
+    public void processReservedOrderCryptoWallet(ReservedOrderDTO orderDTO) {
         if (isWalletPresent(orderDTO)) {
             ProcessedOrder processedOrder = new ProcessedOrder(
                     orderDTO.getOrderId(),
