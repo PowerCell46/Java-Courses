@@ -89,13 +89,11 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                     });
 
         } catch (DataIntegrityViolationException ex) {
-            log.info("Insufficient balance to pay for the order for user with id {}.", orderDTO.getOrderId());
+            log.info("Insufficient balance to pay for order with id {}.", orderDTO.getOrderId());
 
             processedOrder.setStatus(ProcessedOrderStatus.INSUFFICIENT_BALANCE);
-            final ProcessedOrder failedOrder = processedOrderRepository.save(processedOrder);
+            final ProcessedOrder failedOrder = processedOrderPersistenceService.save(processedOrder);
 
-            // TODO: Do you need this TransactionSync... when calling the kafka failure
-            // If you don't need it, delete the other process order service
             sendKafkaFailureOrderPayment(failedOrder);
         }
     }

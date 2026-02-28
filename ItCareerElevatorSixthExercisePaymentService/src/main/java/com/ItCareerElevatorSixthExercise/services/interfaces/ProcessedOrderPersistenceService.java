@@ -4,5 +4,5 @@ import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 
 public interface ProcessedOrderPersistenceService {
 
-    ProcessedOrder saveInsufficientBalance(Long orderId);
+    ProcessedOrder save(ProcessedOrder processedOrder);
 }

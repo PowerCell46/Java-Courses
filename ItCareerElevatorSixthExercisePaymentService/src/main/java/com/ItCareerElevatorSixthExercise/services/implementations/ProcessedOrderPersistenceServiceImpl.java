@@ -1,7 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderPersistenceService;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +18,7 @@ public class ProcessedOrderPersistenceServiceImpl implements ProcessedOrderPersi
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ProcessedOrder saveInsufficientBalance(Long orderId) {
-        ProcessedOrder processedOrder = processedOrderRepository
-                .findById(orderId)
-                .get();
-
-        processedOrder.setStatus(ProcessedOrderStatus.INSUFFICIENT_BALANCE);
-
+    public ProcessedOrder save(ProcessedOrder processedOrder) {
         return processedOrderRepository.save(processedOrder);
     }
 }
