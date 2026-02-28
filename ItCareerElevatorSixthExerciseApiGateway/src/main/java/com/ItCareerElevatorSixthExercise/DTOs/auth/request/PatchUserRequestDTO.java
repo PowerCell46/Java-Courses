@@ -22,11 +22,11 @@ public class PatchUserRequestDTO {
     )
     private String email;
 
-    @Pattern(
+    /* @Pattern(
             regexp = "^(0x[a-fA-F0-9]{40})?$",
             message = "Wallet address must be a valid Ethereum address (example: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e)."
     )
-    private String walletAddress;
+    private String walletAddress; */
 
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,20}$",

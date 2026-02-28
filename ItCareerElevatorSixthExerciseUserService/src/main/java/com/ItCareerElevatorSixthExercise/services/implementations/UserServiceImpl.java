@@ -36,8 +36,8 @@ import static com.ItCareerElevatorSixthExercise.util.RetryPolicy.buildRetrySpec;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Value("${app.kafka.topics.mail-register-user}")
-    private String MAIL_REGISTER_USER_TOPIC_NAME;
+    @Value("${app.kafka.topics.register-user}")
+    private String REGISTER_USER_TOPIC_NAME;
 
     private final RoleService roleService;
     private final ObjectMapper objectMapper;
@@ -57,11 +57,12 @@ public class UserServiceImpl implements UserService {
         );
         user = save(user);
 
-        if (requestDTO.getWalletAddress() != null) {
-            initializeUserWalletAddress(user.getId(), requestDTO.getWalletAddress());
+        /* if (requestDTO.getWalletAddress() != null) {
+            initializeUserCryptoWalletAddress(user.getId(), requestDTO.getWalletAddress());
         }
+        */
 
-        sendSuccessfulRegistrationEmailToUser(user);
+        sendSuccessfulRegistrationKafkaMessage(user);
 
         return user;
     }
@@ -87,18 +88,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         log.info("Persisting user with username {} to the database.", user.getUsername());
-
         return userRepository.save(user);
     }
 
-    private void initializeUserWalletAddress(String id, String walletAddress) {
+    private void initializeUserCryptoWalletAddress(String id, String walletAddress) {
         log.info("---| Making a request to the paymentMicroservice.");
 
         var requestBody = new MsvcCreateUserPaymentRequestDTO(id, walletAddress);
-
         paymentServiceWebClient
                 .post()
-                .uri("/api/users")
+                .uri("/api/users-wallets/crypto")
                 .bodyValue(requestBody)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
@@ -111,24 +110,24 @@ public class UserServiceImpl implements UserService {
                 .block();
     }
 
-    private void sendSuccessfulRegistrationEmailToUser(User user) {
+    private void sendSuccessfulRegistrationKafkaMessage(User user) {
         try {
             String key = String.format("register-user-%s-email", user.getId());
-            String value = objectMapper.writeValueAsString(new RegisterUserEmailDTO(user.getUsername(), user.getEmail()));
+            String value = objectMapper.writeValueAsString(new RegisterUserEmailDTO(user.getId(), user.getUsername(), user.getEmail()));
 
             registerEmailKafkaTemplate
-                    .send(MAIL_REGISTER_USER_TOPIC_NAME, key, value)
+                    .send(REGISTER_USER_TOPIC_NAME, key, value)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
-                            log.error("Failed to send RegisterUserEmailDTO to topic {}.", MAIL_REGISTER_USER_TOPIC_NAME, ex);
+                            log.error("Failed to send RegisterUserEmailDTO to topic {}.", REGISTER_USER_TOPIC_NAME, ex);
 
                         } else {
-                            log.info("Success sending RegisterUserEmailDTO to topic {}.", MAIL_REGISTER_USER_TOPIC_NAME);
+                            log.info("Success sending RegisterUserEmailDTO to topic {}.", REGISTER_USER_TOPIC_NAME);
                         }
                     });
 
         } catch (JsonProcessingException ex) {
-            log.error("An error occurred with \"objectMapper.writeValueAsString(new RegisterUserEmailDTO(user.getUsername(), user.getEmail()))\".");
+            log.error("An error occurred with \"objectMapper.writeValueAsString(new RegisterUserEmailDTO(user.getId(), user.getUsername(), user.getEmail()))\".");
         }
     }
 
@@ -147,8 +146,7 @@ public class UserServiceImpl implements UserService {
         return new AlterUserResponseDTO(
                 user.getId(),
                 user.getUsername(),
-                user.getEmail(),
-                fetchWalletAddress(user.getId())
+                user.getEmail()
         );
     }
 
@@ -190,26 +188,26 @@ public class UserServiceImpl implements UserService {
             save(user);
         }
 
-        if (requestDTO.getWalletAddress() != null) {
-            updateUserWalletAddress(userId, requestDTO.getWalletAddress());
+        /* if (requestDTO.getWalletAddress() != null) {
+            updateUserCryptoWalletAddress(userId, requestDTO.getWalletAddress());
         }
+        */
 
         return new AlterUserResponseDTO(
                 user.getId(),
                 user.getUsername(),
-                user.getEmail(),
-                fetchWalletAddress(userId)
+                user.getEmail()
         );
     }
 
-    private void updateUserWalletAddress(String id, String walletAddress) {
+    private void updateUserCryptoWalletAddress(String id, String walletAddress) {
         log.info("---| Making a request to the paymentMicroservice.");
 
         var requestBody = new MsvcUpdateUserPaymentRequestDTO(walletAddress);
 
         paymentServiceWebClient
                 .patch()
-                .uri(String.format("/api/users/%s", id))
+                .uri(String.format("/api/users-wallets/crypto/%s", id))
                 .bodyValue(requestBody)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
@@ -220,22 +218,5 @@ public class UserServiceImpl implements UserService {
                 .toBodilessEntity()
                 .retryWhen(buildRetrySpec())
                 .block();
-    }
-
-    private String fetchWalletAddress(String userId) {
-        var responseDTO = paymentServiceWebClient
-                .get()
-                .uri(String.format("/api/users/%s", userId))
-                .retrieve()
-                .onStatus(HttpStatusCode::isError,
-                        res -> res
-                                .bodyToMono(ErrorResponseDTO.class)
-                                .map(PaymentServiceException::new)
-                                .flatMap(Mono::error))
-                .bodyToMono(MsvcGetUserWalletAddressResponseDTO.class)
-                .retryWhen(buildRetrySpec())
-                .block();
-
-        return responseDTO.getWalletAddress();
     }
 }

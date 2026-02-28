@@ -13,7 +13,7 @@ public class UserRequestDTO {
 
     private String email;
 
-    private String walletAddress;
+    // private String walletAddress;
 
     private String password;
 }
