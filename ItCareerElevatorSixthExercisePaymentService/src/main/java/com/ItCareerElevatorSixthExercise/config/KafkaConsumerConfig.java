@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.config;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.registerUser.RegisterUserDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.registerUser.UserRegisteredDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +26,8 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.items-reserved-consumer.group-id}")
     private String itemsReservedConsumerGroup;
 
-    @Value("${spring.kafka.register-user-consumer.group-id}")
-    private String registerUserConsumerGroup;
+    @Value("${spring.kafka.user-registered-consumer.group-id}")
+    private String userRegisteredConsumerGroup;
 
     @Bean
     public ConsumerFactory<String, ReservedOrderDTO> itemsReservedConsumerFactory() {
@@ -55,14 +55,14 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, RegisterUserDTO> registerUserConsumerFactory() {
+    public ConsumerFactory<String, UserRegisteredDTO> userRegisteredConsumerFactory() {
         Map<String, Object> properties = new HashMap<>();
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, registerUserConsumerGroup);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, userRegisteredConsumerGroup);
 
         var keyDeserializer = new StringDeserializer();
-        var valueDeserializer = new JacksonJsonDeserializer<>(RegisterUserDTO.class);
+        var valueDeserializer = new JacksonJsonDeserializer<>(UserRegisteredDTO.class);
         valueDeserializer.addTrustedPackages("*");
 
         return new DefaultKafkaConsumerFactory<>(
@@ -73,9 +73,9 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, RegisterUserDTO> registerUserKafkaListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, RegisterUserDTO>();
-        factory.setConsumerFactory(registerUserConsumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, UserRegisteredDTO> userRegisteredKafkaListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, UserRegisteredDTO>();
+        factory.setConsumerFactory(userRegisteredConsumerFactory());
         return factory;
     }
 }

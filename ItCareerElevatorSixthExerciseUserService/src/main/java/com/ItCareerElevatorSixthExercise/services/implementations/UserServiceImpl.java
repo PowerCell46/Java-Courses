@@ -9,7 +9,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUpdateUserCr
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.mail.RegisterUserDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.mail.UserRegisteredDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.EmailIsAlreadyTakenException;
@@ -38,8 +38,8 @@ import static com.ItCareerElevatorSixthExercise.util.RetryPolicy.buildRetrySpec;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Value("${app.kafka.topics.register-user}")
-    private String REGISTER_USER_TOPIC_NAME;
+    @Value("${app.kafka.topics.user-registered}")
+    private String USER_REGISTERED_TOPIC_NAME;
 
     private final RoleService roleService;
     private final ObjectMapper objectMapper;
@@ -114,22 +114,22 @@ public class UserServiceImpl implements UserService {
 
     private void sendSuccessfulRegistrationKafkaMessage(User user) {
         try {
-            String key = String.format("register-user-%s-email", user.getId());
-            String value = objectMapper.writeValueAsString(new RegisterUserDTO(user.getId(), user.getUsername(), user.getEmail()));
+            String key = String.format("user-registered-%s", user.getId());
+            String value = objectMapper.writeValueAsString(new UserRegisteredDTO(user.getId(), user.getUsername(), user.getEmail()));
 
             registerEmailKafkaTemplate
-                    .send(REGISTER_USER_TOPIC_NAME, key, value)
+                    .send(USER_REGISTERED_TOPIC_NAME, key, value)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
-                            log.error("Failed to send RegisterUserDTO to topic {}.", REGISTER_USER_TOPIC_NAME, ex);
+                            log.error("Failed to send UserRegisteredDTO to topic {}.", USER_REGISTERED_TOPIC_NAME, ex);
 
                         } else {
-                            log.info("Success sending RegisterUserDTO to topic {}.", REGISTER_USER_TOPIC_NAME);
+                            log.info("Success sending UserRegisteredDTO to topic {}.", USER_REGISTERED_TOPIC_NAME);
                         }
                     });
 
         } catch (JsonProcessingException ex) {
-            log.error("An error occurred with \"objectMapper.writeValueAsString(new RegisterUserDTO(user.getId(), user.getUsername(), user.getEmail()))\".");
+            log.error("An error occurred with \"objectMapper.writeValueAsString(new UserRegisteredDTO(user.getId(), user.getUsername(), user.getEmail()))\".");
         }
     }
 

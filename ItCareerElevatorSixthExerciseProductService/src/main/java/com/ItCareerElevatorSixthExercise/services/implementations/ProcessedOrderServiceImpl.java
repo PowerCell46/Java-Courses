@@ -212,6 +212,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
+    @Transactional
     public void processPaymentUnsuccessful(PaymentUnsuccessfulDTO paymentDTO) {
         ProcessedOrder processedOrder = processedOrderRepository
                 .findById(paymentDTO.getOrderId())
