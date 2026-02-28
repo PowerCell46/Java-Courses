@@ -2,7 +2,7 @@ package com.ItCareerElevatorSixthExercise.util;
 
 import com.ItCareerElevatorSixthExercise.entities.LastProcessedBlockNumber;
 import com.ItCareerElevatorSixthExercise.repositories.LastProcessedBlockNumberRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoWalletService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class CryptocurrencyScheduler {
     private String walletAddress;
 
     private final Web3j web3j;
-    private final UserCryptoService userCryptoService;
+    private final UserCryptoWalletService userCryptoWalletService;
     private final LastProcessedBlockNumberRepository blockNumberRepository;
 
     @SneakyThrows
@@ -49,7 +49,7 @@ public class CryptocurrencyScheduler {
                     .stream()
                     .map(transaction -> (EthBlock.TransactionObject) transaction)
                     .filter(transaction -> transaction.getTo() != null && transaction.getTo().equalsIgnoreCase(walletAddress))
-                    .forEach(userCryptoService::processTransaction);
+                    .forEach(userCryptoWalletService::processTransaction);
         }
 
         lastScannedBlockState.setLastProcessedBlock(currentBlockNumber);

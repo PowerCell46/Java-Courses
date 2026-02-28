@@ -10,7 +10,7 @@ import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.CurrencyConversionService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoWalletService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserCryptoCryptoServiceImpl implements UserCryptoService {
+public class UserCryptoWalletServiceImpl implements UserCryptoWalletService {
 
     private final UserRepository userRepository;
     private final ProcessedOrderService processedOrderService;

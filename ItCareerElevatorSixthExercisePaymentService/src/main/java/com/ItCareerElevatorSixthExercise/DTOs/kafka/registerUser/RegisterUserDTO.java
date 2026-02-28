@@ -1,13 +1,15 @@
-package com.ItCareerElevatorSixthExercise.DTOs.mail;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka.registerUser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class RegisterUserEmailDTO {
+public class RegisterUserDTO {
 
     private String id;
 

@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc;
+package com.ItCareerElevatorSixthExercise.DTOs.mail;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MsvcUpdateUserPaymentRequestDTO {
+public class RegisterUserDTO {
 
-    private String walletAddress;
+    private String id;
+
+    private String username;
+
+    private String email;
 }

@@ -7,7 +7,7 @@ import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
 import com.ItCareerElevatorSixthExercise.exceptions.UserAlreadyExistsException;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserWalletService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserLocalWalletService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserWalletCryptoServiceImpl implements UserWalletService {
+public class UserLocalWalletServiceImpl implements UserLocalWalletService {
 
     private final UserRepository userRepository;
 

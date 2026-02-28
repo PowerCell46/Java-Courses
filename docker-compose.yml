@@ -26,7 +26,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-  
+
   kafka_ui:
     image: provectuslabs/kafka-ui
     container_name: kafka_ui
@@ -54,7 +54,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  
+
   postgres_orders:
     image: postgres:16-alpine
     container_name: order_service_db
@@ -69,7 +69,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  
+
   postgres_products:
     image: postgres:16-alpine
     container_name: product_service_db
@@ -84,7 +84,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  
+
   postgres_payments:
     image: postgres:16-alpine
     container_name: payment_service_db
@@ -99,7 +99,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  
+
   server_api_gateway:
     build:
       context: ./ItCareerElevatorSixthExerciseApiGateway
@@ -118,7 +118,7 @@ services:
     depends_on:
       postgres_users:
         condition: service_healthy
-        
+
   server_user_service:
     build:
       context: ./ItCareerElevatorSixthExerciseUserService
@@ -140,7 +140,7 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-  
+
   server_order_service:
     build:
       context: ./ItCareerElevatorSixthExerciseOrderService
@@ -164,7 +164,7 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-  
+
   server_product_service:
     build:
       context: ./ItCareerElevatorSixthExerciseProductService
@@ -186,7 +186,7 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-  
+
   server_payment_service:
     build:
       context: ./ItCareerElevatorSixthExercisePaymentService
@@ -195,11 +195,12 @@ services:
     ports:
       - "8084:8084"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_payments:5432/web_store_products_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_payments:5432/web_store_payments_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_payment_service
+      KAFKA_REGISTER_USER_CONSUMER_GROUP: register_user_payment_service
       ETHEREUM_NODE_URL: ${ETHEREUM_NODE_URL}
       ETHEREUM_WALLET_ADDRESS: ${ETHEREUM_WALLET_ADDRESS}
     depends_on:

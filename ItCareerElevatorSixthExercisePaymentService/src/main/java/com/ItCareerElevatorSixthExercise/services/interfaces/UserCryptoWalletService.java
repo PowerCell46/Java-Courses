@@ -5,7 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.response.UserCryptoWalletResponseD
 import com.ItCareerElevatorSixthExercise.entities.User;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
-public interface UserCryptoService {
+public interface UserCryptoWalletService {
 
     User save(User user);
 

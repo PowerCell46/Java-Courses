@@ -7,8 +7,8 @@ import com.ItCareerElevatorSixthExercise.DTOs.request.UserCryptoWalletRequestDTO
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserCryptoWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserLocalWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.UserWalletService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserCryptoWalletService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserLocalWalletService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +28,14 @@ import java.net.URI;
 @RequestMapping("/api/users-wallets")
 public class UserController {
 
-    private final UserWalletService userWalletService;
-    private final UserCryptoService userCryptoService;
+    private final UserLocalWalletService userLocalWalletService;
+    private final UserCryptoWalletService userCryptoWalletService;
 
     @GetMapping("/local/{id}")
     public ResponseEntity<UserLocalWalletResponseDTO> getUserBalance(@PathVariable String id) {
         log.info("---> GET request on api/users-wallets/local/{}.", id);
 
-        var responseDTO = userWalletService.getUserById(id);
+        var responseDTO = userLocalWalletService.getUserById(id);
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -44,7 +44,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> initializeUser(@RequestBody UserLocalWalletRequestDTO requestDTO) {
         log.info("---> POST request on api/users-wallets/local for user with id {}.", requestDTO.getUserId());
 
-        var responseDTO = userWalletService.initializeUser(requestDTO);
+        var responseDTO = userLocalWalletService.initializeUser(requestDTO);
 
         URI location = URI.create(String.format("/api/users-wallets/local/%s", responseDTO.getId()));
         return ResponseEntity.created(location).body(responseDTO);
@@ -57,7 +57,7 @@ public class UserController {
     ) {
         log.info("---> PATCH request on api/users-wallets/local/{}.", id);
 
-        var responseDTO = userWalletService.processDeposit(new UserLocalWalletRequestDTO(id, requestDTO.getAmount()));
+        var responseDTO = userLocalWalletService.processDeposit(new UserLocalWalletRequestDTO(id, requestDTO.getAmount()));
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -66,7 +66,7 @@ public class UserController {
     public ResponseEntity<UserCryptoWalletResponseDTO> getUserWalletAddress(@PathVariable String id) {
         log.info("---> GET request on api/users-wallets/crypto/{}.", id);
 
-        var responseDTO = userCryptoService.getWalletAddress(id);
+        var responseDTO = userCryptoWalletService.getWalletAddress(id);
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -75,7 +75,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserCryptoWalletRequestDTO requestDTO) {
         log.info("---> POST request on api/users-wallets/crypto for user with id {}.", requestDTO.getId());
 
-        var responseDTO = userCryptoService.setWalletAddress(requestDTO);
+        var responseDTO = userCryptoWalletService.setWalletAddress(requestDTO);
 
         URI location = URI.create(String.format("/api/users-wallets/crypto/%s", responseDTO.getId()));
         return ResponseEntity.created(location).body(new UserResponseDTO(requestDTO.getId()));
@@ -88,7 +88,7 @@ public class UserController {
     ) {
         log.info("---> PATCH request on api/users-wallets/crypto/{}.", id);
 
-        var responseDTO = userCryptoService.setWalletAddress(new UserCryptoWalletRequestDTO(id, requestDTO.getWalletAddress()));
+        var responseDTO = userCryptoWalletService.setWalletAddress(new UserCryptoWalletRequestDTO(id, requestDTO.getWalletAddress()));
 
         return ResponseEntity.ok(responseDTO);
     }

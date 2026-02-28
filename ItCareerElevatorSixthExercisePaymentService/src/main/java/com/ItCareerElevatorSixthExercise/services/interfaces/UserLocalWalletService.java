@@ -5,7 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.response.UserLocalWalletResponseDT
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 
-public interface UserWalletService {
+public interface UserLocalWalletService {
 
     User save(User user);
 

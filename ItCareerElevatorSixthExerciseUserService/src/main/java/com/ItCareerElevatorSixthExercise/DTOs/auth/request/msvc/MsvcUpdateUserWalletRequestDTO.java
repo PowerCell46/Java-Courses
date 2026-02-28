@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MsvcCreateUserPaymentRequestDTO {
-
-    private String id;
+public class MsvcUpdateUserWalletRequestDTO {
 
     private String walletAddress;
 }
