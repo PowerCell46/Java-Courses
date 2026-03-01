@@ -57,9 +57,34 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
+    public ProcessedOrder save(ProcessedOrder processedOrder) {
+        log.info("Persisting processed order with id {} to the database.", processedOrder.getOrderId());
+        return processedOrderRepository.save(processedOrder);
+    }
+
+    @Override
+    public ProcessedOrder initializeProcessedOrder(Long orderId) {
+        ProcessedOrder processedOrder = new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING);
+        return save(processedOrder);
+    }
+
+    @Override
     @Transactional
     public void processReserveItems(ReserveOrderDTO reserveOrderDTO, ProcessedOrder processedOrder) {
-        // TODO: Validate that all product id's are valid
+        if (!areOrderItemsValid(reserveOrderDTO.getOrderItems())) {
+            processedOrder.setStatus(ProcessedOrderStatus.INVALID_PRODUCTS);
+            final ProcessedOrder failedOrder = processedOrderRepository.save(processedOrder);
+
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            sendKafkaFailureReserveItemsMessage(failedOrder);
+                        }
+                    });
+        }
+
+        processedOrder.setUserId(reserveOrderDTO.getUserId());
         processedOrder.setTotalPrice(calculateProductsSum(reserveOrderDTO));
 
         try {
@@ -67,7 +92,6 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                     .getOrderItems()
                     .forEach(this::reserveProduct);
 
-            processedOrder.setUserId(reserveOrderDTO.getUserId());
             processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
             final ProcessedOrder savedOrder = processedOrderRepository.save(processedOrder);
 
@@ -84,7 +108,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                     });
 
         } catch (DataIntegrityViolationException ex) {
-            log.info("One of the items is not available - returning the other items back in stock.");
+            log.info("One of the items is not available. Returning the other items back in stock.");
 
             processedOrder.setStatus(ProcessedOrderStatus.NOT_IN_STOCK);
             final ProcessedOrder failedOrder = processedOrderPersistenceService.save(processedOrder);
@@ -103,17 +127,14 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         }
     }
 
-    @Override
-    public ProcessedOrder initializeProcessedOrder(Long orderId) {
-        return save(new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING));
-    }
+    private boolean areOrderItemsValid(List<ReserveOrderItemDTO> orderItems) {
+        List<Long> productIds = orderItems
+                .stream()
+                .map(reserveOrderItemDTO -> CommonEntity.convertSnowflakeIdToId(reserveOrderItemDTO.getProductId()))
+                .toList();
 
-    private void reserveProduct(ReserveOrderItemDTO reserveOrderItemDTO) {
-        productRepository
-                .decreaseProductInStockQuantity(
-                        reserveOrderItemDTO.getQuantity(),
-                        CommonEntity.convertSnowflakeIdToId(reserveOrderItemDTO.getProductId())
-                );
+        long validIdsCount = productRepository.findAllById(productIds).size();
+        return validIdsCount == productIds.size();
     }
 
     private BigDecimal calculateProductsSum(ReserveOrderDTO reserveOrderDTO) {
@@ -126,6 +147,14 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                         CommonEntity.convertSnowflakeIdToId(reserveOrderItemDTO.getProductId())
                                 )
                                 .toList()
+                );
+    }
+
+    private void reserveProduct(ReserveOrderItemDTO reserveOrderItemDTO) {
+        productRepository
+                .decreaseProductInStockQuantity(
+                        reserveOrderItemDTO.getQuantity(),
+                        CommonEntity.convertSnowflakeIdToId(reserveOrderItemDTO.getProductId())
                 );
     }
 
@@ -202,28 +231,28 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
-    public ProcessedOrder save(ProcessedOrder processedOrder) {
-        log.info("Persisting processed order with id {} to the database.", processedOrder.getOrderId());
-        return processedOrderRepository.save(processedOrder);
+    @Transactional
+    public void processPaymentUnsuccessful(PaymentUnsuccessfulDTO paymentDTO) {
+        processedOrderRepository
+                .findById(paymentDTO.getOrderId())
+                .ifPresent(processedOrder -> {
+                    List<ReservedProduct> reservedProducts = reservedProductService.getAllByProcessedOrder(processedOrder);
+
+                    reservedProducts
+                            .forEach(this::returnBackProduct);
+
+                    cleanupProcessedOrder(paymentDTO.getOrderId());
+                });
     }
 
     @Override
     @Transactional
-    public void processPaymentUnsuccessful(PaymentUnsuccessfulDTO paymentDTO) {
-        ProcessedOrder processedOrder = processedOrderRepository
-                .findById(paymentDTO.getOrderId())
-                .get();
-
-        List<ReservedProduct> reservedProducts = reservedProductService
-                .getAllByProcessedOrder(processedOrder);
-
-        reservedProducts
-                .forEach(this::returnBackProduct);
-
-        processedOrderRepository.delete(processedOrder);
+    public void cleanupProcessedOrder(Long id) {
+        log.info("Deleting processedOrder with id {} and its reservedProducts from the database.", id);
+        productRepository.deleteById(id);
     }
 
-    public void returnBackProduct(ReservedProduct reservedProduct) {
+    private void returnBackProduct(ReservedProduct reservedProduct) {
         productRepository
                 .increaseProductInStockQuantity(
                         reservedProduct.getQuantity(),

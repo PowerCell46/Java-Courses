@@ -8,6 +8,8 @@ public interface ProcessedOrderService {
 
     boolean isOrderProcessed(Long orderId);
 
+    ProcessedOrder save(ProcessedOrder processedOrder);
+
     ProcessedOrder initializeProcessedOrder(Long orderId);
 
     void processReserveItems(ReserveOrderDTO reserveOrderDTO, ProcessedOrder processedOrder);
@@ -16,7 +18,7 @@ public interface ProcessedOrderService {
 
     void sendKafkaFailureReserveItemsMessage(ProcessedOrder processedOrder);
 
-    ProcessedOrder save(ProcessedOrder processedOrder);
-
     void processPaymentUnsuccessful(PaymentUnsuccessfulDTO paymentDTO);
+
+    void cleanupProcessedOrder(Long id);
 }

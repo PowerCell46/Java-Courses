@@ -4,9 +4,11 @@ public enum ProcessedOrderStatus {
 
     PROCESSING, // 0
 
-    RESERVED, // 1
+    INVALID_PRODUCTS, // 1
 
-    NOT_IN_STOCK, // 2
+    RESERVED, // 2
 
-    SENT_TO_KAFKA // 3
+    NOT_IN_STOCK, // 3
+
+    SENT_TO_KAFKA // 4
 }

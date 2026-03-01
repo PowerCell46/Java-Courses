@@ -27,21 +27,25 @@ public class ReservedProductServiceImpl implements ReservedProductService {
     }
 
     @Override
-    public List<ReservedProduct> getAllByProcessedOrder(ProcessedOrder processedOrder) {
-        return reservedProductRepository.findAllByProcessedOrder(processedOrder);
-    }
-
     public ReservedProduct save(ReservedProduct reservedProduct) {
         log.info("Persisting reservedProduct to the database.");
 
         return reservedProductRepository.save(reservedProduct);
     }
 
-    private ReservedProduct instantiateFromOrderItem(ReserveOrderItemDTO reserveOrderItemDTO, ProcessedOrder processedOrder) {
+    private ReservedProduct instantiateFromOrderItem(
+            ReserveOrderItemDTO reserveOrderItemDTO,
+            ProcessedOrder processedOrder
+    ) {
         return new ReservedProduct(
                 processedOrder,
                 productService.getById(reserveOrderItemDTO.getProductId()),
                 reserveOrderItemDTO.getQuantity()
         );
+    }
+
+    @Override
+    public List<ReservedProduct> getAllByProcessedOrder(ProcessedOrder processedOrder) {
+        return reservedProductRepository.findAllByProcessedOrder(processedOrder);
     }
 }
