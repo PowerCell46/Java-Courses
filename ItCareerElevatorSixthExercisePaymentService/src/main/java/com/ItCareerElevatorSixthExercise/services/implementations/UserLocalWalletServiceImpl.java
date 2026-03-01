@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -20,23 +22,12 @@ public class UserLocalWalletServiceImpl implements UserLocalWalletService {
     private final UserRepository userRepository;
 
     @Override
-    public User save(User user) {
-        log.info("Persisting user with id {} to the database.", user.getId());
-        return userRepository.save(user);
-    }
-
-    @Override
     public UserResponseDTO initializeUser(UserLocalWalletRequestDTO requestDTO) {
         if (userAlreadyExists(requestDTO.getId())) {
-            throw new UserAlreadyExistsException(
-                    String.format("User with id %s already exists.", requestDTO.getId())
-            );
+            throw new UserAlreadyExistsException(String.format("User with id %s already exists.", requestDTO.getId()));
         }
 
-        User user = new User(
-                requestDTO.getId(),
-                requestDTO.getAmount()
-        );
+        User user = new User(requestDTO.getId(), requestDTO.getAmount());
         user = save(user);
 
         return new UserResponseDTO(user.getId());
@@ -48,10 +39,17 @@ public class UserLocalWalletServiceImpl implements UserLocalWalletService {
                 .isPresent();
     }
 
-    @Override // ! This can throw an err if an order executes at the same time (retry until successful)
-    public UserLocalWalletResponseDTO processDeposit(UserLocalWalletRequestDTO requestDTO) {
-        User user = getById(requestDTO.getId());
-        user.setBalance(user.getBalance().add(requestDTO.getAmount()));
+    @Override
+    public User save(User user) {
+        log.info("Persisting user with id {} to the database.", user.getId());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public UserLocalWalletResponseDTO processDeposit(String id, BigDecimal depositAmount) {
+        User user = getById(id);
+
+        user.setBalance(user.getBalance().add(depositAmount));
         user = userRepository.save(user);
 
         return new UserLocalWalletResponseDTO(user.getId(), user.getBalance());
@@ -67,7 +65,6 @@ public class UserLocalWalletServiceImpl implements UserLocalWalletService {
     private User getById(String userId) {
         return userRepository
                 .findById(userId)
-                .orElseThrow(() ->
-                        new NoSuchUserException(String.format("No user found with id %s.", userId)));
+                .orElseThrow(() -> new NoSuchUserException(String.format("No user found with id %s.", userId)));
     }
 }

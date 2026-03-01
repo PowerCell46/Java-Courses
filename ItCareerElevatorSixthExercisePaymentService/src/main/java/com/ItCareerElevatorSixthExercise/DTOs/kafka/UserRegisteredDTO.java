@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka.registerUser;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserRegisteredDTO {
 
-    private String id;
+    private String id; // UUID
 
     private String username;
 

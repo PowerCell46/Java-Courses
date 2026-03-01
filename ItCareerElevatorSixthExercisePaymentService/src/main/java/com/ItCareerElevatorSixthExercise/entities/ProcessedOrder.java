@@ -25,10 +25,10 @@ import java.time.LocalDateTime;
 public class ProcessedOrder {
 
     @Id
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
     @Column(nullable = false)
-    private String userId;
+    private String userId; // UUID
 
     @Column(nullable = false)
     private BigDecimal totalPrice;

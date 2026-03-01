@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 
 import java.math.BigDecimal;

@@ -40,12 +40,12 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, String> orderPaymentSuccessfulKafkaTemplate() {
+    public KafkaTemplate<String, String> paymentSuccessfulKafkaTemplate() {
         return new KafkaTemplate<>(defaultProducerFactory());
     }
 
     @Bean
-    public KafkaTemplate<String, String> orderPaymentUnsuccessfulKafkaTemplate() {
+    public KafkaTemplate<String, String> paymentUnsuccessfulKafkaTemplate() {
         return new KafkaTemplate<>(defaultProducerFactory());
     }
 }

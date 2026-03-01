@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PaymentUnsuccessfulDTO {
 
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
     private String reason;
 }

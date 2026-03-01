@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ReservedOrderDTO {
 
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
-    private String userId;
+    private String userId; // UUID
 
     private BigDecimal totalPrice;
 }

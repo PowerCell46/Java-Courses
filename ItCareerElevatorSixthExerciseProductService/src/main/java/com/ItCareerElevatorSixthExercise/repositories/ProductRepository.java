@@ -24,4 +24,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT COALESCE(SUM(p.price), 0) FROM Product p WHERE p.id IN :productIds")
     BigDecimal getProductsPriceSum(@Param("productIds") List<Long> productIds);
 }
-// TODO: We are bending the versioning this way
+// TODO: We are bending the versioning rule this way

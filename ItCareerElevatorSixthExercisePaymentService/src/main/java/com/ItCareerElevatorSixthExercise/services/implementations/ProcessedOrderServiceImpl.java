@@ -1,8 +1,8 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful.PaymentSuccessfulDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.PaymentSuccessfulDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.PaymentUnsuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
@@ -40,8 +40,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     private final UserRepository userRepository;
     private final ProcessedOrderRepository processedOrderRepository;
     private final ProcessedOrderPersistenceService processedOrderPersistenceService;
-    private final KafkaTemplate<String, String> orderPaymentSuccessfulKafkaTemplate;
-    private final KafkaTemplate<String, String> orderPaymentUnsuccessfulKafkaTemplate;
+    private final KafkaTemplate<String, String> paymentSuccessfulKafkaTemplate;
+    private final KafkaTemplate<String, String> paymentUnsuccessfulKafkaTemplate;
 
     @Override
     public boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO) {
@@ -145,15 +145,12 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Override
     public void sendKafkaSuccessfulOrderPayment(ProcessedOrder processedOrder) {
         try {
-            var paymentSuccessfulDTO = new PaymentSuccessfulDTO(
-                    processedOrder.getOrderId(),
-                    processedOrder.getTotalPrice()
-            );
+            var paymentSuccessfulDTO = new PaymentSuccessfulDTO(processedOrder.getOrderId());
 
             String key = String.format("payment-successful-%d", processedOrder.getOrderId());
             String value = objectMapper.writeValueAsString(paymentSuccessfulDTO);
 
-            orderPaymentSuccessfulKafkaTemplate
+            paymentSuccessfulKafkaTemplate
                     .send(PAYMENT_SUCCESSFUL_TOPIC_NAME, key, value)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {
@@ -188,7 +185,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             String key = String.format("payment-unsuccessful-%d", paymentUnsuccessfulDTO.getOrderId());
             String value = objectMapper.writeValueAsString(paymentUnsuccessfulDTO);
 
-            orderPaymentUnsuccessfulKafkaTemplate
+            paymentUnsuccessfulKafkaTemplate
                     .send(PAYMENT_UNSUCCESSFUL_TOPIC_NAME, key, value)
                     .whenComplete((result, ex) -> {
                         if (ex != null) {

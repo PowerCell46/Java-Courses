@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.registerUser.UserRegisteredDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.UserRegisteredDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserLocalWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserLocalWalletService;
@@ -24,18 +24,18 @@ public class UserRegisteredListener {
             groupId = "${spring.kafka.user-registered-consumer.group-id}",
             containerFactory = "userRegisteredKafkaListenerContainerFactory"
     )
-    public void handleRegisterUserMessage(UserRegisteredDTO userRegisteredDTO) {
-        if (userRegisteredDTO == null || userRegisteredDTO.getId() == null)
+    public void handleRegisterUserMessage(UserRegisteredDTO registerDTO) {
+        if (registerDTO == null || registerDTO.getId() == null)
             return;
 
-        log.info("---> Handling registerUser with id {}.", userRegisteredDTO.getId());
+        log.info("---> Handling registerUser with id {}.", registerDTO.getId());
 
-        if (userRepository.findById(userRegisteredDTO.getId()).isPresent()) {
-            log.info("User with id {} is already registered. Skipping...", userRegisteredDTO.getId());
+        if (userRepository.findById(registerDTO.getId()).isPresent()) {
+            log.info("User with id {} is already registered. Skipping...", registerDTO.getId());
             return;
         }
 
-        userLocalWalletService
-                .initializeUser(new UserLocalWalletRequestDTO(userRegisteredDTO.getId(), BigDecimal.ZERO));
+        var walletRequestDTO = new UserLocalWalletRequestDTO(registerDTO.getId(), BigDecimal.ZERO);
+        userLocalWalletService.initializeUser(walletRequestDTO);
     }
 }

@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class ItemsReservedListener {
 
         log.info("---> Handling itemsReserved for order with id {}.", orderDTO.getOrderId());
 
-        if (processedOrderService.isOrderAlreadyProcessed(orderDTO)) { // TODO: Pushed twice. Why? (Doesn't show in order service consumer twice)
+        if (processedOrderService.isOrderAlreadyProcessed(orderDTO)) {
             log.info("Order with id {} is already processed. Skipping...", orderDTO.getOrderId());
             return;
         }

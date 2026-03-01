@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserResponseDTO {
 
-    private String id;
+    private String id; // UUID
 }

@@ -1,11 +1,9 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -13,7 +11,5 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class PaymentSuccessfulDTO {
 
-    private Long orderId;
-
-    private BigDecimal totalPrice;
+    private Long orderId; // snowflakeId
 }

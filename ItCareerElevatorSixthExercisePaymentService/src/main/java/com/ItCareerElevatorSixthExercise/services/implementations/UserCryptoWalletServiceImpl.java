@@ -62,11 +62,11 @@ public class UserCryptoWalletServiceImpl implements UserCryptoWalletService {
 
         log.info("Processing transaction matching the wallet.");
 
-        if (optionalUser.isEmpty()) // ? Unknown wallet has sent us crypto
+        if (optionalUser.isEmpty()) // ? Unknown wallet has sent crypto (What should we do in this case)
             return;
 
-        // ! You have to get the ether/euro when the transaction happened (execution price)
         BigDecimal paidAmountInEther = Convert.fromWei(new BigDecimal(transaction.getValue()), Convert.Unit.ETHER);
+        // ! You have to get the eth/euro ratio for the timestamp when the transaction happened (execution price)
         BigDecimal paidAmountInEuros = currencyConversionService.convertEtherToEuro(paidAmountInEther);
 
         log.info("Paid amount in euros: {}. Paid amount in ether: {}.", paidAmountInEuros, paidAmountInEther);
@@ -74,22 +74,20 @@ public class UserCryptoWalletServiceImpl implements UserCryptoWalletService {
         Optional<ProcessedOrder> optionalProcessedOrder = processedOrderService
                 .findByUserIdAndApproximateTotalPrice(optionalUser.get().getId(), paidAmountInEuros);
 
-        if (optionalProcessedOrder.isEmpty()) // ? Couldn't find such order (with payer's wallet address, order with the paid amount)
+        if (optionalProcessedOrder.isEmpty()) // ? Couldn't find such (with users address and totalSum == paidSum)
             return;
 
         optionalProcessedOrder.get().setStatus(ProcessedOrderStatus.PAID);
         processedOrderRepository.save(optionalProcessedOrder.get());
 
-        processedOrderService
-                .sendKafkaSuccessfulOrderPayment(optionalProcessedOrder.get());
+        processedOrderService.sendKafkaSuccessfulOrderPayment(optionalProcessedOrder.get());
     }
 
     @Override
     public UserCryptoWalletResponseDTO getWalletAddress(String id) {
         User user = userRepository
                 .findById(id)
-                .orElseThrow(() ->
-                        new NoSuchUserException(String.format("No user found with id %s.", id)));
+                .orElseThrow(() -> new NoSuchUserException(String.format("No user found with id %s.", id)));
 
         return new UserCryptoWalletResponseDTO(id, user.getWalletAddress());
     }
