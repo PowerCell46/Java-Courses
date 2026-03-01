@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 
 public interface ProcessedOrderPersistenceService {
 

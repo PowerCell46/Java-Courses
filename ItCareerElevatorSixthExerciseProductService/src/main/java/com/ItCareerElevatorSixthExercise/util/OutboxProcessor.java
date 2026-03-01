@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.util;
 
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ReservedProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
@@ -27,7 +27,7 @@ public class OutboxProcessor {
     @Scheduled(fixedDelay = 1_000 * 60 * 2) // 2 minutes
     public void processFailedKafkaMessages() {
         List<ProcessedOrder> failedReservedOrders = fetchReservedFailedOrders();
-        failedReservedOrders
+        failedReservedOrders // TODO: Filter by reserved with a timestamp
                 .forEach(processedOrderService::sendKafkaSuccessReserveItemsMessage);
 
         List<ProcessedOrder> failedNotInStockOrders = fetchNotInStockFailedOrders();
@@ -37,7 +37,7 @@ public class OutboxProcessor {
 
     private List<ProcessedOrder> fetchReservedFailedOrders() {
         return processedOrderRepository
-                .findAllByStatusAndLastModifiedAtBefore(ProcessedOrderStatus.RETRY_KAFKA_SEND, LocalDateTime.now().minusMinutes(5));
+                .findAllByStatusAndLastModifiedAtBefore(null, LocalDateTime.now().minusMinutes(5));
     }
 
     private List<ProcessedOrder> fetchNotInStockFailedOrders() {

@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.repositories;
 
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
-import com.ItCareerElevatorSixthExercise.entities.ReservedProduct;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

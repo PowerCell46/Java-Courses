@@ -1,7 +1,7 @@
-package com.ItCareerElevatorSixthExercise.entities;
+package com.ItCareerElevatorSixthExercise.entities.product;
 
+import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;

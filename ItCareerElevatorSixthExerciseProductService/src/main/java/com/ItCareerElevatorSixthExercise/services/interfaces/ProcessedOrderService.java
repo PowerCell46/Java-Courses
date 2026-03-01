@@ -1,8 +1,8 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderDTO;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 
 public interface ProcessedOrderService {
 
@@ -10,7 +10,7 @@ public interface ProcessedOrderService {
 
     ProcessedOrder initializeProcessedOrder(Long orderId);
 
-    void processReserveItems(OrderDTO orderDTO, ProcessedOrder processedOrder);
+    void processReserveItems(ReserveOrderDTO reserveOrderDTO, ProcessedOrder processedOrder);
 
     void sendKafkaSuccessReserveItemsMessage(ProcessedOrder processedOrder);
 

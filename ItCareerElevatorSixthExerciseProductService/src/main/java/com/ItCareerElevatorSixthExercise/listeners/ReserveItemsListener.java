@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class ReserveItemsListener {
             groupId = "${spring.kafka.reserve-items-consumer.group-id}",
             containerFactory = "reserveItemsKafkaListenerContainerFactory"
     )
-    public void handleReserveItemsMessage(OrderDTO order) {
+    public void handleReserveItemsMessage(ReserveOrderDTO order) {
         if (order == null || order.getId() == null)
             return;
 

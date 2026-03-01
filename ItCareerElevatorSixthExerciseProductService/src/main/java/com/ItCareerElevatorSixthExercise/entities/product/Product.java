@@ -1,5 +1,6 @@
-package com.ItCareerElevatorSixthExercise.entities;
+package com.ItCareerElevatorSixthExercise.entities.product;
 
+import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -48,14 +48,4 @@ public class Product extends CommonEntity {
 
     @Version
     private Long version;
-
-    public Product(BigDecimal price, Integer inStockQuantity, String imageUrl, Manufacturer manufacturer) {
-        super();
-
-        this.price = price;
-        this.inStockQuantity = inStockQuantity;
-        this.imageUrl = imageUrl;
-        this.manufacturer = manufacturer;
-        this.translations = new HashSet<>();
-    }
 }

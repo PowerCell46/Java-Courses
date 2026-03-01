@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.repositories;
 
-import com.ItCareerElevatorSixthExercise.entities.Manufacturer;
+import com.ItCareerElevatorSixthExercise.entities.product.Manufacturer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

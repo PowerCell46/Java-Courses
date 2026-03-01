@@ -1,5 +1,7 @@
-package com.ItCareerElevatorSixthExercise.entities;
+package com.ItCareerElevatorSixthExercise.entities.reservation;
 
+import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
+import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

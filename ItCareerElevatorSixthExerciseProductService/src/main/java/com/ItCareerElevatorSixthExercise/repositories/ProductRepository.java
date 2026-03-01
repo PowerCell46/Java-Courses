@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.repositories;
 
-import com.ItCareerElevatorSixthExercise.entities.Product;
+import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -87,6 +87,7 @@ public class ProductController {
     }
 
     // TODO: increase product quantity {productId, restockQuantity (will be += to the current quantity)}
+    // ATM you CANNOT change the inStockQuantity
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DeleteProductResponseDTO> deleteProduct(@PathVariable String id) {

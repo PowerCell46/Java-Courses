@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.entities;
+package com.ItCareerElevatorSixthExercise.entities.reservation;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,6 +17,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,7 +37,7 @@ public class ProcessedOrder {
     @Column(nullable = false)
     private String userId; // UUID
 
-    @Column(nullable = false)
+    @Column
     private BigDecimal totalPrice;
 
     @Column(nullable = false)
@@ -60,7 +61,7 @@ public class ProcessedOrder {
         this.orderId = orderId;
         this.lastModifiedAt = LocalDateTime.now();
         this.userId = "N/A";
-        this.totalPrice = BigDecimal.ZERO;
         this.status = status;
+        this.reservedProducts = new ArrayList<>();
     }
 }

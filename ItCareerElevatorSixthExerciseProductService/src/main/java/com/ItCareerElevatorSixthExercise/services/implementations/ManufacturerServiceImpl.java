@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.entities.Manufacturer;
+import com.ItCareerElevatorSixthExercise.entities.product.Manufacturer;
 import com.ItCareerElevatorSixthExercise.repositories.ManufacturerRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ManufacturerService;
 import lombok.RequiredArgsConstructor;

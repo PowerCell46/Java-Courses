@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
 
-import com.ItCareerElevatorSixthExercise.entities.Locale;
+import com.ItCareerElevatorSixthExercise.entities.product.Locale;
 
 public interface LocaleService {
 

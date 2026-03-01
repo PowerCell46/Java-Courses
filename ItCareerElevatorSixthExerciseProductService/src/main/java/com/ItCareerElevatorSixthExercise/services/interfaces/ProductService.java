@@ -5,7 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
-import com.ItCareerElevatorSixthExercise.entities.Product;
+import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

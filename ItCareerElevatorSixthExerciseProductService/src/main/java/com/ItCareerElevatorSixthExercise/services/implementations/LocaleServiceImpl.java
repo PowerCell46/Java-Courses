@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.entities.Locale;
+import com.ItCareerElevatorSixthExercise.entities.product.Locale;
 import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchLocaleException;
 import com.ItCareerElevatorSixthExercise.repositories.LocaleRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.LocaleService;

@@ -11,11 +11,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDTO {
+public class ReserveOrderDTO {
 
     private Long id;
 
     private String userId; // UUID
 
-    private List<OrderItemDTO> orderItems;
+    private List<ReserveOrderItemDTO> orderItems;
 }

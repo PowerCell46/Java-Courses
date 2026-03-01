@@ -1,14 +1,14 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
-import com.ItCareerElevatorSixthExercise.entities.ReservedProduct;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderItemDTO;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
 
 import java.util.List;
 
 public interface ReservedProductService {
 
-    void initializeOrderItems(List<OrderItemDTO> orderItems, ProcessedOrder processedOrder);
+    void initializeOrderItems(List<ReserveOrderItemDTO> orderItems, ProcessedOrder processedOrder);
 
     List<ReservedProduct> getAllByProcessedOrder(ProcessedOrder processedOrder);
 }

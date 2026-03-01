@@ -1,8 +1,8 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
-import com.ItCareerElevatorSixthExercise.entities.ReservedProduct;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderItemDTO;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
 import com.ItCareerElevatorSixthExercise.repositories.ReservedProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ReservedProductService;
@@ -21,9 +21,9 @@ public class ReservedProductServiceImpl implements ReservedProductService {
     private final ReservedProductRepository reservedProductRepository;
 
     @Override
-    public void initializeOrderItems(List<OrderItemDTO> orderItems, ProcessedOrder processedOrder) {
+    public void initializeOrderItems(List<ReserveOrderItemDTO> orderItems, ProcessedOrder processedOrder) {
         orderItems
-                .forEach(orderItemDTO -> save(instantiateFromOrderItem(orderItemDTO, processedOrder)));
+                .forEach(reserveOrderItemDTO -> save(instantiateFromOrderItem(reserveOrderItemDTO, processedOrder)));
     }
 
     @Override
@@ -37,11 +37,11 @@ public class ReservedProductServiceImpl implements ReservedProductService {
         return reservedProductRepository.save(reservedProduct);
     }
 
-    private ReservedProduct instantiateFromOrderItem(OrderItemDTO orderItemDTO, ProcessedOrder processedOrder) {
+    private ReservedProduct instantiateFromOrderItem(ReserveOrderItemDTO reserveOrderItemDTO, ProcessedOrder processedOrder) {
         return new ReservedProduct(
                 processedOrder,
-                productService.getById(orderItemDTO.getProductId()),
-                orderItemDTO.getQuantity()
+                productService.getById(reserveOrderItemDTO.getProductId()),
+                reserveOrderItemDTO.getQuantity()
         );
     }
 }

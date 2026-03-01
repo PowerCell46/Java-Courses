@@ -2,13 +2,13 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderItemDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrderStatus;
-import com.ItCareerElevatorSixthExercise.entities.ProcessedOrder;
-import com.ItCareerElevatorSixthExercise.entities.ReservedProduct;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrderStatus;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
+import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
 import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
 import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderPersistenceService;
@@ -58,22 +58,22 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     @Override
     @Transactional
-    public void processReserveItems(OrderDTO orderDTO, ProcessedOrder processedOrder) {
+    public void processReserveItems(ReserveOrderDTO reserveOrderDTO, ProcessedOrder processedOrder) {
         // TODO: Validate that all product id's are valid
-        processedOrder.setTotalPrice(calculateProductsSum(orderDTO));
+        processedOrder.setTotalPrice(calculateProductsSum(reserveOrderDTO));
 
         try {
-            orderDTO
+            reserveOrderDTO
                     .getOrderItems()
                     .forEach(this::reserveProduct);
 
-            processedOrder.setUserId(orderDTO.getUserId());
+            processedOrder.setUserId(reserveOrderDTO.getUserId());
             processedOrder.setStatus(ProcessedOrderStatus.RESERVED);
             final ProcessedOrder savedOrder = processedOrderRepository.save(processedOrder);
 
-            reservedProductService.initializeOrderItems(orderDTO.getOrderItems(), savedOrder);
+            reservedProductService.initializeOrderItems(reserveOrderDTO.getOrderItems(), savedOrder);
 
-            log.info("Successful reservation of products for order with id {}.", orderDTO.getId());
+            log.info("Successful reservation of products for order with id {}.", reserveOrderDTO.getId());
 
             TransactionSynchronizationManager
                     .registerSynchronization(new TransactionSynchronization() {
@@ -108,22 +108,22 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         return save(new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING));
     }
 
-    private void reserveProduct(OrderItemDTO orderItemDTO) {
+    private void reserveProduct(ReserveOrderItemDTO reserveOrderItemDTO) {
         productRepository
                 .decreaseProductInStockQuantity(
-                        orderItemDTO.getQuantity(),
-                        CommonEntity.convertSnowflakeIdToId(orderItemDTO.getProductId())
+                        reserveOrderItemDTO.getQuantity(),
+                        CommonEntity.convertSnowflakeIdToId(reserveOrderItemDTO.getProductId())
                 );
     }
 
-    private BigDecimal calculateProductsSum(OrderDTO orderDTO) {
+    private BigDecimal calculateProductsSum(ReserveOrderDTO reserveOrderDTO) {
         return productRepository
                 .getProductsPriceSum(
-                        orderDTO
+                        reserveOrderDTO
                                 .getOrderItems()
                                 .stream()
-                                .map(orderItemDTO ->
-                                        CommonEntity.convertSnowflakeIdToId(orderItemDTO.getProductId())
+                                .map(reserveOrderItemDTO ->
+                                        CommonEntity.convertSnowflakeIdToId(reserveOrderItemDTO.getProductId())
                                 )
                                 .toList()
                 );
@@ -147,9 +147,6 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                         if (ex != null) {
                             log.error("Failed to send ReservedOrderDTO to topic {}.", ITEMS_RESERVED_TOPIC_NAME, ex);
 
-                            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
-                            processedOrderRepository.save(processedOrder);
-
                         } else {
                             log.info("Sent ReservedOrderDTO {} to topic {} partition {} offset {}.",
                                     key,
@@ -165,9 +162,6 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(reservedOrderDTO)\".");
-
-            processedOrder.setStatus(ProcessedOrderStatus.RETRY_KAFKA_SEND);
-            processedOrderRepository.save(processedOrder);
         }
     }
 

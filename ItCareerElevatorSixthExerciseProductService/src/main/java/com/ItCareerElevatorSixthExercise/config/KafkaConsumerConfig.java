@@ -2,7 +2,7 @@ package com.ItCareerElevatorSixthExercise.config;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful.PaymentSuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.OrderDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,14 +34,14 @@ public class KafkaConsumerConfig {
     private String paymentSuccessfulConsumerGroupId;
 
     @Bean
-    public ConsumerFactory<String, OrderDTO> reserveItemsConsumerFactory() {
+    public ConsumerFactory<String, ReserveOrderDTO> reserveItemsConsumerFactory() {
         Map<String, Object> properties = new HashMap<>();
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, reserveItemsConsumerGroupId);
 
         var keyDeserializer = new StringDeserializer();
-        var valueDeserializer = new JacksonJsonDeserializer<>(OrderDTO.class);
+        var valueDeserializer = new JacksonJsonDeserializer<>(ReserveOrderDTO.class);
         valueDeserializer.addTrustedPackages("*");
 
         return new DefaultKafkaConsumerFactory<>(
@@ -52,8 +52,8 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderDTO> reserveItemsKafkaListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, OrderDTO>();
+    public ConcurrentKafkaListenerContainerFactory<String, ReserveOrderDTO> reserveItemsKafkaListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, ReserveOrderDTO>();
         factory.setConsumerFactory(reserveItemsConsumerFactory());
         return factory;
     }

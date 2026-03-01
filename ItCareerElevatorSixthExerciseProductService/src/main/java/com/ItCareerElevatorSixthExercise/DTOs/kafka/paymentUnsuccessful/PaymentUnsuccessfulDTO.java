@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PaymentUnsuccessfulDTO {
 
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
     private String reason;
 }

@@ -4,8 +4,8 @@ package com.ItCareerElevatorSixthExercise.services.interfaces;
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.TranslationFieldRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
-import com.ItCareerElevatorSixthExercise.entities.Product;
-import com.ItCareerElevatorSixthExercise.entities.ProductTranslation;
+import com.ItCareerElevatorSixthExercise.entities.product.Product;
+import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 
 import java.util.List;
 import java.util.Set;

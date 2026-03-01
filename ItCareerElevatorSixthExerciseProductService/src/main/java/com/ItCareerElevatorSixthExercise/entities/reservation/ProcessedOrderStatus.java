@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.entities;
+package com.ItCareerElevatorSixthExercise.entities.reservation;
 
 public enum ProcessedOrderStatus {
 
@@ -8,7 +8,5 @@ public enum ProcessedOrderStatus {
 
     NOT_IN_STOCK, // 2
 
-    SENT_TO_KAFKA, // 3
-
-    RETRY_KAFKA_SEND // 4
+    SENT_TO_KAFKA // 3
 }

@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.entities;
+package com.ItCareerElevatorSixthExercise.entities.product;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,13 +14,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "locales")
-public class Locale {
+@Table(name = "manufacturers")
+public class Manufacturer {
 
     @Id
-    @Column(length = 10)
-    private String code;
-
     @Column(nullable = false)
     private String name;
 }

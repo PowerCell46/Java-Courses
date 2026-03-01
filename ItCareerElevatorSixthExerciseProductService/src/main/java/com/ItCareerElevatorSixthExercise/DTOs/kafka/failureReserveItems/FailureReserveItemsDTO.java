@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class FailureReserveItemsDTO {
 
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
     private BigDecimal totalPrice;
 

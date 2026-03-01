@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.repositories;
 
-import com.ItCareerElevatorSixthExercise.entities.Locale;
+import com.ItCareerElevatorSixthExercise.entities.product.Locale;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
