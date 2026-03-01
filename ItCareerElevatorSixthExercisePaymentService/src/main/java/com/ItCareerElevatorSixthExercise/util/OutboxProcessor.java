@@ -19,7 +19,6 @@ import java.util.List;
 public class OutboxProcessor {
 
     private static final Integer MAX_TIME_FOR_A_GIVEN_STATE = 10;
-    private static final Integer MAX_WAITING_TIME_FOR_PAYMENT = 15;
 
     private final ProcessedOrderService processedOrderService;
     private final ProcessedOrderRepository processedOrderRepository;
@@ -27,24 +26,40 @@ public class OutboxProcessor {
     @Transactional
     @Scheduled(fixedDelay = 1_000 * 60 * 2) // 2 minutes
     public void processFailedKafkaMessages() {
+        List<ProcessedOrder> failedProcessingOrders = fetchProcessingFailedOrders();
+        failedProcessingOrders
+                .forEach(processedOrderService::sendKafkaFailureOrderPayment);
+
         /*
-        List<ProcessedOrder> ordersWithMissingWalletAddress = fetchOrdersWithMissingWalletAddress();
-        ordersWithMissingWalletAddress
+        List<ProcessedOrder> failedMissingWalletAddressOrders = fetchMissingWalletAddressFailedOrders();
+        failedMissingWalletAddressOrders
                 .forEach(processedOrderService::sendKafkaFailureOrderPayment);
         */
 
-        List<ProcessedOrder> retryPaidFailedInKafkaOrders = fetchPaidOrdersFailedInKafka();
-        retryPaidFailedInKafkaOrders
-                .forEach(processedOrderService::sendKafkaSuccessfulOrderPayment);
-
         /*
-        List<ProcessedOrder> timedOutOrders = fetchTimedOutOrders();
+        List<ProcessedOrder> timedOutOrders = fetchTimedOutFailedOrders();
         timedOutOrders
                 .forEach(processedOrderService::sendKafkaFailureOrderPayment);
          */
+
+        List<ProcessedOrder> failedInsufficientBalanceOrders = fetchInsufficientBalanceFailedOrders();
+        failedInsufficientBalanceOrders
+                .forEach(processedOrderService::sendKafkaFailureOrderPayment);
+
+        List<ProcessedOrder> retryPaidFailedInKafkaOrders = fetchPaidFailedOrders();
+        retryPaidFailedInKafkaOrders
+                .forEach(processedOrderService::sendKafkaSuccessfulOrderPayment);
     }
 
-    private List<ProcessedOrder> fetchOrdersWithMissingWalletAddress() {
+    private List<ProcessedOrder> fetchProcessingFailedOrders() {
+        return processedOrderRepository
+                .findAllByStatusAndLastModifiedAtBefore(
+                        ProcessedOrderStatus.PROCESSING,
+                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
+                );
+    }
+
+    private List<ProcessedOrder> fetchMissingWalletAddressFailedOrders() {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
                         ProcessedOrderStatus.MISSING_WALLET_ADDRESS,
@@ -52,15 +67,7 @@ public class OutboxProcessor {
                 );
     }
 
-    private List<ProcessedOrder> fetchPaidOrdersFailedInKafka() {
-        return processedOrderRepository
-                .findAllByStatusAndLastModifiedAtBefore(
-                        ProcessedOrderStatus.PROCESSING,
-                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
-                );
-    }
-
-    private List<ProcessedOrder> fetchTimedOutOrders() {
+    private List<ProcessedOrder> fetchTimedOutFailedOrders() {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
                         ProcessedOrderStatus.TIMED_OUT,
@@ -68,42 +75,19 @@ public class OutboxProcessor {
                 );
     }
 
-    @Transactional
-    // @Scheduled(fixedDelay = 1_000 * 60 * 20) // 20 minutes
-    public void processUnpaidOrders() {
-        List<ProcessedOrder> timedOutProcessingOrders = fetchTimedOutProcessingOrders();
-        timedOutProcessingOrders = timedOutProcessingOrders
-                .stream()
-                .peek(processedOrder -> processedOrder.setStatus(ProcessedOrderStatus.TIMED_OUT))
-                .toList();
-
-        processedOrderRepository.saveAll(timedOutProcessingOrders);
-        timedOutProcessingOrders
-                .forEach(processedOrderService::sendKafkaFailureOrderPayment);
-    }
-
-    private List<ProcessedOrder> fetchTimedOutProcessingOrders() {
+    private List<ProcessedOrder> fetchInsufficientBalanceFailedOrders() {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
-                        ProcessedOrderStatus.PROCESSING,
-                        LocalDateTime.now().minusMinutes(MAX_WAITING_TIME_FOR_PAYMENT)
+                        ProcessedOrderStatus.INSUFFICIENT_BALANCE,
+                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
                 );
     }
 
-    @Transactional
-    @Scheduled(cron = "1 23 0 * * *") // Every day at 01:23 AM
-    public void cleanupOldSentToKafkaOrders() {
-        List<ProcessedOrder> staleEntries = fetchStaleSentToKafkaOrders();
-
-        log.info("Daily cleanup of stale processed orders [{}].", staleEntries.size());
-        processedOrderRepository.deleteAll(staleEntries);
-    }
-
-    private List<ProcessedOrder> fetchStaleSentToKafkaOrders() {
+    private List<ProcessedOrder> fetchPaidFailedOrders() {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
-                        ProcessedOrderStatus.SENT_TO_KAFKA,
-                        LocalDateTime.now().minusDays(1)
+                        ProcessedOrderStatus.PAID,
+                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
                 );
     }
 }

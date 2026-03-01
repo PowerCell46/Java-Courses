@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public interface UserRepository extends JpaRepository<User, String> {
 
     @Modifying
-    @Query("UPDATE User u SET u.balance = u.balance - :orderTotalPrice WHERE u.id = :id")
-    void payForOrder(@Param("id") String id, @Param("orderTotalPrice") BigDecimal orderTotalPrice);
+    @Query("UPDATE User u SET u.balance = u.balance - :totalPrice WHERE u.id = :id")
+    void payForOrder(@Param("id") String id, @Param("totalPrice") BigDecimal totalPrice);
 }
 // TODO: We are bending the versioning rule this way

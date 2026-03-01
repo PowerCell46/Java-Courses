@@ -48,12 +48,16 @@ public class CryptocurrencyScheduler {
                     .getTransactions()
                     .stream()
                     .map(transaction -> (EthBlock.TransactionObject) transaction)
-                    .filter(transaction -> transaction.getTo() != null && transaction.getTo().equalsIgnoreCase(walletAddress))
+                    .filter(this::isReceiverCorrect)
                     .forEach(userCryptoWalletService::processTransaction);
         }
 
         lastScannedBlockState.setLastProcessedBlock(currentBlockNumber);
         blockNumberRepository.save(lastScannedBlockState);
+    }
+
+    private boolean isReceiverCorrect(EthBlock.TransactionObject transactionObject) {
+        return transactionObject != null && transactionObject.getTo().equalsIgnoreCase(walletAddress);
     }
 
     // * Imitating the characteristics of a runtime exception.

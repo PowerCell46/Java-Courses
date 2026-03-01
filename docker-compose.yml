@@ -203,6 +203,7 @@ services:
       KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_payment_service
       KAFKA_USER_REGISTERED_CONSUMER_GROUP: user_registered_payment_service
       ETHEREUM_NODE_URL: ${ETHEREUM_NODE_URL}
+      ETHEREUM_EURO_RATIO_URL: https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur
       ETHEREUM_WALLET_ADDRESS: ${ETHEREUM_WALLET_ADDRESS}
     depends_on:
       postgres_payments:

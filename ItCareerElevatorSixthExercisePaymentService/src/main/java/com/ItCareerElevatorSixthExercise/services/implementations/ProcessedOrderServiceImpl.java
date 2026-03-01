@@ -99,13 +99,13 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
     @Override
     public Optional<ProcessedOrder> findByUserIdAndApproximateTotalPrice(String userId, BigDecimal totalPrice) {
-        final BigDecimal ALLOWED_DEVIATION_IN_PRICE = BigDecimal.valueOf(2L);
+        final BigDecimal ALLOWED_DEVIATION_IN_EURO_PRICE = BigDecimal.valueOf(2L);
 
         return processedOrderRepository
                 .findByUserIdAndTotalPriceBetween(
                         userId,
-                        totalPrice.subtract(ALLOWED_DEVIATION_IN_PRICE),
-                        totalPrice.add(ALLOWED_DEVIATION_IN_PRICE)
+                        totalPrice.subtract(ALLOWED_DEVIATION_IN_EURO_PRICE),
+                        totalPrice.add(ALLOWED_DEVIATION_IN_EURO_PRICE)
                 );
     }
 
@@ -129,7 +129,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
             );
             processedOrder = save(processedOrder);
 
-            log.info("User with id {} hasn't specified his/hers wallet address.", processedOrder.getOrderId());
+            log.info("User with id {} hasn't specified their wallet address.", processedOrder.getOrderId());
             sendKafkaFailureOrderPayment(processedOrder);
         }
     }

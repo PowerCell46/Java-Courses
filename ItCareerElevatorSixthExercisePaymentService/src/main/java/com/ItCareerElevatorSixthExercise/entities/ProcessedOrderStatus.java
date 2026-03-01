@@ -2,13 +2,13 @@ package com.ItCareerElevatorSixthExercise.entities;
 
 public enum ProcessedOrderStatus {
 
-    MISSING_WALLET_ADDRESS, // 0
+    PROCESSING, // 0
 
-    INSUFFICIENT_BALANCE, // 1
+    MISSING_WALLET_ADDRESS, // 1
 
-    PROCESSING, // 2
+    TIMED_OUT, // 2
 
-    TIMED_OUT, // 3
+    INSUFFICIENT_BALANCE, // 3
 
     PAID, // 4
 
