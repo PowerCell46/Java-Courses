@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PaymentSuccessfulDTO {
 
-    private Long orderId;
+    private Long orderId; // snowflakeId
 }

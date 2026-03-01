@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ReserveOrderDTO {
 
-    private Long id;
+    private Long id; // snowflakeId
 
     private String userId; // UUID
 

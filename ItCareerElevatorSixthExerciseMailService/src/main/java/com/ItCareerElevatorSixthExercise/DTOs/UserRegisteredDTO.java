@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka;
+package com.ItCareerElevatorSixthExercise.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReserveOrderItemDTO {
+public class UserRegisteredDTO {
 
-    private String productId; // snowflakeId
+    private String id; // UUID
 
-    private Integer quantity;
+    private String username;
+
+    private String email;
 }

@@ -24,11 +24,11 @@ public class UserRegisteredListener {
             groupId = "${spring.kafka.user-registered-consumer.group-id}",
             containerFactory = "userRegisteredKafkaListenerContainerFactory"
     )
-    public void handleRegisterUserMessage(UserRegisteredDTO registerDTO) {
+    public void handleUserRegisteredMessage(UserRegisteredDTO registerDTO) {
         if (registerDTO == null || registerDTO.getId() == null)
             return;
 
-        log.info("---> Handling registerUser with id {}.", registerDTO.getId());
+        log.info("---> Handling userRegistered with id {}.", registerDTO.getId());
 
         if (userRepository.findById(registerDTO.getId()).isPresent()) {
             log.info("User with id {} is already registered. Skipping...", registerDTO.getId());

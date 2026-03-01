@@ -1,9 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.FailureReserveItemsDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReserveOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReserveOrderItemDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.kafka.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.OrderItemRequestDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.entities.OrderItem;
@@ -26,6 +24,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,23 +50,23 @@ public class OrderServiceImpl implements OrderService {
             throw new NonUniqueItemsException("The items in the order must be unique.");
         }
 
-        var createdStatus = loiOrderStatusService
-                .getByListOptionItemCode(LoiOrderStatus.CREATED);
+        var createdStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.CREATED);
 
-        Order order = save(new Order(requestDTO.getUserId(), createdStatus));
+        Order order = new Order(requestDTO.getUserId(), createdStatus);
+        Order persistedOrder = save(order);
 
         List<OrderItem> orderItems = requestDTO
                 .getItems()
                 .stream()
-                .map(orderItem -> orderItemService.initializeFromRequest(orderItem, order))
+                .map(orderItem -> orderItemService.persistFromRequest(orderItem, persistedOrder))
                 .toList();
-        order.setItems(orderItems);
+        persistedOrder.setItems(orderItems);
 
-        sendKafkaReserveItemsMessage(order);
+        sendKafkaReserveItemsMessage(persistedOrder);
 
         return new OrderResponseDTO(
-                order.getSnowflakeId(),
-                order.getOrderStatus().getName()
+                persistedOrder.getSnowflakeId(),
+                persistedOrder.getOrderStatus().getName()
         );
     }
 
@@ -85,7 +84,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order save(Order order) {
         log.info("Persisting an order of user with id {} to the database.", order.getUserId());
-
         return orderRepository.save(order);
     }
 
@@ -132,14 +130,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void handleKafkaMessageFailure(Order order) {
-        log.warn("Setting the order ({}) status to INTERNAL_FAILURE.", order.getId());
-
         order = orderRepository
                 .findById(order.getId())
                 .orElseThrow(() -> new NoSuchOrderFoundException("No order not found."));
 
-        var failedStatus = loiOrderStatusService
-                .getByListOptionItemCode(LoiOrderStatus.INTERNAL_FAILURE);
+        var failedStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.INTERNAL_FAILURE);
+
         order.setOrderStatus(failedStatus);
 
         orderRepository.save(order);
@@ -161,26 +157,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void processReservedOrder(ReservedOrderDTO orderDTO) {
-        setStatusById(orderDTO.getOrderId(), LoiOrderStatus.RESERVED);
+    public void processReserveItemsResult(Long orderId, BigDecimal totalPrice, Long loiOrderStatusCode) {
+        setStatusById(orderId, loiOrderStatusCode);
 
         orderRepository
-                .findById(orderDTO.getOrderId())
+                .findById(orderId)
                 .ifPresent(value -> {
-                    value.setTotalPrice(orderDTO.getTotalPrice());
-                    orderRepository.save(value);
-                });
-    }
-
-    @Override
-    @Transactional
-    public void processFailureReserveItems(FailureReserveItemsDTO failureDTO, Long loiOrderStatusCode) {
-        setStatusById(failureDTO.getOrderId(), loiOrderStatusCode);
-
-        orderRepository
-                .findById(failureDTO.getOrderId())
-                .ifPresent(value -> {
-                    value.setTotalPrice(failureDTO.getTotalPrice());
+                    value.setTotalPrice(totalPrice);
                     orderRepository.save(value);
                 });
     }

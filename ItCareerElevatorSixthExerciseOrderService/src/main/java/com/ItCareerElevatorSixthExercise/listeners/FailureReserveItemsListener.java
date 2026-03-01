@@ -27,8 +27,24 @@ public class FailureReserveItemsListener {
         log.info("---> Handling failureReserveItems for order with id {}.", failureDTO.getOrderId());
 
         switch (failureDTO.getReason()) {
-            case "PROCESSING" -> orderService.processFailureReserveItems(failureDTO, LoiOrderStatus.INTERNAL_FAILURE);
-            case "NOT_IN_STOCK" -> orderService.processFailureReserveItems(failureDTO, LoiOrderStatus.NOT_IN_STOCK);
+            case "PROCESSING" ->
+                    orderService.processReserveItemsResult(
+                            failureDTO.getOrderId(),
+                            failureDTO.getTotalPrice(),
+                            LoiOrderStatus.INTERNAL_FAILURE
+                    );
+            case "INVALID_PRODUCTS" ->
+                    orderService.processReserveItemsResult(
+                            failureDTO.getOrderId(),
+                            failureDTO.getTotalPrice(),
+                            LoiOrderStatus.INVALID_PRODUCTS
+                    );
+            case "NOT_IN_STOCK" ->
+                    orderService.processReserveItemsResult(
+                            failureDTO.getOrderId(),
+                            failureDTO.getTotalPrice(),
+                            LoiOrderStatus.NOT_IN_STOCK
+                    );
         }
     }
 }

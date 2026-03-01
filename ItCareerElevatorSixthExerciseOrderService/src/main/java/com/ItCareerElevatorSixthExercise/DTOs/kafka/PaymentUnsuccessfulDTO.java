@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PaymentUnsuccessfulDTO {
 
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
-    private String reason; // UNPAID, MISSING_WALLET_ADDRESS, INSUFFICIENT_BALANCE
+    private String reason; // PROCESSING, MISSING_WALLET_ADDRESS, TIMED_OUT, INSUFFICIENT_BALANCE
 }

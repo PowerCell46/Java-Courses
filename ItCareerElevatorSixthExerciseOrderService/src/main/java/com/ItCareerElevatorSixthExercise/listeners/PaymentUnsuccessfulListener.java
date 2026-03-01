@@ -27,6 +27,7 @@ public class PaymentUnsuccessfulListener {
         log.info("---> Handling paymentUnsuccessful for order with id {}.", paymentDTO.getOrderId());
 
         switch (paymentDTO.getReason()) {
+            case "PROCESSING" -> orderService.setStatusById(paymentDTO.getOrderId(), LoiOrderStatus.INTERNAL_FAILURE);
             case "MISSING_WALLET_ADDRESS" -> orderService.setStatusById(paymentDTO.getOrderId(), LoiOrderStatus.MISSING_WALLET_ADDRESS);
             case "TIMED_OUT" -> orderService.setStatusById(paymentDTO.getOrderId(), LoiOrderStatus.UNPAID);
             case "INSUFFICIENT_BALANCE" -> orderService.setStatusById(paymentDTO.getOrderId(), LoiOrderStatus.INSUFFICIENT_BALANCE);

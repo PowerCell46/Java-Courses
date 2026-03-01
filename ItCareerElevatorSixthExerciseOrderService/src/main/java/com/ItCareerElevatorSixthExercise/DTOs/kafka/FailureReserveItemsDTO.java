@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class FailureReserveItemsDTO {
 
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
     private BigDecimal totalPrice;
 
-    private String reason; // NOT_IN_STOCK, (FAILED_AT_)PROCESSING
+    private String reason; // PROCESSING, INVALID_PRODUCTS, NOT_IN_STOCK
 }

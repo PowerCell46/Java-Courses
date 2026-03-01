@@ -25,6 +25,15 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @GetMapping("/status/{id}")
+    public ResponseEntity<OrderResponseDTO> getOrderStatus(@PathVariable String id) {
+        log.info("---> GET request on api/orders/status/{}.", id);
+
+        var responseDTO = orderService.getById(id);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderRequestDTO requestDTO) {
         log.info("---> POST request on api/orders for user with id: {}.", requestDTO.getUserId());
@@ -33,14 +42,5 @@ public class OrderController {
 
         URI location = URI.create(String.format("/api/orders/status/%s", responseDTO.getId()));
         return ResponseEntity.created(location).body(responseDTO);
-    }
-
-    @GetMapping("/status/{id}")
-    public ResponseEntity<OrderResponseDTO> getOrderStatus(@PathVariable String id) {
-        log.info("---> GET request on api/orders/status/{}.", id);
-
-        var responseDTO = orderService.getById(id);
-
-        return ResponseEntity.ok(responseDTO);
     }
 }

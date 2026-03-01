@@ -17,13 +17,8 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public OrderItem initializeFromRequest(OrderItemRequestDTO requestDTO, Order order) {
-        OrderItem orderItem = new OrderItem(
-                requestDTO.getProductId(),
-                requestDTO.getQuantity(),
-                order
-        );
-
+    public OrderItem persistFromRequest(OrderItemRequestDTO requestDTO, Order order) {
+        OrderItem orderItem = new OrderItem(requestDTO.getProductId(), requestDTO.getQuantity(), order);
         return save(orderItem);
     }
 

@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderResponseDTO {
 
-    private String id;
+    private String id; // snowflakeId
 
     private String status;
 }

@@ -6,7 +6,7 @@ import com.ItCareerElevatorSixthExercise.entities.OrderItem;
 
 public interface OrderItemService {
 
-    OrderItem initializeFromRequest(OrderItemRequestDTO requestDTO, Order order);
+    OrderItem persistFromRequest(OrderItemRequestDTO requestDTO, Order order);
 
     OrderItem save(OrderItem orderItem);
 }
