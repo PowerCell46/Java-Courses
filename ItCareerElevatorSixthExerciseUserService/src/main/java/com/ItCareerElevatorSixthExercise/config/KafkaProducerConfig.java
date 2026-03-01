@@ -30,7 +30,7 @@ public class KafkaProducerConfig {
         // (subject to jitter and internal rules), but never longer than 120 seconds total for that record.
         config.put(ProducerConfig.RETRIES_CONFIG, 10);
         config.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 200);
-        config.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 120000);
+        config.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 120_000);
 
         config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         config.put(ProducerConfig.ACKS_CONFIG, "all");

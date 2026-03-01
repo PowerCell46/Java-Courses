@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MsvcUpdateUserCryptoWalletRequestDTO {
+public class MsvcCryptoWalletRequestDTO {
+
+    private String id; // UUID
 
     private String walletAddress;
 }

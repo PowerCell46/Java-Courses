@@ -27,14 +27,14 @@ public class UserLocalWalletServiceImpl implements UserLocalWalletService {
 
     @Override
     public UserResponseDTO initializeUser(UserLocalWalletRequestDTO requestDTO) {
-        if (userAlreadyExists(requestDTO.getUserId())) {
+        if (userAlreadyExists(requestDTO.getId())) {
             throw new UserAlreadyExistsException(
-                    String.format("User with id %s already exists.", requestDTO.getUserId())
+                    String.format("User with id %s already exists.", requestDTO.getId())
             );
         }
 
         User user = new User(
-                requestDTO.getUserId(),
+                requestDTO.getId(),
                 requestDTO.getAmount()
         );
         user = save(user);
@@ -50,7 +50,7 @@ public class UserLocalWalletServiceImpl implements UserLocalWalletService {
 
     @Override // ! This can throw an err if an order executes at the same time (retry until successful)
     public UserLocalWalletResponseDTO processDeposit(UserLocalWalletRequestDTO requestDTO) {
-        User user = getById(requestDTO.getUserId());
+        User user = getById(requestDTO.getId());
         user.setBalance(user.getBalance().add(requestDTO.getAmount()));
         user = userRepository.save(user);
 

@@ -3,7 +3,7 @@ package com.ItCareerElevatorSixthExercise.controllers;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.InvalidCredentialsException;
 import com.ItCareerElevatorSixthExercise.exceptions.auth.NoSuchUserException;
-import com.ItCareerElevatorSixthExercise.exceptions.msvc.MicroserviceException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.DefaultMicroserviceException;
 import com.ItCareerElevatorSixthExercise.exceptions.msvc.OrderServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.msvc.ProductServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.msvc.UserServiceException;
@@ -20,14 +20,15 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Slf4j
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-    @ExceptionHandler(MicroserviceException.class)
-    public ResponseEntity<ErrorResponseDTO> handleMicroserviceException(MicroserviceException ex) {
-        log.warn("Handling MicroserviceException.");
+    @ExceptionHandler(DefaultMicroserviceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMicroserviceException(DefaultMicroserviceException ex) {
+        log.warn("Handling DefaultMicroserviceException.");
         log.warn("Error status: {}, message: {}", ex.getStatus(), ex.getMessage());
 
         ErrorResponseDTO error = new ErrorResponseDTO(
@@ -87,6 +88,19 @@ public class ExceptionHandlerController {
         return ResponseEntity
                 .status(ex.getStatus())
                 .body(error);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingServletRequestPartException(MissingServletRequestPartException ex) {
+        log.warn("Handling MissingServletRequestPartException");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "The file part of the request is missing.",
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class) // * Thrown in authenticate -> catch block

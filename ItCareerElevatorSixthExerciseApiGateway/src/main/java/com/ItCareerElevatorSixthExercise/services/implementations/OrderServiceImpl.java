@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.order.request.MsvcOrderRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.order.request.msvc.MsvcOrderRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.order.request.OrderRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.order.response.OrderResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;

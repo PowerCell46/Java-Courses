@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.auth.request;
+package com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class MsvcDepositAmountRequestDTO {
 
-    private String userId; // UUID
+    private String id; // UUID
 
     private BigDecimal amount;
 }

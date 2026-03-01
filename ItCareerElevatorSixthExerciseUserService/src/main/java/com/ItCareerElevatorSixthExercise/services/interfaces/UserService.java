@@ -16,6 +16,4 @@ public interface UserService {
     AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO);
 
     AlterUserResponseDTO updateFields(String userId, UserRequestDTO requestDTO);
-
-    DepositAmountResponseDTO depositAmount(DepositAmountRequestDTO requestDTO);
 }

@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.mail;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

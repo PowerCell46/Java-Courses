@@ -1,37 +1,26 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcDepositRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUserCryptoWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUpdateUserCryptoWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.mail.UserRegisteredDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.UserRegisteredDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.EmailIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
-import com.ItCareerElevatorSixthExercise.exceptions.PaymentServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.UsernameIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
+import com.ItCareerElevatorSixthExercise.services.interfaces.PaymentService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.RoleService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
-import static com.ItCareerElevatorSixthExercise.util.RetryPolicy.buildRetrySpec;
 
 @Slf4j
 @Service
@@ -44,8 +33,8 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
+    private final PaymentService paymentService;
     private final PasswordEncoder passwordEncoder;
-    private final WebClient paymentServiceWebClient;
     private final KafkaTemplate<String, String> registerEmailKafkaTemplate;
 
     @Override
@@ -60,7 +49,7 @@ public class UserServiceImpl implements UserService {
         user = save(user);
 
         /* if (requestDTO.getWalletAddress() != null) {
-            initializeCryptoWalletAddress(user.getId(), requestDTO.getWalletAddress());
+            paymentService.initializeCryptoWalletAddress(user.getId(), requestDTO.getWalletAddress());
         }
         */
 
@@ -91,25 +80,6 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         log.info("Persisting user with username {} to the database.", user.getUsername());
         return userRepository.save(user);
-    }
-
-    private void initializeCryptoWalletAddress(String id, String walletAddress) {
-        log.info("---| Making a request to the paymentMicroservice.");
-
-        var requestBody = new MsvcUserCryptoWalletRequestDTO(id, walletAddress);
-        paymentServiceWebClient
-                .post()
-                .uri("/api/users-wallets/crypto")
-                .bodyValue(requestBody)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError,
-                        res -> res
-                                .bodyToMono(ErrorResponseDTO.class)
-                                .map(PaymentServiceException::new)
-                                .flatMap(Mono::error))
-                .toBodilessEntity()
-                .retryWhen(buildRetrySpec())
-                .block();
     }
 
     private void sendSuccessfulRegistrationKafkaMessage(User user) {
@@ -191,7 +161,7 @@ public class UserServiceImpl implements UserService {
         }
 
         /* if (requestDTO.getWalletAddress() != null) {
-            updateCryptoWalletAddress(userId, requestDTO.getWalletAddress());
+            paymentService.updateCryptoWalletAddress(userId, requestDTO.getWalletAddress());
         }
         */
 
@@ -200,46 +170,5 @@ public class UserServiceImpl implements UserService {
                 user.getUsername(),
                 user.getEmail()
         );
-    }
-
-    @Override
-    public DepositAmountResponseDTO depositAmount(DepositAmountRequestDTO requestDTO) {
-        log.info("---| Making a request to the paymentMicroservice.");
-
-        var requestBody = new MsvcDepositRequestDTO(requestDTO.getAmount());
-
-        return paymentServiceWebClient
-                .patch()
-                .uri(String.format("/api/users-wallets/local/%s", requestDTO.getUserId()))
-                .bodyValue(requestBody)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError,
-                        res -> res
-                                .bodyToMono(ErrorResponseDTO.class)
-                                .map(PaymentServiceException::new)
-                                .flatMap(Mono::error))
-                .bodyToMono(DepositAmountResponseDTO.class)
-                .retryWhen(buildRetrySpec())
-                .block();
-    }
-
-    private void updateCryptoWalletAddress(String id, String walletAddress) {
-        log.info("---| Making a request to the paymentMicroservice.");
-
-        var requestBody = new MsvcUpdateUserCryptoWalletRequestDTO(walletAddress);
-
-        paymentServiceWebClient
-                .patch()
-                .uri(String.format("/api/users-wallets/crypto/%s", id))
-                .bodyValue(requestBody)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError,
-                        res -> res
-                                .bodyToMono(ErrorResponseDTO.class)
-                                .map(PaymentServiceException::new)
-                                .flatMap(Mono::error))
-                .toBodilessEntity()
-                .retryWhen(buildRetrySpec())
-                .block();
     }
 }

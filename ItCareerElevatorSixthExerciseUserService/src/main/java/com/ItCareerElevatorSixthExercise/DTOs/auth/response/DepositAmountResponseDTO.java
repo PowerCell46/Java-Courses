@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class DepositAmountResponseDTO {
 
-    private String userId; // UUID
+    private String id; // UUID
 
     private BigDecimal balance;
 }

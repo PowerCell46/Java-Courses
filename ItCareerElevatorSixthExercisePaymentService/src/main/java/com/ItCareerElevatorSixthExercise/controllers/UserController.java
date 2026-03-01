@@ -42,7 +42,7 @@ public class UserController {
 
     @PostMapping("/local")
     public ResponseEntity<UserResponseDTO> initializeUser(@RequestBody UserLocalWalletRequestDTO requestDTO) {
-        log.info("---> POST request on api/users-wallets/local for user with id {}.", requestDTO.getUserId());
+        log.info("---> POST request on api/users-wallets/local for user with id {}.", requestDTO.getId());
 
         var responseDTO = userLocalWalletService.initializeUser(requestDTO);
 

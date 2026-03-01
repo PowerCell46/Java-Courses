@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MsvcUserCryptoWalletRequestDTO {
-
-    private String id;
+public class MsvcUpdateCryptoWalletRequestDTO {
 
     private String walletAddress;
 }

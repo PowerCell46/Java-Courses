@@ -2,7 +2,7 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.MsvcDepositAmountRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcDepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
             return cud.getUser();
         }
 
-        // Practically would never happen (it would, if you call from an endpoint method, where user isn't authenticated)
+        // Practically would never happen (it could, if you call from an endpoint method, where the user isn't authenticated)
         throw new IllegalStateException("Illegal state: no authenticated user.");
     }
 
@@ -154,7 +154,10 @@ public class UserServiceImpl implements UserService {
     public DepositAmountResponseDTO depositAmount(User user, DepositAmountRequestDTO requestDTO) {
         log.info("---| Making a request to the userService.");
 
-        var msvcRequestDTO = new MsvcDepositAmountRequestDTO(user.getId(), requestDTO.getAmount());
+        var msvcRequestDTO = new MsvcDepositAmountRequestDTO(
+                user.getId(),
+                requestDTO.getAmount()
+        );
 
         return userServiceWebClient
                 .post()

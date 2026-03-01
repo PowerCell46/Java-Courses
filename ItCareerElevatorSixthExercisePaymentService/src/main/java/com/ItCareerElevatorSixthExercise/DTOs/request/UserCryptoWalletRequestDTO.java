@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserCryptoWalletRequestDTO {
 
-    private String id;
+    private String id; // UUID
 
     private String walletAddress;
 }

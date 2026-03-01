@@ -5,6 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
+import com.ItCareerElevatorSixthExercise.services.interfaces.PaymentService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UserController {
 
+    private final PaymentService paymentService;
     private final UserService userService;
 
     @PostMapping
@@ -35,7 +37,8 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<AlterUserResponseDTO> updateUserDetails(
-            @PathVariable String userId, @RequestBody UserRequestDTO requestDTO
+            @PathVariable String userId,
+            @RequestBody UserRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on api/users/{}.", userId);
 
@@ -46,9 +49,9 @@ public class UserController {
 
     @PostMapping("/deposit")
     public ResponseEntity<DepositAmountResponseDTO> depositAmount(@RequestBody DepositAmountRequestDTO requestDTO) {
-        log.info("---> POST request on /api/users/deposit for user with id {}.", requestDTO.getUserId());
+        log.info("---> POST request on api/users/deposit for user with id {}.", requestDTO.getId());
 
-        var responseDTO = userService.depositAmount(requestDTO);
+        var responseDTO = paymentService.depositAmount(requestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }

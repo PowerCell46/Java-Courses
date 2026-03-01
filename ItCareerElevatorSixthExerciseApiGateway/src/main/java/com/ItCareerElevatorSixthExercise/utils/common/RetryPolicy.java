@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.utils.common;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.exceptions.msvc.MicroserviceException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.DefaultMicroserviceException;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
@@ -23,7 +23,7 @@ public class RetryPolicy {
                             System.currentTimeMillis()
                     );
 
-                    return new MicroserviceException(error);
+                    return new DefaultMicroserviceException(error);
                 });
     }
 
