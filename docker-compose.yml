@@ -178,6 +178,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_RESERVE_ITEMS_CONSUMER_GROUP: reserve_items_product_service
+      KAFKA_PAYMENT_SUCCESSFUL_CONSUMER_GROUP: payment_successful_product_service
       KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_product_service
       SNOWFLAKE_WORKER_ID: 3
       SNOWFLAKE_DATA_CENTER_ID: 5

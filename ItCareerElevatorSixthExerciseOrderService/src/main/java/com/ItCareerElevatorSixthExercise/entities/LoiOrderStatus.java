@@ -27,6 +27,8 @@ public class LoiOrderStatus extends ListOptionItem {
 
     public static final Long CANCELLED = 8L;
 
+    public static final Long INSUFFICIENT_BALANCE = 9L;
+
     public LoiOrderStatus(String name, Long code) {
         super(name, code);
     }

@@ -32,5 +32,6 @@ public class DatabaseLoader implements CommandLineRunner {
         orderStatusRepository.save(new LoiOrderStatus("UNPAID", LoiOrderStatus.UNPAID));
         orderStatusRepository.save(new LoiOrderStatus("PAID", LoiOrderStatus.PAID));
         orderStatusRepository.save(new LoiOrderStatus("CANCELLED", LoiOrderStatus.CANCELLED));
+        orderStatusRepository.save(new LoiOrderStatus("INSUFFICIENT_BALANCE", LoiOrderStatus.INSUFFICIENT_BALANCE));
     }
 }

@@ -140,7 +140,6 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
 
             String key = String.format("items-reserved-%s", processedOrder.getUserId());
             String value = objectMapper.writeValueAsString(reservedOrderDTO);
-            System.out.println("ITEMS RESERVED: " + value);
 
             itemsReservedKafkaTemplate
                     .send(ITEMS_RESERVED_TOPIC_NAME, key, value)

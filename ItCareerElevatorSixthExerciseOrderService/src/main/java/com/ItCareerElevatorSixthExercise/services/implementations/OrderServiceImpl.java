@@ -160,6 +160,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void processReservedOrder(ReservedOrderDTO orderDTO) {
         setStatusById(orderDTO.getOrderId(), LoiOrderStatus.RESERVED);
 
@@ -172,6 +173,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void processFailureReserveItems(FailureReserveItemsDTO failureDTO, Long loiOrderStatusCode) {
         setStatusById(failureDTO.getOrderId(), loiOrderStatusCode);
 

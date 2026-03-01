@@ -25,7 +25,7 @@ public class ItemsReservedListener {
 
         log.info("---> Handling itemsReserved for order with id {}.", orderDTO.getOrderId());
 
-        if (processedOrderService.isOrderAlreadyProcessed(orderDTO)) {
+        if (processedOrderService.isOrderAlreadyProcessed(orderDTO)) { // TODO: Pushed twice. Why? (Doesn't show in order service consumer twice)
             log.info("Order with id {} is already processed. Skipping...", orderDTO.getOrderId());
             return;
         }

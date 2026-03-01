@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.kafka;
+package com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentUnsuccessfulDTO {
+public class PaymentSuccessfulDTO {
 
     private Long orderId;
-
-    private String reason; // UNPAID, MISSING_WALLET_ADDRESS, INSUFFICIENT_BALANCE
 }
