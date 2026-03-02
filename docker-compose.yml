@@ -211,6 +211,22 @@ services:
       kafka:
         condition: service_healthy
 
+  server_mail_service:
+    build:
+      context: ./ItCareerElevatorSixthExerciseMailService
+      dockerfile: Dockerfile
+    container_name: mail_service_server
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_USER_REGISTERED_CONSUMER_GROUP: user_registered_mail_service
+      SPRING_MAIL_EMAIL: ${SPRING_MAIL_EMAIL}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+    depends_on:
+      kafka:
+        condition: service_healthy
+
 volumes:
   web_store_application_kafka_vol:
   web_store_application_users_db_vol:
