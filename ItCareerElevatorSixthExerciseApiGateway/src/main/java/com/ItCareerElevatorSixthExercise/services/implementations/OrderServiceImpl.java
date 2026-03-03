@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO create(OrderRequestDTO requestDTO, User user) {
         log.info("---| Making a request to the orderMicroservice.");
 
-        var requestBody = new MsvcOrderRequestDTO(user.getId(), requestDTO.getItems());
+        var requestBody = new MsvcOrderRequestDTO(user.getId(), user.getEmail(), requestDTO.getItems());
 
         return orderServiceWebClient
                 .post()

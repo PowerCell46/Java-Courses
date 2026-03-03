@@ -69,8 +69,13 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     @Override
-    public ProcessedOrder initializeProcessedOrder(Long orderId) {
-        ProcessedOrder processedOrder = new ProcessedOrder(orderId, ProcessedOrderStatus.PROCESSING);
+    public ProcessedOrder initializeProcessedOrder(ReserveOrderDTO reserveOrderDTO) {
+        ProcessedOrder processedOrder = new ProcessedOrder(
+                reserveOrderDTO.getId(),
+                reserveOrderDTO.getUserId(),
+                reserveOrderDTO.getUserEmail(),
+                ProcessedOrderStatus.PROCESSING
+        );
         return save(processedOrder);
     }
 
@@ -269,6 +274,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     private OrderCompletedDTO constructOrderCompleted(ProcessedOrder processedOrder) {
         return new OrderCompletedDTO(
                 CommonEntity.convertIdToSnowflakeId(processedOrder.getOrderId()),
+                processedOrder.getUserEmail(),
                 processedOrder.getTotalPrice(),
                 processedOrder
                         .getReservedProducts()

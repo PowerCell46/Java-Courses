@@ -10,7 +10,7 @@ public interface ProcessedOrderService {
 
     ProcessedOrder save(ProcessedOrder processedOrder);
 
-    ProcessedOrder initializeProcessedOrder(Long orderId);
+    ProcessedOrder initializeProcessedOrder(ReserveOrderDTO reserveOrderDTO);
 
     void processReserveItems(ReserveOrderDTO reserveOrderDTO, ProcessedOrder processedOrder);
 

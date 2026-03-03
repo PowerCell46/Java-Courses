@@ -18,5 +18,7 @@ public class ReserveOrderDTO {
 
     private String userId; // UUID
 
+    private String userEmail;
+
     private List<ReserveOrderItemDTO> orderItems;
 }

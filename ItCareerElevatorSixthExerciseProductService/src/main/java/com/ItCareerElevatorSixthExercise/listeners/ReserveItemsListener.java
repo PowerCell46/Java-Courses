@@ -19,18 +19,18 @@ public class ReserveItemsListener {
             groupId = "${spring.kafka.reserve-items-consumer.group-id}",
             containerFactory = "reserveItemsKafkaListenerContainerFactory"
     )
-    public void handleReserveItemsMessage(ReserveOrderDTO order) {
-        if (order == null || order.getId() == null)
+    public void handleReserveItemsMessage(ReserveOrderDTO orderDTO) {
+        if (orderDTO == null || orderDTO.getId() == null)
             return;
 
-        if (processedOrderService.isOrderProcessed(order.getId())) {
-            log.warn("Order with id {} is already processed. Skipping...", order.getId());
+        if (processedOrderService.isOrderProcessed(orderDTO.getId())) {
+            log.warn("Order with id {} is already processed. Skipping...", orderDTO.getId());
             return;
         }
 
-        log.info("---> Handling order with id {}.", order.getId());
+        log.info("---> Handling order with id {}.", orderDTO.getId());
 
-        var processedOrder = processedOrderService.initializeProcessedOrder(order.getId());
-        processedOrderService.processReserveItems(order, processedOrder);
+        var processedOrder = processedOrderService.initializeProcessedOrder(orderDTO);
+        processedOrderService.processReserveItems(orderDTO, processedOrder);
     }
 }

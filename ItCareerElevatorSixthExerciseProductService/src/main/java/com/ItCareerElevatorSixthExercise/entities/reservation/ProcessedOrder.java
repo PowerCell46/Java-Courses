@@ -37,6 +37,9 @@ public class ProcessedOrder {
     @Column(nullable = false)
     private String userId; // UUID
 
+    @Column(nullable = false)
+    private String userEmail;
+
     @Column
     private BigDecimal totalPrice;
 
@@ -57,10 +60,11 @@ public class ProcessedOrder {
         this.lastModifiedAt = LocalDateTime.now();
     }
 
-    public ProcessedOrder(Long orderId, ProcessedOrderStatus status) {
+    public ProcessedOrder(Long orderId, String userId, String userEmail, ProcessedOrderStatus status) {
         this.orderId = orderId;
         this.lastModifiedAt = LocalDateTime.now();
-        this.userId = "N/A";
+        this.userId = userId;
+        this.userEmail = userEmail;
         this.status = status;
         this.reservedProducts = new ArrayList<>();
     }

@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
 
         var createdStatus = loiOrderStatusService.getByListOptionItemCode(LoiOrderStatus.CREATED);
 
-        Order order = new Order(requestDTO.getUserId(), createdStatus);
+        Order order = new Order(requestDTO.getUserId(), requestDTO.getUserEmail(), createdStatus);
         Order persistedOrder = save(order);
 
         List<OrderItem> orderItems = requestDTO
@@ -119,6 +119,7 @@ public class OrderServiceImpl implements OrderService {
         return new ReserveOrderDTO(
                 order.getId(),
                 order.getUserId(),
+                order.getUserEmail(),
                 order.getItems()
                         .stream()
                         .map(item -> new ReserveOrderItemDTO(

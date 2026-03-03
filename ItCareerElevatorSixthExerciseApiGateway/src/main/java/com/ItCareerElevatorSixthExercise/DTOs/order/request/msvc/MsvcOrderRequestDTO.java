@@ -14,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 public class MsvcOrderRequestDTO {
 
-    private String userId;
+    private String userId; // UUID
+
+    private String userEmail;
 
     private List<OrderItemRequestDTO> items;
 }

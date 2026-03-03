@@ -69,7 +69,7 @@ public class MailServiceImpl implements MailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-            helper.setTo("radovr4@gmail.com"); // TODO: Set actual email
+            helper.setTo(orderDTO.getUserEmail());
             helper.setTo("Web Store successful order!");
 
             helper.setText(formatOrderMessageBody(orderDTO));

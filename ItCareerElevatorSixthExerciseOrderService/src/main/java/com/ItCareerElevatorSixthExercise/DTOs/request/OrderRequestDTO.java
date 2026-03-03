@@ -15,5 +15,7 @@ public class OrderRequestDTO {
 
     private String userId; // UUID
 
+    private String userEmail;
+
     private List<OrderItemRequestDTO> items;
 }

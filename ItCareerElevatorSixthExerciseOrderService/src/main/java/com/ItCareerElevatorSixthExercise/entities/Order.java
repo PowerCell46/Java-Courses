@@ -27,6 +27,9 @@ public class Order extends CommonEntity {
     @Column(nullable = false)
     private String userId; // UUID
 
+    @Column(nullable = false)
+    private String userEmail;
+
     @Column
     private BigDecimal totalPrice;
 
@@ -37,8 +40,9 @@ public class Order extends CommonEntity {
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderItem> items;
 
-    public Order(String userId, LoiOrderStatus orderStatus) {
+    public Order(String userId, String userEmail, LoiOrderStatus orderStatus) {
         this.userId = userId;
+        this.userEmail = userEmail;
         this.totalPrice = null;
         this.orderStatus = orderStatus;
         this.items = new ArrayList<>();
