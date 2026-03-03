@@ -29,7 +29,7 @@ import java.util.List;
 public class ProcessedOrder {
 
     @Id
-    private Long orderId;
+    private Long orderId; // snowflakeId
 
     @Column(nullable = false)
     private LocalDateTime lastModifiedAt;

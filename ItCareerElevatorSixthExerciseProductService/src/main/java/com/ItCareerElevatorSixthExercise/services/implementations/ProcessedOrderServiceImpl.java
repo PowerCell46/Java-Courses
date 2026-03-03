@@ -1,6 +1,8 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.orderCompleted.OrderCompletedDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.kafka.orderCompleted.OrderItemCompletedDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderItemDTO;
@@ -41,11 +43,15 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Value("${app.kafka.topics.failure-reserve-items}")
     private String FAILURE_RESERVE_ITEMS_TOPIC_NAME;
 
+    @Value("${spring.kafka.order-completed}")
+    private String ORDER_COMPLETED_TOPIC_NAME;
+
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
     private final ReservedProductService reservedProductService;
     private final ProcessedOrderRepository processedOrderRepository;
     private final KafkaTemplate<String, String> itemsReservedKafkaTemplate;
+    private final KafkaTemplate<String, String> orderCompletedKafkaTemplate;
     private final KafkaTemplate<String, String> failureReserveItemsKafkaTemplate;
     private final ProcessedOrderPersistenceService processedOrderPersistenceService;
 
@@ -177,7 +183,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                             log.error("Failed to send ReservedOrderDTO to topic {}.", ITEMS_RESERVED_TOPIC_NAME, ex);
 
                         } else {
-                            log.info("Sent ReservedOrderDTO {} to topic {} partition {} offset {}.",
+                            log.info("Sent ReservedOrderDTO {} to topic {}; partition {}; offset {}.",
                                     key,
                                     result.getRecordMetadata().topic(),
                                     result.getRecordMetadata().partition(),
@@ -213,7 +219,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                             log.error("Failed to send FailureReserveItemsDTO to topic {}.", FAILURE_RESERVE_ITEMS_TOPIC_NAME, ex);
 
                         } else {
-                            log.info("Sent FailureReserveItemsDTO {} to topic {} partition {} offset {}.",
+                            log.info("Sent FailureReserveItemsDTO {} to topic {}; partition {}; offset {}.",
                                     key,
                                     result.getRecordMetadata().topic(),
                                     result.getRecordMetadata().partition(),
@@ -228,6 +234,66 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
         } catch (JsonProcessingException ex) {
             log.error("An error occurred with \"objectMapper.writeValueAsString(failureReserveItemsDTO)\".");
         }
+    }
+
+    @Override
+    public void sendKafkaOrderCompletedMessage(ProcessedOrder processedOrder) {
+        try {
+            var orderCompletedDTO = constructOrderCompleted(processedOrder);
+
+            String key = String.format("order-completed-%s", orderCompletedDTO.getId());
+            String value = objectMapper.writeValueAsString(orderCompletedDTO);
+
+            orderCompletedKafkaTemplate
+                    .send(ORDER_COMPLETED_TOPIC_NAME, key, value)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error("Failed to send OrderCompletedDTO to topic {}.", ORDER_COMPLETED_TOPIC_NAME);
+
+                        } else {
+                            log.info("Sent OrderCompletedDTO {} to topic {}; partition {}; offset {}.",
+                                    key,
+                                    result.getRecordMetadata().topic(),
+                                    result.getRecordMetadata().partition(),
+                                    result.getRecordMetadata().offset()
+                            );
+                            productRepository.deleteById(processedOrder.getOrderId());
+                        }
+                    });
+
+        } catch (JsonProcessingException ex) {
+            log.info("An error occurred with \"objectMapper.writeValueAsString(orderCompletedDTO)\".");
+        }
+    }
+
+    private OrderCompletedDTO constructOrderCompleted(ProcessedOrder processedOrder) {
+        return new OrderCompletedDTO(
+                CommonEntity.convertIdToSnowflakeId(processedOrder.getOrderId()),
+                processedOrder.getTotalPrice(),
+                processedOrder
+                        .getReservedProducts()
+                        .stream()
+                        .map(reservedProduct -> new OrderItemCompletedDTO(
+                                        CommonEntity.convertIdToSnowflakeId(reservedProduct.getProduct().getId()),
+                                        reservedProduct.getQuantity(),
+                                        reservedProduct.getProduct().getPrice()
+                                )
+                        )
+                        .toList()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void processPaymentSuccessful(Long id) {
+        processedOrderRepository
+                .findById(id)
+                .ifPresent(processedOrder -> {
+                    processedOrder.setStatus(ProcessedOrderStatus.PAID);
+                    processedOrder = processedOrderRepository.save(processedOrder);
+
+                    sendKafkaOrderCompletedMessage(processedOrder);
+                });
     }
 
     @Override

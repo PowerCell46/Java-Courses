@@ -159,7 +159,7 @@ public class ProductServiceImpl implements ProductService {
 
         return GetProductResponseDTO
                 .builder()
-                .id(product.getSnowflakeId())
+                .id(CommonEntity.convertIdToSnowflakeId(product.getId()))
                 .nameTranslations(product.getTranslations()
                         .stream()
                         .map(ProductTranslation::getName)

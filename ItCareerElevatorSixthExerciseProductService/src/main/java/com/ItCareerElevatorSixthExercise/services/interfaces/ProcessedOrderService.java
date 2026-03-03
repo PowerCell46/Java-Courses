@@ -18,6 +18,10 @@ public interface ProcessedOrderService {
 
     void sendKafkaFailureReserveItemsMessage(ProcessedOrder processedOrder);
 
+    void sendKafkaOrderCompletedMessage(ProcessedOrder processedOrder);
+
+    void processPaymentSuccessful(Long id);
+
     void processPaymentUnsuccessful(PaymentUnsuccessfulDTO paymentDTO);
 
     void cleanupProcessedOrder(Long id);

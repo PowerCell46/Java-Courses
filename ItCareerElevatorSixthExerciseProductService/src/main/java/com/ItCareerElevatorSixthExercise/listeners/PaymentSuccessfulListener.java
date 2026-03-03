@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PaymentSuccessfulListener {
 
-    private ProcessedOrderService processedOrderService;
+    private final ProcessedOrderService processedOrderService;
 
     @KafkaListener(
             topics = "${app.kafka.topics.payment-successful}",
@@ -25,6 +25,6 @@ public class PaymentSuccessfulListener {
 
         log.info("---> Handling successful payment for order with id {}.", paymentDTO.getOrderId());
 
-        processedOrderService.cleanupProcessedOrder(paymentDTO.getOrderId());
+        processedOrderService.processPaymentSuccessful(paymentDTO.getOrderId());
     }
 }

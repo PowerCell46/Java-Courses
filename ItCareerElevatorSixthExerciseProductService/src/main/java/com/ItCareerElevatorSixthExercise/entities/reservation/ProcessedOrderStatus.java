@@ -10,5 +10,7 @@ public enum ProcessedOrderStatus {
 
     NOT_IN_STOCK, // 3
 
-    SENT_TO_KAFKA // 4
+    PAID, // 4
+
+    SENT_TO_KAFKA // 5
 }

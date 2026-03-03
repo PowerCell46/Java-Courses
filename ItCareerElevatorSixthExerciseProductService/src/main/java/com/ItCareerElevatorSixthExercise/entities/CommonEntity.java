@@ -40,7 +40,7 @@ public class CommonEntity {
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
     private static final Base64.Decoder DECODER = Base64.getUrlDecoder();
 
-    public String getSnowflakeId() {
+    public static String convertIdToSnowflakeId(Long id) {
         if (id == null) {
             throw new IllegalStateException("Id is null, cannot convert to snowflakeId.");
         }

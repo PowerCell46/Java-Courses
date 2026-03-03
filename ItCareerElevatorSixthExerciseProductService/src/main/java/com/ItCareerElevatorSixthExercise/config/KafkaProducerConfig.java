@@ -48,4 +48,9 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, String> failureReserveItemsKafkaTemplate() {
         return new KafkaTemplate<>(defaultProducerFactory());
     }
+
+    @Bean
+    public KafkaTemplate<String, String> orderCompletedKafkaTemplate() {
+        return new KafkaTemplate<>(defaultProducerFactory());
+    }
 }
