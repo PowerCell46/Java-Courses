@@ -23,7 +23,7 @@ public class OrderCompletedListener {
         if (orderDTO == null || orderDTO.getId() == null)
             return;
 
-        log.info("---> Handling orderCompleted with id {}.", orderDTO.getId());
+        log.info("---> Handling orderCompleted with id {} to user with email {}.", orderDTO.getId(), orderDTO.getUserEmail());
 
         mailService.sendOrderMail(orderDTO);
     }

@@ -23,7 +23,7 @@ public class UserRegisteredListener {
         if (registerDTO == null || registerDTO.getId() == null)
             return;
 
-        log.info("---> Handling userRegistered with id {}.", registerDTO.getId());
+        log.info("---> Handling userRegistered with email {}.", registerDTO.getEmail());
 
         mailService.sendRegistrationMail(registerDTO);
     }

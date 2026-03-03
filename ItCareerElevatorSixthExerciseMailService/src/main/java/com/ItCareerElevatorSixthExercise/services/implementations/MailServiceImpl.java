@@ -35,7 +35,7 @@ public class MailServiceImpl implements MailService {
             helper.setTo(registerDTO.getEmail());
             helper.setSubject("Welcome to Web Store!");
 
-            helper.setText(formatRegistrationMessageBody(registerDTO));
+            helper.setText(formatRegistrationMessageBody(registerDTO), true);
             mailSender.send(message);
 
         } catch (MessagingException ex) {
@@ -70,9 +70,9 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setTo(orderDTO.getUserEmail());
-            helper.setTo("Web Store successful order!");
+            helper.setSubject("Web Store successful order!");
 
-            helper.setText(formatOrderMessageBody(orderDTO));
+            helper.setText(formatOrderMessageBody(orderDTO), true);
             mailSender.send(message);
 
         } catch (MessagingException ex) {

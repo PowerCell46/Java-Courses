@@ -21,4 +21,10 @@ public class ProcessedOrderPersistenceServiceImpl implements ProcessedOrderPersi
     public ProcessedOrder save(ProcessedOrder processedOrder) {
         return processedOrderRepository.save(processedOrder);
     }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        processedOrderRepository.deleteById(id);
+    }
 }

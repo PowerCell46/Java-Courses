@@ -64,7 +64,11 @@ public class ProductServiceImpl implements ProductService {
                 .create(requestDTO, product);
         product.setTranslations(translations);
 
-        return objectMapper.convertValue(product, ProductResponseDTO.class);
+        return new ProductResponseDTO(
+                CommonEntity.convertIdToSnowflakeId(product.getId()),
+                product.getPrice(),
+                product.getInStockQuantity()
+        );
     }
 
     @Override

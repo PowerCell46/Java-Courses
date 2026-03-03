@@ -43,7 +43,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Value("${app.kafka.topics.failure-reserve-items}")
     private String FAILURE_RESERVE_ITEMS_TOPIC_NAME;
 
-    @Value("${spring.kafka.order-completed}")
+    @Value("${app.kafka.topics.order-completed}")
     private String ORDER_COMPLETED_TOPIC_NAME;
 
     private final ObjectMapper objectMapper;
@@ -262,7 +262,7 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                                     result.getRecordMetadata().partition(),
                                     result.getRecordMetadata().offset()
                             );
-                            productRepository.deleteById(processedOrder.getOrderId());
+                            processedOrderPersistenceService.deleteById(processedOrder.getOrderId());
                         }
                     });
 
