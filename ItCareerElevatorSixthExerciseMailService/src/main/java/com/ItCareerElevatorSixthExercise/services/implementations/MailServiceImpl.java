@@ -1,6 +1,7 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
-import com.ItCareerElevatorSixthExercise.DTOs.UserRegisteredDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.orderCompleted.OrderCompletedDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.userRegistered.UserRegisteredDTO;
 import com.ItCareerElevatorSixthExercise.exceptions.MailTemplateException;
 import com.ItCareerElevatorSixthExercise.exceptions.MailingProcessException;
 import com.ItCareerElevatorSixthExercise.services.interfaces.MailService;
@@ -40,6 +41,11 @@ public class MailServiceImpl implements MailService {
             log.warn("Exception occurred while constructing/send the email.", ex);
             throw new MailingProcessException("Failed to send message email.", ex);
         }
+    }
+
+    @Override
+    public void sendOrderMail(OrderCompletedDTO orderDTO) {
+
     }
 
     private String formatMessageBody(UserRegisteredDTO registeredDTO) {

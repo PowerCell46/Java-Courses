@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
-import com.ItCareerElevatorSixthExercise.DTOs.UserRegisteredDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.userRegistered.UserRegisteredDTO;
 import com.ItCareerElevatorSixthExercise.services.interfaces.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -239,10 +239,10 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Override
     public void sendKafkaOrderCompletedMessage(ProcessedOrder processedOrder) {
         try {
-            var orderCompletedDTO = constructOrderCompleted(processedOrder);
+            var orderDTO = constructOrderCompleted(processedOrder);
 
-            String key = String.format("order-completed-%s", orderCompletedDTO.getId());
-            String value = objectMapper.writeValueAsString(orderCompletedDTO);
+            String key = String.format("order-completed-%s", orderDTO.getId());
+            String value = objectMapper.writeValueAsString(orderDTO);
 
             orderCompletedKafkaTemplate
                     .send(ORDER_COMPLETED_TOPIC_NAME, key, value)

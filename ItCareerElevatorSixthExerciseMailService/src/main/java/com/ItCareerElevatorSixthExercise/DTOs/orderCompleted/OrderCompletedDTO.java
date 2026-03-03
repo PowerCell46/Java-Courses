@@ -1,0 +1,22 @@
+package com.ItCareerElevatorSixthExercise.DTOs.orderCompleted;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderCompletedDTO {
+
+    private String id; // snowflakeId
+
+    private BigDecimal totalPrice;
+
+    private List<OrderItemCompletedDTO> orderItems;
+}

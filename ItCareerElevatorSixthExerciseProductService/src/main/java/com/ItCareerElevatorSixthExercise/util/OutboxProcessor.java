@@ -41,6 +41,10 @@ public class OutboxProcessor {
         List<ProcessedOrder> failedProcessingOrders = fetchFailedProcessingOrders();
         failedProcessingOrders
                 .forEach(processedOrderService::sendKafkaFailureReserveItemsMessage);
+
+        List<ProcessedOrder> failedPaidOrders = fetchPaidFailedOrders();
+        failedPaidOrders
+                .forEach(processedOrderService::sendKafkaOrderCompletedMessage);
     }
 
     private List<ProcessedOrder> fetchFailedProcessingOrders() {
@@ -71,6 +75,14 @@ public class OutboxProcessor {
         return processedOrderRepository
                 .findAllByStatusAndLastModifiedAtBefore(
                         ProcessedOrderStatus.NOT_IN_STOCK,
+                        LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
+                );
+    }
+
+    private List<ProcessedOrder> fetchPaidFailedOrders() {
+        return processedOrderRepository
+                .findAllByStatusAndLastModifiedAtBefore(
+                        ProcessedOrderStatus.PAID,
                         LocalDateTime.now().minusMinutes(MAX_TIME_FOR_A_GIVEN_STATE)
                 );
     }

@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs;
+package com.ItCareerElevatorSixthExercise.DTOs.userRegistered;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

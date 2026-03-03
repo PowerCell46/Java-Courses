@@ -1,6 +1,7 @@
 package com.ItCareerElevatorSixthExercise.config;
 
-import com.ItCareerElevatorSixthExercise.DTOs.UserRegisteredDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.orderCompleted.OrderCompletedDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.userRegistered.UserRegisteredDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,9 @@ public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.user-registered.group-id}")
     private String userRegisteredConsumerGroupId;
+
+    @Value("${spring.kafka.order-completed.group-id}")
+    private String orderCompletedGroupId;
 
     @Bean
     public ConsumerFactory<String, UserRegisteredDTO> userRegisteredConsumerFactory() {
@@ -45,6 +49,31 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, UserRegisteredDTO> userRegisteredKafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, UserRegisteredDTO>();
         factory.setConsumerFactory(userRegisteredConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, OrderCompletedDTO> orderCompletedConsumerFactory() {
+        Map<String, Object> properties = new HashMap<>();
+
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, orderCompletedGroupId);
+
+        var keyDeserializer = new StringDeserializer();
+        var valueDeserializer = new JacksonJsonDeserializer<>(OrderCompletedDTO.class);
+        valueDeserializer.addTrustedPackages("*");
+
+        return new DefaultKafkaConsumerFactory<>(
+                properties,
+                keyDeserializer,
+                valueDeserializer
+        );
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, OrderCompletedDTO> orderCompletedKafkaListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, OrderCompletedDTO>();
+        factory.setConsumerFactory(orderCompletedConsumerFactory());
         return factory;
     }
 }
