@@ -13,6 +13,8 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 
+import org.springframework.kafka.listener.ContainerProperties;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,7 @@ public class KafkaConsumerConfig {
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, userRegisteredConsumerGroup);
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
         var keyDeserializer = new StringDeserializer();
         var valueDeserializer = new JacksonJsonDeserializer<>(UserRegisteredDTO.class);
@@ -51,6 +54,7 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, UserRegisteredDTO> userRegisteredKafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, UserRegisteredDTO>();
         factory.setConsumerFactory(userRegisteredConsumerFactory());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         return factory;
     }
 
@@ -60,6 +64,7 @@ public class KafkaConsumerConfig {
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, itemsReservedConsumerGroup);
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
         var keyDeserializer = new StringDeserializer();
         var valueDeserializer = new JacksonJsonDeserializer<>(ReservedOrderDTO.class);
@@ -76,6 +81,7 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, ReservedOrderDTO> itemsReservedKafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, ReservedOrderDTO>();
         factory.setConsumerFactory(itemsReservedConsumerFactory());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         return factory;
     }
 }

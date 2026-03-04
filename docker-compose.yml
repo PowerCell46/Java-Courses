@@ -104,7 +104,7 @@ services:
     build:
       context: ./ItCareerElevatorSixthExerciseApiGateway
       dockerfile: Dockerfile
-    container_name: api_gateway_server
+    container_name: server-api-gateway
     ports:
       - "8080:8080"
     environment:
@@ -112,9 +112,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      USERS_MICROSERVICE_BASE_ENDPOINT: http://server_user_service:8081
-      ORDERS_MICROSERVICE_BASE_ENDPOINT: http://server_order_service:8082
-      PRODUCTS_MICROSERVICE_BASE_ENDPOINT: http://server_product_service:8083
+      USERS_MICROSERVICE_BASE_ENDPOINT: http://server-user-service:8081
+      ORDERS_MICROSERVICE_BASE_ENDPOINT: http://server-order-service:8082
+      PRODUCTS_MICROSERVICE_BASE_ENDPOINT: http://server-product-service:8083
     depends_on:
       postgres_users:
         condition: service_healthy
@@ -123,7 +123,7 @@ services:
     build:
       context: ./ItCareerElevatorSixthExerciseUserService
       dockerfile: Dockerfile
-    container_name: user_service_server
+    container_name: server-user-service
     ports:
       - "8081:8081"
     environment:
@@ -134,7 +134,7 @@ services:
       USER_ADMIN_USERNAME: ${USER_ADMIN_USERNAME}
       USER_ADMIN_EMAIL: ${USER_ADMIN_EMAIL}
       USER_ADMIN_BCrypt_PASSWORD: ${USER_ADMIN_BCrypt_PASSWORD}
-      PAYMENT_MICROSERVICE_BASE_ENDPOINT: http://server_payment_service:8084
+      PAYMENT_MICROSERVICE_BASE_ENDPOINT: http://server-payment-service:8084
     depends_on:
       postgres_users:
         condition: service_healthy
@@ -145,7 +145,7 @@ services:
     build:
       context: ./ItCareerElevatorSixthExerciseOrderService
       dockerfile: Dockerfile
-    container_name: order_service_server
+    container_name: server-order-service
     ports:
       - "8082:8082"
     environment:
@@ -169,7 +169,7 @@ services:
     build:
       context: ./ItCareerElevatorSixthExerciseProductService
       dockerfile: Dockerfile
-    container_name: product_service_server
+    container_name: server-product-service
     ports:
       - "8083:8083"
     environment:
@@ -192,7 +192,7 @@ services:
     build:
       context: ./ItCareerElevatorSixthExercisePaymentService
       dockerfile: Dockerfile
-    container_name: payment_service_server
+    container_name: server-payment-service
     ports:
       - "8084:8084"
     environment:
@@ -215,7 +215,7 @@ services:
     build:
       context: ./ItCareerElevatorSixthExerciseMailService
       dockerfile: Dockerfile
-    container_name: mail_service_server
+    container_name: server-mail-service
     ports:
       - "8085:8085"
     environment:
