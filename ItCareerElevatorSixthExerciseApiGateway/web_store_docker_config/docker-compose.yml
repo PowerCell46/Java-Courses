@@ -1,0 +1,236 @@
+services:
+  kafka:
+    image: apache/kafka:3.7.1
+    container_name: kafka_message_broker
+    environment:
+      KAFKA_NODE_ID: 0
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      # CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    ports:
+      - "9092:9092"
+    volumes:
+      - web_store_application_kafka_vol:/var/lib/kafka/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  kafka_ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka_ui
+    ports:
+      - "7777:8080"
+    restart: unless-stopped
+    environment:
+      KAFKA_CLUSTERS_0_NAME: broker
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  postgres_users:
+    image: postgres:16-alpine
+    container_name: user_service_db
+    environment:
+      POSTGRES_DB: web_store_users_db
+      POSTGRES_USER: ${POSTGRES_SQL_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+    volumes:
+      - web_store_application_users_db_vol:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SQL_USERNAME} -d web_store_users_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres_orders:
+    image: postgres:16-alpine
+    container_name: order_service_db
+    environment:
+      POSTGRES_DB: web_store_orders_db
+      POSTGRES_USER: ${POSTGRES_SQL_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+    volumes:
+      - web_store_application_orders_db_vol:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SQL_USERNAME} -d web_store_orders_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres_products:
+    image: postgres:16-alpine
+    container_name: product_service_db
+    environment:
+      POSTGRES_DB: web_store_products_db
+      POSTGRES_USER: ${POSTGRES_SQL_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+    volumes:
+      - web_store_application_products_db_vol:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SQL_USERNAME} -d web_store_products_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres_payments:
+    image: postgres:16-alpine
+    container_name: payment_service_db
+    environment:
+      POSTGRES_DB: web_store_payments_db
+      POSTGRES_USER: ${POSTGRES_SQL_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+    volumes:
+      - web_store_application_payments_db_vol:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SQL_USERNAME} -d web_store_payments_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server_api_gateway:
+    build:
+      context: ./ItCareerElevatorSixthExerciseApiGateway
+      dockerfile: Dockerfile
+    container_name: server-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_users:5432/web_store_users_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      USERS_MICROSERVICE_BASE_ENDPOINT: http://server-user-service:8081
+      ORDERS_MICROSERVICE_BASE_ENDPOINT: http://server-order-service:8082
+      PRODUCTS_MICROSERVICE_BASE_ENDPOINT: http://server-product-service:8083
+    depends_on:
+      postgres_users:
+        condition: service_healthy
+
+  server_user_service:
+    build:
+      context: ./ItCareerElevatorSixthExerciseUserService
+      dockerfile: Dockerfile
+    container_name: server-user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_users:5432/web_store_users_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      USER_ADMIN_USERNAME: ${USER_ADMIN_USERNAME}
+      USER_ADMIN_EMAIL: ${USER_ADMIN_EMAIL}
+      USER_ADMIN_BCrypt_PASSWORD: ${USER_ADMIN_BCrypt_PASSWORD}
+      PAYMENT_MICROSERVICE_BASE_ENDPOINT: http://server-payment-service:8084
+    depends_on:
+      postgres_users:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  server_order_service:
+    build:
+      context: ./ItCareerElevatorSixthExerciseOrderService
+      dockerfile: Dockerfile
+    container_name: server-order-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_orders:5432/web_store_orders_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_FAILURE_RESERVE_ITEMS_CONSUMER_GROUP: failure_reserve_items_order_service
+      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_order_service
+      KAFKA_PAYMENT_SUCCESSFUL_CONSUMER_GROUP: payment_successful_order_service
+      KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_order_service
+      SNOWFLAKE_WORKER_ID: 4
+      SNOWFLAKE_DATA_CENTER_ID: 11
+    depends_on:
+      postgres_orders:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  server_product_service:
+    build:
+      context: ./ItCareerElevatorSixthExerciseProductService
+      dockerfile: Dockerfile
+    container_name: server-product-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_products:5432/web_store_products_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_RESERVE_ITEMS_CONSUMER_GROUP: reserve_items_product_service
+      KAFKA_PAYMENT_SUCCESSFUL_CONSUMER_GROUP: payment_successful_product_service
+      KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_product_service
+      SNOWFLAKE_WORKER_ID: 3
+      SNOWFLAKE_DATA_CENTER_ID: 5
+    depends_on:
+      postgres_products:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  server_payment_service:
+    build:
+      context: ./ItCareerElevatorSixthExercisePaymentService
+      dockerfile: Dockerfile
+    container_name: server-payment-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_payments:5432/web_store_payments_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_SQL_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_SQL_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_ITEMS_RESERVED_CONSUMER_GROUP: items_reserved_payment_service
+      KAFKA_USER_REGISTERED_CONSUMER_GROUP: user_registered_payment_service
+      ETHEREUM_NODE_URL: ${ETHEREUM_NODE_URL}
+      ETHEREUM_EURO_RATIO_URL: https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur
+      ETHEREUM_WALLET_ADDRESS: ${ETHEREUM_WALLET_ADDRESS}
+    depends_on:
+      postgres_payments:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  server_mail_service:
+    build:
+      context: ./ItCareerElevatorSixthExerciseMailService
+      dockerfile: Dockerfile
+    container_name: server-mail-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_USER_REGISTERED_CONSUMER_GROUP: user_registered_mail_service
+      KAFKA_ORDER_COMPLETED_CONSUMER_GROUP: order_completed_mail_service
+      SPRING_MAIL_EMAIL: ${SPRING_MAIL_EMAIL}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+volumes:
+  web_store_application_kafka_vol:
+  web_store_application_users_db_vol:
+  web_store_application_orders_db_vol:
+  web_store_application_products_db_vol:
+  web_store_application_payments_db_vol:
