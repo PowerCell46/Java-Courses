@@ -16,4 +16,6 @@ public interface UserService {
     AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO);
 
     AlterUserResponseDTO updateFields(String userId, UserRequestDTO requestDTO);
+
+    void sendSuccessfulRegistrationKafkaMessage(User user);
 }

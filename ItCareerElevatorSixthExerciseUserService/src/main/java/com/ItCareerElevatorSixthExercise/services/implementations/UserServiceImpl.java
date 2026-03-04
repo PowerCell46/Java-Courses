@@ -81,7 +81,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    private void sendSuccessfulRegistrationKafkaMessage(User user) { // ! Outbox pattern is missing
+    @Override
+    public void sendSuccessfulRegistrationKafkaMessage(User user) { // ! Outbox pattern is missing
         try {
             String key = String.format("user-registered-%s", user.getId());
             String value = objectMapper.writeValueAsString(new UserRegisteredDTO(user.getId(), user.getUsername(), user.getEmail()));

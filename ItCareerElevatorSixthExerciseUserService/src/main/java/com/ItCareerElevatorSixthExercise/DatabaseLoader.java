@@ -4,6 +4,7 @@ import com.ItCareerElevatorSixthExercise.entities.Role;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.repositories.RoleRepository;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
+import com.ItCareerElevatorSixthExercise.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private static final String ROLE_ADMIN_NAME = "ROLE_ADMIN";
 
+    private final UserService userService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
@@ -51,7 +53,9 @@ public class DatabaseLoader implements CommandLineRunner {
                     });
 
             User adminUser = new User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD, Set.of(roleAdmin));
-            userRepository.save(adminUser);
+            adminUser = userRepository.save(adminUser);
+
+            userService.sendSuccessfulRegistrationKafkaMessage(adminUser);
 
         } else {
             log.info("User admin is already initialized.");
