@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.services.implementations;
+package com.ItCareerElevatorSixthExercise.services.implementations.product;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.TranslationFieldRequestDTO;
@@ -7,7 +7,7 @@ import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 import com.ItCareerElevatorSixthExercise.exceptions.product.InvalidTranslationsException;
 import com.ItCareerElevatorSixthExercise.exceptions.product.ProductAlreadyExistsException;
-import com.ItCareerElevatorSixthExercise.repositories.ProductTranslationRepository;
+import com.ItCareerElevatorSixthExercise.repositories.product.ProductTranslationRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.LocaleService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductTranslationService;
 import lombok.RequiredArgsConstructor;

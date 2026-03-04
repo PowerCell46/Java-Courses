@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise;
 
 import com.ItCareerElevatorSixthExercise.entities.product.Locale;
-import com.ItCareerElevatorSixthExercise.repositories.LocaleRepository;
+import com.ItCareerElevatorSixthExercise.repositories.product.LocaleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

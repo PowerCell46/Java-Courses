@@ -6,9 +6,9 @@ import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.UserRegisteredDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
 import com.ItCareerElevatorSixthExercise.entities.User;
-import com.ItCareerElevatorSixthExercise.exceptions.EmailIsAlreadyTakenException;
-import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
-import com.ItCareerElevatorSixthExercise.exceptions.UsernameIsAlreadyTakenException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.EmailIsAlreadyTakenException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.NoSuchUserException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.UsernameIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.PaymentService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.RoleService;
@@ -54,7 +54,6 @@ public class UserServiceImpl implements UserService {
         */
 
         sendSuccessfulRegistrationKafkaMessage(user);
-
         return user;
     }
 
@@ -82,7 +81,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    private void sendSuccessfulRegistrationKafkaMessage(User user) {
+    private void sendSuccessfulRegistrationKafkaMessage(User user) { // ! Outbox pattern is missing
         try {
             String key = String.format("user-registered-%s", user.getId());
             String value = objectMapper.writeValueAsString(new UserRegisteredDTO(user.getId(), user.getUsername(), user.getEmail()));

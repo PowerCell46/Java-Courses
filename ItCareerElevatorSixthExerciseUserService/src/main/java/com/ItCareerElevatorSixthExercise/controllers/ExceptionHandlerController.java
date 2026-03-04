@@ -1,11 +1,11 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.exceptions.EmailIsAlreadyTakenException;
-import com.ItCareerElevatorSixthExercise.exceptions.NoSuchRoleException;
-import com.ItCareerElevatorSixthExercise.exceptions.NoSuchUserException;
-import com.ItCareerElevatorSixthExercise.exceptions.PaymentServiceException;
-import com.ItCareerElevatorSixthExercise.exceptions.UsernameIsAlreadyTakenException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.EmailIsAlreadyTakenException;
+import com.ItCareerElevatorSixthExercise.exceptions.role.NoSuchRoleException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.NoSuchUserException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.PaymentServiceException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.UsernameIsAlreadyTakenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

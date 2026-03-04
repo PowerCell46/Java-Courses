@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.services.implementations;
+package com.ItCareerElevatorSixthExercise.services.implementations.reservation;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.failureReserveItems.FailureReserveItemsDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.orderCompleted.OrderCompletedDTO;
@@ -11,8 +11,8 @@ import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
-import com.ItCareerElevatorSixthExercise.repositories.ProcessedOrderRepository;
-import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
+import com.ItCareerElevatorSixthExercise.repositories.reservation.ProcessedOrderRepository;
+import com.ItCareerElevatorSixthExercise.repositories.product.ProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderPersistenceService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ReservedProductService;

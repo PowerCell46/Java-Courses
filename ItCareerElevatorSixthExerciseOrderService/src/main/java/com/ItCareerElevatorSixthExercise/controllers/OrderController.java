@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -25,11 +26,14 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/status/{id}")
-    public ResponseEntity<OrderResponseDTO> getOrderStatus(@PathVariable String id) {
-        log.info("---> GET request on api/orders/status/{}.", id);
+    @GetMapping("/status/{orderId}")
+    public ResponseEntity<OrderResponseDTO> getOrderStatus(
+            @PathVariable String orderId,
+            @RequestParam String userId
+    ) {
+        log.info("---> GET request on api/orders/status/{} for user with id {}.", orderId, userId);
 
-        var responseDTO = orderService.getById(id);
+        var responseDTO = orderService.getById(orderId, userId);
 
         return ResponseEntity.ok(responseDTO);
     }

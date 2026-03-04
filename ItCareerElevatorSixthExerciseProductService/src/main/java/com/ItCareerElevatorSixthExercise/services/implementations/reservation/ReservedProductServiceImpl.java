@@ -1,9 +1,9 @@
-package com.ItCareerElevatorSixthExercise.services.implementations;
+package com.ItCareerElevatorSixthExercise.services.implementations.reservation;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderItemDTO;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
-import com.ItCareerElevatorSixthExercise.repositories.ReservedProductRepository;
+import com.ItCareerElevatorSixthExercise.repositories.reservation.ReservedProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ReservedProductService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ReservedProductServiceImpl implements ReservedProductService {
 
     @Override
     public ReservedProduct save(ReservedProduct reservedProduct) {
-        log.info("Persisting reservedProduct to the database.");
+        log.info("Persisting a reservedProduct to the database.");
 
         return reservedProductRepository.save(reservedProduct);
     }

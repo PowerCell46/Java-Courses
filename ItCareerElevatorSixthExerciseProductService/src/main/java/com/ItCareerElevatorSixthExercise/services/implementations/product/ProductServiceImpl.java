@@ -1,9 +1,9 @@
-package com.ItCareerElevatorSixthExercise.services.implementations;
+package com.ItCareerElevatorSixthExercise.services.implementations.product;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.GetImageResponseDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductImageResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
@@ -11,7 +11,7 @@ import com.ItCareerElevatorSixthExercise.entities.product.Manufacturer;
 import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchProductException;
-import com.ItCareerElevatorSixthExercise.repositories.ProductRepository;
+import com.ItCareerElevatorSixthExercise.repositories.product.ProductRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ManufacturerService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
 import com.ItCareerElevatorSixthExercise.services.interfaces.ProductTranslationService;
@@ -73,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product save(Product product) {
-        log.info("Persisting product to the database.");
+        log.info("Persisting a product to the database.");
 
         return productRepository.save(product);
     }
@@ -111,8 +111,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage) {
-        Product product = getById(productId);
+    public ProductResponseDTO update(String id, UpdateProductRequestDTO requestDTO, MultipartFile fileImage) {
+        Product product = getById(id);
 
         if (
             // @formatter:off
@@ -177,7 +177,7 @@ public class ProductServiceImpl implements ProductService {
                 .manufacturerName(product.getManufacturer().getName())
                 .inStockQuantity(product.getInStockQuantity())
                 .price(product.getPrice())
-                .image(GetImageResponseDTO
+                .image(GetProductImageResponseDTO
                         .builder()
                         .name(imagePath.getFileName().toString())
                         .contentType(getImageContentType(imagePath))

@@ -45,10 +45,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO getById(String id) {
+    public OrderResponseDTO getById(String id, User user) {
         return orderServiceWebClient
                 .get()
-                .uri(String.format("/api/orders/status/%s", id))
+                .uri(String.format("/api/orders/status/%s?userId=%s", id, user.getId()))
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
                         res -> res

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUserWalletRequestDTO {
+public class UpdateUserCryptoWalletRequestDTO {
 
     private String walletAddress;
 }

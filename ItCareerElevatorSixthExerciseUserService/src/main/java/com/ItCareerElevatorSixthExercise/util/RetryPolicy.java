@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.util;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.exceptions.PaymentServiceException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.PaymentServiceException;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;

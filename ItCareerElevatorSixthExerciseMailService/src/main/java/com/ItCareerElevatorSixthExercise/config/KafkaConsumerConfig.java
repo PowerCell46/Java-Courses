@@ -25,7 +25,7 @@ public class KafkaConsumerConfig {
     private String userRegisteredConsumerGroupId;
 
     @Value("${spring.kafka.order-completed.group-id}")
-    private String orderCompletedGroupId;
+    private String orderCompletedConsumerGroupId;
 
     @Bean
     public ConsumerFactory<String, UserRegisteredDTO> userRegisteredConsumerFactory() {
@@ -57,7 +57,7 @@ public class KafkaConsumerConfig {
         Map<String, Object> properties = new HashMap<>();
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, orderCompletedGroupId);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, orderCompletedConsumerGroupId);
 
         var keyDeserializer = new StringDeserializer();
         var valueDeserializer = new JacksonJsonDeserializer<>(OrderCompletedDTO.class);

@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.exceptions;
+package com.ItCareerElevatorSixthExercise.exceptions.user;
 
 public class NoSuchUserException extends RuntimeException {
 

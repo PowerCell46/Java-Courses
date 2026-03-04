@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DeleteProductResponseDTO {
 
-    private String id;
+    private String id; // snowflakeId
 }

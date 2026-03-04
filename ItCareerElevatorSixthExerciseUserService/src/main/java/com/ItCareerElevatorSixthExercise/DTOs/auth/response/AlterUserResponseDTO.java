@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AlterUserResponseDTO {
 
-    private String id;
+    private String id; // UUID
 
     private String username;
 

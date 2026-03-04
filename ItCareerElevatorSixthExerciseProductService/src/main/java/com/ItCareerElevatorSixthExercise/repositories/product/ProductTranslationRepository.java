@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.repositories;
+package com.ItCareerElevatorSixthExercise.repositories.product;
 
 import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;

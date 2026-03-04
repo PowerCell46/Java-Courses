@@ -48,6 +48,8 @@ public class AuthenticationController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    // TODO: GetMapping on /profile for fetching the user details
+
     @PatchMapping("/profile")
     public ResponseEntity<AlterUserResponseDTO> updateUser(@Valid @RequestBody PatchUserRequestDTO userRequest) {
         User loggedUser = userService.getCurrentlyLoggedUser();

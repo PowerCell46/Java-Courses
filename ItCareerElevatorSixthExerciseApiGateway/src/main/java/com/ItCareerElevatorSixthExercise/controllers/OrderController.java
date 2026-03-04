@@ -34,7 +34,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder(@Valid @RequestBody OrderRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
-        log.info("---> POST request on api/orders for user {}.", loggedUser.getUsername());
+        log.info("---> POST request on api/orders for user with username {}.", loggedUser.getUsername());
 
         var responseDTO = orderService.create(requestDTO, loggedUser);
 
@@ -49,9 +49,10 @@ public class OrderController {
             @Pattern(regexp = "^[A-Za-z0-9_-]{11}$", message = "Id must be a valid snowflake id.")
             String id
     ) {
-        log.info("---> GET request on api/orders/status/{}.", id);
+        User loggedUser = userService.getCurrentlyLoggedUser();
+        log.info("---> GET request on api/orders/status/{} for user with username {}.", id, loggedUser.getUsername());
 
-        var responseDTO = orderService.getById(id);
+        var responseDTO = orderService.getById(id, loggedUser);
 
         return ResponseEntity.ok(responseDTO);
     }

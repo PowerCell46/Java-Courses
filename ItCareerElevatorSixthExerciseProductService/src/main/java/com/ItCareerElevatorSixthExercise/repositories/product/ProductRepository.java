@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.repositories;
+package com.ItCareerElevatorSixthExercise.repositories.product;
 
 import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

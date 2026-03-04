@@ -2,11 +2,11 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcCryptoWalletRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcDepositRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcDepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcUpdateCryptoWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
-import com.ItCareerElevatorSixthExercise.exceptions.PaymentServiceException;
+import com.ItCareerElevatorSixthExercise.exceptions.msvc.PaymentServiceException;
 import com.ItCareerElevatorSixthExercise.services.interfaces.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
     public DepositAmountResponseDTO depositAmount(DepositAmountRequestDTO requestDTO) {
         log.info("---| Making a request to the paymentMicroservice.");
 
-        var requestBody = new MsvcDepositRequestDTO(requestDTO.getAmount());
+        var requestBody = new MsvcDepositAmountRequestDTO(requestDTO.getAmount());
 
         return paymentServiceWebClient
                 .patch()

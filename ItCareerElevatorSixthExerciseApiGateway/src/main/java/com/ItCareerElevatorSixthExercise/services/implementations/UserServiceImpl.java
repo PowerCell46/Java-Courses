@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
             return cud.getUser();
         }
 
-        // Practically would never happen (it could, if you call from an endpoint method, where the user isn't authenticated)
+        // It could happen, if you call from an endpoint method, where the user isn't authenticated
         throw new IllegalStateException("Illegal state: no authenticated user.");
     }
 

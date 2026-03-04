@@ -10,7 +10,7 @@ public interface OrderService {
 
     Order save(Order order);
 
-    OrderResponseDTO getById(String id);
+    OrderResponseDTO getById(String orderId, String userId);
 
     OrderResponseDTO create(OrderRequestDTO requestDTO);
 

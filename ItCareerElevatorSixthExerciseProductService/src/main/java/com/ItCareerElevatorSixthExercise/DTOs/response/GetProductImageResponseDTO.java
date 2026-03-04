@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.DTOs.product.response;
+package com.ItCareerElevatorSixthExercise.DTOs.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,11 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class GetImageResponseDTO {
-
-    private String contentType;
+public class GetProductImageResponseDTO {
 
     private String name;
+
+    private String contentType;
 
     private String base64;
 }

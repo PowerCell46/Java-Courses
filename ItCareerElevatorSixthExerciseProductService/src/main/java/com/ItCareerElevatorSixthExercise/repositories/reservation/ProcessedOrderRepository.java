@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.repositories;
+package com.ItCareerElevatorSixthExercise.repositories.reservation;
 
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrderStatus;

@@ -22,7 +22,7 @@ public interface ProductService {
 
     List<GetProductResponseDTO> getProducts(Integer page, Integer size);
 
-    ProductResponseDTO update(String productId, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
+    ProductResponseDTO update(String id, UpdateProductRequestDTO requestDTO, MultipartFile fileImage);
 
     DeleteProductResponseDTO deleteById(String id);
 }

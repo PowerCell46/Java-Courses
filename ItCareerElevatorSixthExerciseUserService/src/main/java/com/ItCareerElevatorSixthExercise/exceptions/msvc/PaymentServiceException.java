@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.exceptions;
+package com.ItCareerElevatorSixthExercise.exceptions.msvc;
 
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import lombok.Getter;

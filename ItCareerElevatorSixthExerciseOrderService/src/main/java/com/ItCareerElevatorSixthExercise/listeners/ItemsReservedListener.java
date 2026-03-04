@@ -26,10 +26,7 @@ public class ItemsReservedListener {
 
         log.info("---> Handling itemsReserved for order with id {}.", orderDTO.getOrderId());
 
-        orderService.processReserveItemsResult(
-                orderDTO.getOrderId(),
-                orderDTO.getTotalPrice(),
-                LoiOrderStatus.RESERVED
-        );
+        orderService
+                .processReserveItemsResult(orderDTO.getOrderId(), orderDTO.getTotalPrice(), LoiOrderStatus.RESERVED);
     }
 }

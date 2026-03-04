@@ -1,6 +1,6 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
-import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateUserWalletRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateUserCryptoWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UserCryptoWalletRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserCryptoWalletResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.UserResponseDTO;
@@ -48,7 +48,7 @@ public class UserCryptoWalletController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserCryptoWalletResponseDTO> updateUser(
             @PathVariable String id,
-            @RequestBody UpdateUserWalletRequestDTO requestDTO
+            @RequestBody UpdateUserCryptoWalletRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on api/users-wallets/crypto/{}.", id);
 

@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReserveOrderItemDTO {
 
-    private String productId;
+    private String productId; // snowflakeId
 
     private Integer quantity;
 }

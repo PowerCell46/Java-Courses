@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MsvcDepositRequestDTO {
+public class MsvcDepositAmountRequestDTO {
 
     private BigDecimal amount;
 }

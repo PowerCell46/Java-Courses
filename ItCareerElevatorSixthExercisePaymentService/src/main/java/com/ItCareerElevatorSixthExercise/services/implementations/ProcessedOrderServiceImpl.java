@@ -39,9 +39,9 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final ProcessedOrderRepository processedOrderRepository;
-    private final ProcessedOrderPersistenceService processedOrderPersistenceService;
     private final KafkaTemplate<String, String> paymentSuccessfulKafkaTemplate;
     private final KafkaTemplate<String, String> paymentUnsuccessfulKafkaTemplate;
+    private final ProcessedOrderPersistenceService processedOrderPersistenceService;
 
     @Override
     public boolean isOrderAlreadyProcessed(ReservedOrderDTO orderDTO) {

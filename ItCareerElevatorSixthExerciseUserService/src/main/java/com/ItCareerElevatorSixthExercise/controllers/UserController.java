@@ -35,6 +35,8 @@ public class UserController {
         return ResponseEntity.created(null).body(registeredUser); // TODO: URL
     }
 
+    // TODO: GetMapping on /userId for fetching the user details
+
     @PatchMapping("/{userId}")
     public ResponseEntity<AlterUserResponseDTO> updateUserDetails(
             @PathVariable String userId,

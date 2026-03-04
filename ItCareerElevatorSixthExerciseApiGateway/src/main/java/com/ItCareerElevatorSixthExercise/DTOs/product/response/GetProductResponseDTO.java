@@ -26,5 +26,5 @@ public class GetProductResponseDTO {
 
     private BigDecimal price;
 
-    private GetImageResponseDTO image;
+    private GetProductImageResponseDTO image;
 }

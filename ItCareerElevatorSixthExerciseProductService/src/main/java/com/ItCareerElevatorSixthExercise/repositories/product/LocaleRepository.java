@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.repositories;
+package com.ItCareerElevatorSixthExercise.repositories.product;
 
 import com.ItCareerElevatorSixthExercise.entities.product.Locale;
 import org.springframework.data.jpa.repository.JpaRepository;

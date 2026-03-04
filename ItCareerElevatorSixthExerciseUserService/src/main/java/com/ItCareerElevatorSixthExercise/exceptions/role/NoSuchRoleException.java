@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.exceptions;
+package com.ItCareerElevatorSixthExercise.exceptions.role;
 
 public class NoSuchRoleException extends RuntimeException {
 

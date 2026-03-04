@@ -15,7 +15,7 @@ public class LoiOrderStatus extends ListOptionItem {
 
     public static final Long INTERNAL_FAILURE = 2L; // Stuck in PROCESSING | Kafka failure
 
-    public static final Long INVALID_PRODUCTS = 3L; // Invalid productId used in the order
+    public static final Long INVALID_PRODUCTS = 3L; // Invalid productId used in the order items
 
     public static final Long NOT_IN_STOCK = 4L;
 
