@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.services.interfaces;
+package com.ItCareerElevatorSixthExercise.services.interfaces.product;
 
 
 import com.ItCareerElevatorSixthExercise.entities.product.Locale;

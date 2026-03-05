@@ -3,7 +3,7 @@ package com.ItCareerElevatorSixthExercise.util;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.repositories.reservation.ProcessedOrderRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.reservation.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -4,8 +4,8 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderIte
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
 import com.ItCareerElevatorSixthExercise.repositories.reservation.ReservedProductRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ReservedProductService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.product.ProductService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.reservation.ReservedProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class ReservedProductServiceImpl implements ReservedProductService {
 
     @Override
     public ReservedProduct save(ReservedProduct reservedProduct) {
-        log.info("Persisting a reservedProduct to the database.");
+        log.info("Persisting reservedProduct to the database.");
 
         return reservedProductRepository.save(reservedProduct);
     }

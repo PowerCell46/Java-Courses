@@ -5,7 +5,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

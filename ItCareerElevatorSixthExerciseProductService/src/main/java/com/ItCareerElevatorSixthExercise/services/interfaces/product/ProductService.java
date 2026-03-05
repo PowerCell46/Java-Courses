@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.services.interfaces;
+package com.ItCareerElevatorSixthExercise.services.interfaces.product;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;

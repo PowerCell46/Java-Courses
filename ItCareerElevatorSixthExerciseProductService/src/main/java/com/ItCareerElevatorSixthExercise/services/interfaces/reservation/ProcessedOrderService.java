@@ -1,4 +1,4 @@
-package com.ItCareerElevatorSixthExercise.services.interfaces;
+package com.ItCareerElevatorSixthExercise.services.interfaces.reservation;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentUnsuccessful.PaymentUnsuccessfulDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderDTO;

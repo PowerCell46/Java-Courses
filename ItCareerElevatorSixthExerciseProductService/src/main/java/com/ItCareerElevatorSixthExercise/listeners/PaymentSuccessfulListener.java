@@ -1,7 +1,7 @@
 package com.ItCareerElevatorSixthExercise.listeners;
 
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.paymentSuccessful.PaymentSuccessfulDTO;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ProcessedOrderService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.reservation.ProcessedOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

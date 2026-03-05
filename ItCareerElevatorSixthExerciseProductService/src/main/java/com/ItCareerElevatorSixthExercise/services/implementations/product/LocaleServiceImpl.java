@@ -3,7 +3,7 @@ package com.ItCareerElevatorSixthExercise.services.implementations.product;
 import com.ItCareerElevatorSixthExercise.entities.product.Locale;
 import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchLocaleException;
 import com.ItCareerElevatorSixthExercise.repositories.product.LocaleRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.LocaleService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.product.LocaleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -12,9 +12,10 @@ import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchProductException;
 import com.ItCareerElevatorSixthExercise.repositories.product.ProductRepository;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ManufacturerService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ProductService;
-import com.ItCareerElevatorSixthExercise.services.interfaces.ProductTranslationService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.product.ManufacturerService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.product.MinioStorageService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.product.ProductService;
+import com.ItCareerElevatorSixthExercise.services.interfaces.product.ProductTranslationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
+    private final MinioStorageService minioStorageService;
     private final ManufacturerService manufacturerService;
     private final ProductTranslationService productTranslationService;
 
@@ -53,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 
-        product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY_NAME));
+        product.setImageUrl(minioStorageService.upload(fileImage, IMAGE_SUBDIRECTORY_NAME));
         product.setManufacturer(manufacturerService.getOrCreateByName(requestDTO.getManufacturerName()));
         if (product.getInStockQuantity() == null)
             product.setInStockQuantity(0);
@@ -73,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product save(Product product) {
-        log.info("Persisting a product to the database.");
+        log.info("Persisting product to the database.");
 
         return productRepository.save(product);
     }
