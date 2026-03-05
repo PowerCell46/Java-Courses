@@ -41,10 +41,9 @@ public class MinioStorageServiceImpl implements MinioStorageService {
             );
 
             if (!exists) {
-                minioClient.makeBucket(
-                        MakeBucketArgs.builder().bucket(BUCKET_NAME).build()
-                );
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(BUCKET_NAME).build());
                 setPublicReadPolicy();
+
                 log.info("Bucket '{}' created with public-read policy.", BUCKET_NAME);
             }
         } catch (Exception e) {
@@ -91,6 +90,8 @@ public class MinioStorageServiceImpl implements MinioStorageService {
         String objectKey = extractObjectKey(imageUrl);
 
         try {
+            log.info("Deleting image: {}.", objectKey);
+
             minioClient.removeObject(
                     RemoveObjectArgs
                             .builder()
@@ -98,7 +99,6 @@ public class MinioStorageServiceImpl implements MinioStorageService {
                             .object(objectKey)
                             .build()
             );
-            log.info("Deleted image: {}.", objectKey);
 
         } catch (Exception ex) {
             log.warn("Failed to delete image from MinIO: {}.", objectKey, ex);
@@ -113,6 +113,7 @@ public class MinioStorageServiceImpl implements MinioStorageService {
     private String extractExtension(String originalFileName) {
         if (originalFileName != null && originalFileName.contains("."))
             return originalFileName.substring(originalFileName.lastIndexOf("."));
+
         return "";
     }
 
@@ -132,6 +133,7 @@ public class MinioStorageServiceImpl implements MinioStorageService {
         minioClient.setBucketPolicy(
                 SetBucketPolicyArgs
                         .builder()
+                        .bucket(BUCKET_NAME)
                         .config(policy)
                         .build()
         );

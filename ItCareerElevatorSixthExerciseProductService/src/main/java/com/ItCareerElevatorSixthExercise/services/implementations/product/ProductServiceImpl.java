@@ -3,7 +3,6 @@ package com.ItCareerElevatorSixthExercise.services.implementations.product;
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductImageResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
@@ -25,14 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-
-import static com.ItCareerElevatorSixthExercise.util.ImageUtils.getImageContentType;
-import static com.ItCareerElevatorSixthExercise.util.ImageUtils.readImageToBase64;
-import static com.ItCareerElevatorSixthExercise.util.ImageUtils.saveImageFileToFileSystem;
 
 @Slf4j
 @Service
@@ -62,42 +55,35 @@ public class ProductServiceImpl implements ProductService {
 
         product = save(product);
 
-        Set<ProductTranslation> translations = productTranslationService
-                .create(requestDTO, product);
+        Set<ProductTranslation> translations = productTranslationService.create(requestDTO, product);
         product.setTranslations(translations);
 
         return new ProductResponseDTO(
                 CommonEntity.convertIdToSnowflakeId(product.getId()),
                 product.getPrice(),
-                product.getInStockQuantity()
+                product.getInStockQuantity(),
+                product.getImageUrl()
         );
     }
 
     @Override
     public Product save(Product product) {
         log.info("Persisting product to the database.");
-
         return productRepository.save(product);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Product getById(String id) {
-        Optional<Product> optionalProduct = productRepository
-                .findById(CommonEntity.convertSnowflakeIdToId(id));
-
-        if (optionalProduct.isEmpty()) {
-            throw new NoSuchProductException(String.format("No product found with id %s.", id));
-        }
-
-        return optionalProduct.get();
+        return productRepository
+                .findById(CommonEntity.convertSnowflakeIdToId(id))
+                .orElseThrow(() -> new NoSuchProductException(String.format("No product found with id %s.", id)));
     }
 
     @Override
     @Transactional(readOnly = true)
     public GetProductResponseDTO getProductById(String id) {
         Product product = getById(id);
-
         return constructGetProductResponseDTO(product);
     }
 
@@ -132,7 +118,8 @@ public class ProductServiceImpl implements ProductService {
             product.setPrice(requestDTO.getPrice());
         }
         if (fileImage != null && !fileImage.isEmpty()) {
-            product.setImageUrl(saveImageFileToFileSystem(fileImage, IMAGE_SUBDIRECTORY_NAME));
+            minioStorageService.delete(product.getImageUrl());
+            product.setImageUrl(minioStorageService.upload(fileImage, IMAGE_SUBDIRECTORY_NAME));
         }
 
         if (
@@ -151,18 +138,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public DeleteProductResponseDTO deleteById(String id) {
         Product product = getById(id);
+        minioStorageService.delete(product.getImageUrl());
 
-        DeleteProductResponseDTO responseDTO = objectMapper.convertValue(product, DeleteProductResponseDTO.class);
+        var responseDTO = new DeleteProductResponseDTO(id);
 
-        log.info("(Deleting product from the database.");
-        productRepository.deleteById(CommonEntity.convertSnowflakeIdToId(id));
+        log.info("Deleting product from the database.");
+        productRepository.delete(product);
 
         return responseDTO;
     }
 
     private GetProductResponseDTO constructGetProductResponseDTO(Product product) {
-        Path imagePath = Path.of(product.getImageUrl());
-
         return GetProductResponseDTO
                 .builder()
                 .id(CommonEntity.convertIdToSnowflakeId(product.getId()))
@@ -179,12 +165,7 @@ public class ProductServiceImpl implements ProductService {
                 .manufacturerName(product.getManufacturer().getName())
                 .inStockQuantity(product.getInStockQuantity())
                 .price(product.getPrice())
-                .image(GetProductImageResponseDTO
-                        .builder()
-                        .name(imagePath.getFileName().toString())
-                        .contentType(getImageContentType(imagePath))
-                        .base64(readImageToBase64(imagePath))
-                        .build())
+                .imageUrl(product.getImageUrl())
                 .build();
     }
 }

@@ -18,4 +18,6 @@ public class ProductResponseDTO {
     private BigDecimal price;
 
     private Integer inStockQuantity;
+
+    private String imageUrl;
 }

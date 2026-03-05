@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GetProductResponseDTO {
 
-    private String id;
+    private String id; // snowflakeId
 
     private List<String> nameTranslations;
 
@@ -26,5 +26,5 @@ public class GetProductResponseDTO {
 
     private BigDecimal price;
 
-    private GetProductImageResponseDTO image;
+    private String imageUrl;
 }

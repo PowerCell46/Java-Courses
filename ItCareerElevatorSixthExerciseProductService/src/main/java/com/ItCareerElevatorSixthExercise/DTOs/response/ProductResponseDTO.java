@@ -13,9 +13,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ProductResponseDTO {
 
-    private String id; // snowflakeID
+    private String id; // snowflakeId
 
     private BigDecimal price;
 
     private Integer inStockQuantity;
+
+    private String imageUrl;
 }
