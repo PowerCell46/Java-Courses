@@ -1,11 +1,13 @@
 package com.ItCareerElevatorSixthExercise.services.implementations.product;
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.request.TranslationFieldRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.DeleteProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.GetProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.response.ProductResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
+import com.ItCareerElevatorSixthExercise.entities.product.Locale;
 import com.ItCareerElevatorSixthExercise.entities.product.Manufacturer;
 import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
@@ -59,6 +61,13 @@ public class ProductServiceImpl implements ProductService {
 
         return new ProductResponseDTO(
                 CommonEntity.convertIdToSnowflakeId(product.getId()),
+                requestDTO
+                        .getNameTranslations()
+                        .stream()
+                        .filter(translation -> translation.getCode().equals(Locale.DEFAULT_LANGUAGE_CODE))
+                        .findFirst()
+                        .map(TranslationFieldRequestDTO::getTranslation)
+                        .orElse("N/A"),
                 product.getPrice(),
                 product.getInStockQuantity(),
                 product.getImageUrl()
@@ -131,7 +140,18 @@ public class ProductServiceImpl implements ProductService {
             product = save(product);
         }
 
-        return objectMapper.convertValue(product, ProductResponseDTO.class);
+        return new ProductResponseDTO(
+                CommonEntity.convertIdToSnowflakeId(product.getId()),
+                product.getTranslations()
+                        .stream()
+                        .filter(translation -> translation.getLocale().getCode().equals(Locale.DEFAULT_LANGUAGE_CODE))
+                        .findFirst()
+                        .map(ProductTranslation::getName)
+                        .orElse("N/A"),
+                product.getPrice(),
+                product.getInStockQuantity(),
+                product.getImageUrl()
+        );
     }
 
     @Override
@@ -139,12 +159,10 @@ public class ProductServiceImpl implements ProductService {
         Product product = getById(id);
         minioStorageService.delete(product.getImageUrl());
 
-        var responseDTO = new DeleteProductResponseDTO(id);
-
         log.info("Deleting product from the database.");
         productRepository.delete(product);
 
-        return responseDTO;
+        return new DeleteProductResponseDTO(id);
     }
 
     private GetProductResponseDTO constructGetProductResponseDTO(Product product) {

@@ -88,21 +88,15 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Transactional
     public void processReserveItems(ReserveOrderDTO reserveOrderDTO, ProcessedOrder processedOrder) {
         if (!areOrderItemsValid(reserveOrderDTO.getOrderItems())) {
-            log.info("Invalid order items. Setting the order status to INVALID_PRODUCTS.");
+            log.info("Invalid order items. Setting the processedOrder status to INVALID_PRODUCTS.");
 
             processedOrder.setStatus(ProcessedOrderStatus.INVALID_PRODUCTS);
-            final ProcessedOrder failedOrder = processedOrderRepository.save(processedOrder);
+            processedOrder = processedOrderRepository.save(processedOrder);
+            sendKafkaFailureReserveItemsMessage(processedOrder);
 
-            TransactionSynchronizationManager
-                    .registerSynchronization(new TransactionSynchronization() {
-                        @Override
-                        public void afterCommit() {
-                            sendKafkaFailureReserveItemsMessage(failedOrder);
-                        }
-                    });
+            return;
         }
 
-        processedOrder.setUserId(reserveOrderDTO.getUserId());
         processedOrder.setTotalPrice(calculateProductsSum(reserveOrderDTO));
 
         try {

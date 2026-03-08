@@ -40,6 +40,26 @@ services:
       kafka:
         condition: service_healthy
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio_object_storage
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    volumes:
+      - web_store_application_minio_vol:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 60s
+
   postgres_users:
     image: postgres:16-alpine
     container_name: user_service_db
@@ -182,10 +202,15 @@ services:
       KAFKA_PAYMENT_UNSUCCESSFUL_CONSUMER_GROUP: payment_unsuccessful_product_service
       SNOWFLAKE_WORKER_ID: 3
       SNOWFLAKE_DATA_CENTER_ID: 5
+      MINIO_ENDPOINT_URL: http://minio:9000
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
     depends_on:
       postgres_products:
         condition: service_healthy
       kafka:
+        condition: service_healthy
+      minio:
         condition: service_healthy
 
   server_payment_service:
@@ -230,6 +255,7 @@ services:
 
 volumes:
   web_store_application_kafka_vol:
+  web_store_application_minio_vol:
   web_store_application_users_db_vol:
   web_store_application_orders_db_vol:
   web_store_application_products_db_vol:

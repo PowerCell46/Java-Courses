@@ -15,6 +15,8 @@ public class ProductResponseDTO {
 
     private String id; // snowflakeId
 
+    private String name; // In the default language
+
     private BigDecimal price;
 
     private Integer inStockQuantity;
