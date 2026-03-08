@@ -61,7 +61,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PatchMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<AlterUserResponseDTO> resetPassword(@Valid @RequestBody ResetPasswordRequestDTO requestDTO) {
         User loggedUser = userService.getCurrentlyLoggedUser();
         log.info("---> PATCH request on api/auth/reset-password for user with username: {}.", loggedUser.getUsername());

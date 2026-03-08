@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,4 +16,6 @@ public class OrderResponseDTO {
     private String id; // snowflakeId
 
     private String status;
+
+    private BigDecimal totalPrice;
 }

@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
 
     private final RoleService roleService;
     private final ObjectMapper objectMapper;
-    private final UserRepository userRepository;
     private final PaymentService paymentService;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final KafkaTemplate<String, String> registerEmailKafkaTemplate;
 

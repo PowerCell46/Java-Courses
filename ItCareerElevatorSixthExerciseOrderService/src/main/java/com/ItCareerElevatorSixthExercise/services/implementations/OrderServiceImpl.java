@@ -64,7 +64,11 @@ public class OrderServiceImpl implements OrderService {
 
         sendKafkaReserveItemsMessage(persistedOrder);
 
-        return new OrderResponseDTO(persistedOrder.getSnowflakeId(), persistedOrder.getOrderStatus().getName());
+        return new OrderResponseDTO(
+                persistedOrder.getSnowflakeId(),
+                persistedOrder.getOrderStatus().getName(),
+                null
+        );
     }
 
     private boolean areOrderItemsUnique(OrderRequestDTO requestDTO) {
@@ -147,7 +151,8 @@ public class OrderServiceImpl implements OrderService {
                 .map(order ->
                         new OrderResponseDTO(
                                 order.getSnowflakeId(),
-                                order.getOrderStatus().getName()
+                                order.getOrderStatus().getName(),
+                                order.getTotalPrice()
                         ))
                 .orElseThrow(() ->
                         new NoSuchOrderFoundException(String.format("Invalid or non-existent order with id %s.", orderId))
