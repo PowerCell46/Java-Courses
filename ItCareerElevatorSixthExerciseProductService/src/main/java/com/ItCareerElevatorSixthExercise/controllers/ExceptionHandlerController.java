@@ -3,6 +3,7 @@ package com.ItCareerElevatorSixthExercise.controllers;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.exceptions.common.InvalidSnowflakeIdException;
 import com.ItCareerElevatorSixthExercise.exceptions.product.InvalidTranslationsException;
+import com.ItCareerElevatorSixthExercise.exceptions.product.MissingDefaultTranslationException;
 import com.ItCareerElevatorSixthExercise.exceptions.product.NoSuchLocaleException;
 import com.ItCareerElevatorSixthExercise.exceptions.image.InvalidFileImageException;
 import com.ItCareerElevatorSixthExercise.exceptions.image.ProcessImageFileException;
@@ -60,6 +61,21 @@ public class ExceptionHandlerController {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .body(error);
+    }
+
+    @ExceptionHandler(MissingDefaultTranslationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingDefaultTranslationException(MissingDefaultTranslationException ex) {
+        log.warn("Handling MissingDefaultTranslationException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST.value())
                 .body(error);
     }
 

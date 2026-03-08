@@ -17,6 +17,10 @@ import lombok.Setter;
 @Table(name = "locales")
 public class Locale {
 
+    public static final String DEFAULT_LANGUAGE_CODE = "en";
+
+    public static final String DEFAULT_LANGUAGE_NAME = "English";
+
     @Id
     @Column(length = 10)
     private String code;

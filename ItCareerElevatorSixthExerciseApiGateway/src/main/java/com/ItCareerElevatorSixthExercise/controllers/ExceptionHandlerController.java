@@ -197,7 +197,7 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_CONTENT);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class) // * Thrown when the incoming HTTP request body cannot be converted to the required object type (malformed JSON, incorrect data type for a field)
+    @ExceptionHandler(HttpMessageNotReadableException.class) // * Thrown when the incoming HTTP request body cannot be converted to the required object type (malformed JSON, incorrect data type for a field) (e.g. property type mismatch, missing quotes)
     public ResponseEntity<ErrorResponseDTO> handleConstraintViolation(HttpMessageNotReadableException ex) {
         log.warn("Handling HttpMessageNotReadableException.");
 

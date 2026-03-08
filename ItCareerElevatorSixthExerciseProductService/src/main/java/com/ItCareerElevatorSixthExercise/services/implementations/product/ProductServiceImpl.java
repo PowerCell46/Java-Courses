@@ -43,8 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO create(CreateProductRequestDTO requestDTO, MultipartFile fileImage) {
-        productTranslationService
-                .validate(requestDTO.getNameTranslations());
+        productTranslationService.validate(requestDTO);
 
         Product product = objectMapper.convertValue(requestDTO, Product.class);
 

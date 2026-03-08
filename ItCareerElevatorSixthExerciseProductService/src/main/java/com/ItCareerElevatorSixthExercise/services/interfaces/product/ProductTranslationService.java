@@ -2,12 +2,10 @@ package com.ItCareerElevatorSixthExercise.services.interfaces.product;
 
 
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.request.TranslationFieldRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 
-import java.util.List;
 import java.util.Set;
 
 public interface ProductTranslationService {
@@ -18,5 +16,5 @@ public interface ProductTranslationService {
 
     ProductTranslation save(ProductTranslation productTranslation);
 
-    void validate(List<TranslationFieldRequestDTO> nameTranslations);
+    void validate(CreateProductRequestDTO requestDTO);
 }

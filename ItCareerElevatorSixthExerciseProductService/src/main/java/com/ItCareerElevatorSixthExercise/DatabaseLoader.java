@@ -26,8 +26,8 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     private void seedLocales() {
+        Locale english = new Locale(Locale.DEFAULT_LANGUAGE_CODE, Locale.DEFAULT_LANGUAGE_NAME);
         Locale bulgarian = new Locale("bg", "Bulgarian");
-        Locale english = new Locale("en", "English");
         Locale spanish = new Locale("es", "Spanish");
         Locale german = new Locale("de", "German");
 

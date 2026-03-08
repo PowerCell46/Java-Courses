@@ -3,9 +3,11 @@ package com.ItCareerElevatorSixthExercise.services.implementations.product;
 import com.ItCareerElevatorSixthExercise.DTOs.request.CreateProductRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.TranslationFieldRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.request.UpdateProductRequestDTO;
+import com.ItCareerElevatorSixthExercise.entities.product.Locale;
 import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 import com.ItCareerElevatorSixthExercise.exceptions.product.InvalidTranslationsException;
+import com.ItCareerElevatorSixthExercise.exceptions.product.MissingDefaultTranslationException;
 import com.ItCareerElevatorSixthExercise.exceptions.product.ProductAlreadyExistsException;
 import com.ItCareerElevatorSixthExercise.repositories.product.ProductTranslationRepository;
 import com.ItCareerElevatorSixthExercise.services.interfaces.product.LocaleService;
@@ -96,10 +98,28 @@ public class ProductTranslationServiceImpl implements ProductTranslationService 
     }
 
     @Override
-    public void validate(List<TranslationFieldRequestDTO> nameTranslations) {
-        if (translatedNameAlreadyExists(nameTranslations)) {
+    public void validate(CreateProductRequestDTO requestDTO) {
+        if (translatedNameAlreadyExists(requestDTO.getNameTranslations())) {
             throw new ProductAlreadyExistsException(
                     "Cannot create product, because the name is already taken (in one or more language/s)."
+            );
+        }
+
+        var optionalEnglishNameTranslation = requestDTO
+                .getNameTranslations()
+                .stream()
+                .filter(translation -> translation.getCode().equals(Locale.DEFAULT_LANGUAGE_CODE))
+                .findAny();
+
+        var optionalEnglishDetailsTranslation = requestDTO
+                .getDescriptionTranslations()
+                .stream()
+                .filter(translation -> translation.getCode().equals(Locale.DEFAULT_LANGUAGE_CODE))
+                .findAny();
+
+        if (optionalEnglishNameTranslation.isEmpty() || optionalEnglishDetailsTranslation.isEmpty()) {
+            throw new MissingDefaultTranslationException(
+                    String.format("Product name and description translations must include '%s'.", Locale.DEFAULT_LANGUAGE_CODE)
             );
         }
     }
