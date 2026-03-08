@@ -9,6 +9,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderIte
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
 import com.ItCareerElevatorSixthExercise.entities.product.Locale;
+import com.ItCareerElevatorSixthExercise.entities.product.Product;
 import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -85,6 +88,8 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     @Transactional
     public void processReserveItems(ReserveOrderDTO reserveOrderDTO, ProcessedOrder processedOrder) {
         if (!areOrderItemsValid(reserveOrderDTO.getOrderItems())) {
+            log.info("Invalid order items. Setting the order status to INVALID_PRODUCTS.");
+
             processedOrder.setStatus(ProcessedOrderStatus.INVALID_PRODUCTS);
             final ProcessedOrder failedOrder = processedOrderRepository.save(processedOrder);
 
@@ -151,16 +156,24 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
     }
 
     private BigDecimal calculateProductsSum(ReserveOrderDTO reserveOrderDTO) {
-        return productRepository
-                .getProductsPriceSum(
-                        reserveOrderDTO
-                                .getOrderItems()
-                                .stream()
-                                .map(reserveOrderItemDTO ->
-                                        CommonEntity.convertSnowflakeIdToId(reserveOrderItemDTO.getProductId())
-                                )
-                                .toList()
-                );
+        List<Long> productIds = reserveOrderDTO
+                .getOrderItems()
+                .stream()
+                .map(item -> CommonEntity.convertSnowflakeIdToId(item.getProductId()))
+                .toList();
+
+        Map<Long, BigDecimal> productIdPriceMapping = productRepository
+                .findAllById(productIds)
+                .stream()
+                .collect(Collectors.toMap(Product::getId, Product::getPrice));
+
+        return reserveOrderDTO
+                .getOrderItems()
+                .stream()
+                .map(item -> productIdPriceMapping
+                        .getOrDefault(CommonEntity.convertSnowflakeIdToId(item.getProductId()), BigDecimal.ZERO)
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private void reserveProduct(ReserveOrderItemDTO reserveOrderItemDTO) {
