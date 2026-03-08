@@ -8,6 +8,8 @@ import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderDTO
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.reserveItems.ReserveOrderItemDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.itemsReserved.ReservedOrderDTO;
 import com.ItCareerElevatorSixthExercise.entities.CommonEntity;
+import com.ItCareerElevatorSixthExercise.entities.product.Locale;
+import com.ItCareerElevatorSixthExercise.entities.product.ProductTranslation;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrderStatus;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ProcessedOrder;
 import com.ItCareerElevatorSixthExercise.entities.reservation.ReservedProduct;
@@ -281,6 +283,15 @@ public class ProcessedOrderServiceImpl implements ProcessedOrderService {
                         .stream()
                         .map(reservedProduct -> new OrderItemCompletedDTO(
                                         CommonEntity.convertIdToSnowflakeId(reservedProduct.getProduct().getId()),
+                                        reservedProduct
+                                                .getProduct()
+                                                .getTranslations()
+                                                .stream()
+                                                .filter(tr ->
+                                                        tr.getLocale().getCode().equals(Locale.DEFAULT_LANGUAGE_CODE))
+                                                .findFirst()
+                                                .map(ProductTranslation::getName)
+                                                .orElse("N/A"),
                                         reservedProduct.getQuantity(),
                                         reservedProduct.getProduct().getPrice()
                                 )

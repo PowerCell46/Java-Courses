@@ -15,6 +15,8 @@ public class OrderItemCompletedDTO {
 
     private String id; // snowflakeId
 
+    private String name;
+
     private Integer quantity;
 
     private BigDecimal price;

@@ -2,18 +2,16 @@ package com.ItCareerElevatorSixthExercise.DTOs.auth.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class UserRequestDTO {
+public class ResetPasswordRequestDTO {
 
-    private String username;
+    private String oldPassword;
 
-    private String email;
-
-    // private String walletAddress;
-
-    private String password;
+    private String newPassword;
 }

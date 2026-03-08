@@ -1,7 +1,9 @@
 package com.ItCareerElevatorSixthExercise.controllers;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.ResetPasswordRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
@@ -27,7 +29,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> register(@RequestBody UserRequestDTO requestDTO) {
+    public ResponseEntity<User> register(@RequestBody RegisterUserRequestDTO requestDTO) {
         log.info("---> POST request on api/users with username: {}.", requestDTO.getUsername());
 
         User registeredUser = userService.register(requestDTO);
@@ -40,11 +42,23 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<AlterUserResponseDTO> updateUserDetails(
             @PathVariable String userId,
-            @RequestBody UserRequestDTO requestDTO
+            @RequestBody PatchUserRequestDTO requestDTO
     ) {
         log.info("---> PATCH request on api/users/{}.", userId);
 
         var responseDTO = userService.updateFields(userId, requestDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PatchMapping("/reset-password/{userId}")
+    public ResponseEntity<AlterUserResponseDTO> resetPassword(
+            @PathVariable String userId,
+            @RequestBody ResetPasswordRequestDTO requestDTO
+    ) {
+        log.info("---> PATCH request on api/users/reset-password/{}.", userId);
+
+        var responseDTO = userService.resetPassword(userId, requestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }

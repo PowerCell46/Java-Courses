@@ -2,6 +2,7 @@ package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.ResetPasswordRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.msvc.MsvcDepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
@@ -170,6 +171,25 @@ public class UserServiceImpl implements UserService {
                                 .map(UserServiceException::new)
                                 .flatMap(Mono::error))
                 .bodyToMono(DepositAmountResponseDTO.class)
+                .retryWhen(buildRetrySpec())
+                .block();
+    }
+
+    @Override
+    public AlterUserResponseDTO resetPassword(User user, ResetPasswordRequestDTO requestDTO) {
+        log.info("---| Making a request to the userService.");
+
+        return userServiceWebClient
+                .patch()
+                .uri(String.format("/api/users/reset-password/%s", user.getId()))
+                .bodyValue(requestDTO)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError,
+                        res -> res
+                                .bodyToMono(ErrorResponseDTO.class)
+                                .map(UserServiceException::new)
+                                .flatMap(Mono::error))
+                .bodyToMono(AlterUserResponseDTO.class)
                 .retryWhen(buildRetrySpec())
                 .block();
     }

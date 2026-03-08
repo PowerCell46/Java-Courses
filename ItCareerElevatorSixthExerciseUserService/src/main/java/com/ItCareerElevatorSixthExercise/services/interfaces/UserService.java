@@ -1,21 +1,23 @@
 package com.ItCareerElevatorSixthExercise.services.interfaces;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.ResetPasswordRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
 import com.ItCareerElevatorSixthExercise.entities.User;
 
 public interface UserService {
 
     User save(User user);
 
-    User register(UserRequestDTO requestDTO);
+    User register(RegisterUserRequestDTO requestDTO);
 
     AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO);
 
-    AlterUserResponseDTO updateFields(String userId, UserRequestDTO requestDTO);
+    AlterUserResponseDTO updateFields(String userId, PatchUserRequestDTO requestDTO);
 
     void sendSuccessfulRegistrationKafkaMessage(User user);
+
+    AlterUserResponseDTO resetPassword(String userId, ResetPasswordRequestDTO requestDTO);
 }

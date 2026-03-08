@@ -1,12 +1,15 @@
 package com.ItCareerElevatorSixthExercise.services.implementations;
 
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO;
-import com.ItCareerElevatorSixthExercise.DTOs.auth.request.UserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.ResetPasswordRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.kafka.UserRegisteredDTO;
 import com.ItCareerElevatorSixthExercise.entities.Role;
 import com.ItCareerElevatorSixthExercise.entities.User;
 import com.ItCareerElevatorSixthExercise.exceptions.user.EmailIsAlreadyTakenException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.InvalidCredentialsException;
 import com.ItCareerElevatorSixthExercise.exceptions.user.NoSuchUserException;
 import com.ItCareerElevatorSixthExercise.exceptions.user.UsernameIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.repositories.UserRepository;
@@ -38,7 +41,7 @@ public class UserServiceImpl implements UserService {
     private final KafkaTemplate<String, String> registerEmailKafkaTemplate;
 
     @Override
-    public User register(UserRequestDTO requestDTO) {
+    public User register(RegisterUserRequestDTO requestDTO) {
         validateRegisterData(requestDTO);
 
         User user = new User(
@@ -57,7 +60,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private void validateRegisterData(UserRequestDTO userRequest) {
+    private void validateRegisterData(RegisterUserRequestDTO userRequest) {
         if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UsernameIsAlreadyTakenException(
                     String.format("User with username %s already exists.", userRequest.getUsername())
@@ -104,6 +107,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public AlterUserResponseDTO resetPassword(String userId, ResetPasswordRequestDTO requestDTO) {
+        User user = getById(userId);
+
+        if (!passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid old password.");
+        }
+
+        log.info("Resetting password for user with username {}.", user.getUsername());
+
+        user.setPassword(encodePassword(requestDTO.getNewPassword()));
+        user = userRepository.save(user);
+
+        return new AlterUserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
+    }
+
+    @Override
     public AlterUserResponseDTO assignRolesToUser(AssignRolesRequestDTO requestDTO) {
         User user = getByUsername(requestDTO.getUsername());
 
@@ -128,11 +151,15 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NoSuchUserException(String.format("No user found with username %s.", username)));
     }
 
+    private User getById(String id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow((() -> new NoSuchUserException(String.format("No user found with id %s.", id))));
+    }
+
     @Override
-    public AlterUserResponseDTO updateFields(String userId, UserRequestDTO requestDTO) {
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow((() -> new NoSuchUserException(String.format("No user found with id %s.", userId))));
+    public AlterUserResponseDTO updateFields(String userId, PatchUserRequestDTO requestDTO) {
+        User user = getById(userId);
 
         if (requestDTO.getUsername() != null) {
             if (userRepository.findByUsername(requestDTO.getUsername()).isPresent()) {
@@ -151,11 +178,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(requestDTO.getEmail());
         }
 
-        if (requestDTO.getPassword() != null) { // ? Normally this would happen by a link sent to the email for resetting the password
-            user.setPassword(encodePassword(requestDTO.getPassword()));
-        }
-
-        if (requestDTO.getUsername() != null || requestDTO.getEmail() != null || requestDTO.getPassword() != null) {
+        if (requestDTO.getUsername() != null || requestDTO.getEmail() != null) {
             log.info("Updating user with username {}.", user.getUsername());
             save(user);
         }

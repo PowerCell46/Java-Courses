@@ -94,15 +94,19 @@ public class MailServiceImpl implements MailService {
                         <td style="padding: 14px 24px; border-bottom: 1px solid #1e2f3f;">
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
-                                    <td width="40%"
+                                    <td width="20%"
                                         style="font-size: 14px; color: #c9d6e3; font-family: 'Courier New', Courier, monospace;">
                                         {{itemId}}
+                                    </td>
+                                    <td width="30%" align="center"
+                                        style="font-size: 14px; color: #e8edf2; font-weight: 600;">
+                                        {{itemName}}
                                     </td>
                                     <td width="20%" align="center"
                                         style="font-size: 14px; color: #c9d6e3; font-weight: 500;">
                                         {{itemQuantity}}
                                     </td>
-                                    <td width="40%" align="right"
+                                    <td width="30%" align="right"
                                         style="font-size: 14px; color: #e8edf2; font-weight: 600;">
                                         {{itemPrice}} EUR
                                     </td>

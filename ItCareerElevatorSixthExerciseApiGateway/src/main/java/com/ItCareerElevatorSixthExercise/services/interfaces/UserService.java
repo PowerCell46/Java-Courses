@@ -4,6 +4,7 @@ import com.ItCareerElevatorSixthExercise.DTOs.auth.request.AssignRolesRequestDTO
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.DepositAmountRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.PatchUserRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.request.RegisterRequestDTO;
+import com.ItCareerElevatorSixthExercise.DTOs.auth.request.ResetPasswordRequestDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AlterUserResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.AuthResponseDTO;
 import com.ItCareerElevatorSixthExercise.DTOs.auth.response.DepositAmountResponseDTO;
@@ -25,4 +26,6 @@ public interface UserService extends UserDetailsService {
     AlterUserResponseDTO updateFields(User user, PatchUserRequestDTO userRequest);
 
     DepositAmountResponseDTO depositAmount(User user, DepositAmountRequestDTO requestDTO);
+
+    AlterUserResponseDTO resetPassword(User user, ResetPasswordRequestDTO requestDTO);
 }

@@ -13,7 +13,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class OrderItemCompletedDTO {
 
-    private String id;
+    private String id; // snowflakeId
+
+    private String name;
 
     private Integer quantity;
 

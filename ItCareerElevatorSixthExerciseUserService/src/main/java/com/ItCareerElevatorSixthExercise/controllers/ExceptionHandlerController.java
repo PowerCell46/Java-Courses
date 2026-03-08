@@ -3,6 +3,7 @@ package com.ItCareerElevatorSixthExercise.controllers;
 import com.ItCareerElevatorSixthExercise.DTOs.common.ErrorResponseDTO;
 import com.ItCareerElevatorSixthExercise.exceptions.user.EmailIsAlreadyTakenException;
 import com.ItCareerElevatorSixthExercise.exceptions.role.NoSuchRoleException;
+import com.ItCareerElevatorSixthExercise.exceptions.user.InvalidCredentialsException;
 import com.ItCareerElevatorSixthExercise.exceptions.user.NoSuchUserException;
 import com.ItCareerElevatorSixthExercise.exceptions.msvc.PaymentServiceException;
 import com.ItCareerElevatorSixthExercise.exceptions.user.UsernameIsAlreadyTakenException;
@@ -29,6 +30,21 @@ public class ExceptionHandlerController {
 
         return ResponseEntity
                 .status(ex.getStatus())
+                .body(error);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        log.warn("Handling InvalidCredentialsException.");
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid username or password.",
+                System.currentTimeMillis()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST.value())
                 .body(error);
     }
 
